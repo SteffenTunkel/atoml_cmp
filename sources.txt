@@ -1,0 +1,4 @@
+Atoml: Steffen Herbold "Automated Testing Of Machine Learing" https://github.com/sherbold/atoml
+MavenDocker: Daniel Persson "How to package your Maven application with Docker" https://www.youtube.com/watch?v=VvCS8BfGDKU
+WekaJavaApiExample: Taha Emara "How to use Weka in your Java code" http://emaraic.com/blog/weka-java-example
+PySparkExample: Juliet Hougland "ds-for-telco" https://github.com/hougs/ds-for-telco
