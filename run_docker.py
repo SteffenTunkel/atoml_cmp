@@ -2,6 +2,9 @@ import os
 
 # cmd /k -> remain ___ cmd /c -> terminate
 
+# run atoml test generation
+os.system('cmd /c "docker run --mount type=bind,source=%cd%/generated-tests,target=/generated-tests --mount type=bind,source=%cd%/algorithm-descriptions,target=/testdata atoml_docker"')
+
 # run sklearn classification
 os.system('cmd /c "docker run --mount type=bind,source=%cd%/predictions,target=/log --mount type=bind,source=%cd%/dataset,target=/data sklearn_docker"')
 

@@ -1,0 +1,2 @@
+Changes in atoml for the docker compatibility:
+In atoml_docker/src/main/java/atoml/Runner added a leading "/" to the string for the generated-tests folder.

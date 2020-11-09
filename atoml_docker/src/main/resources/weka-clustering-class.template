@@ -1,0 +1,170 @@
+package <<<PACKAGENAME>>>;
+
+import static org.apache.commons.math3.stat.inference.TestUtils.tTest;
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.rules.TestName;
+import org.junit.FixMethodOrder;
+import org.junit.Rule;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
+
+import javax.annotation.Generated;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import com.google.common.primitives.Doubles;
+import smile.stat.hypothesis.KSTest;
+
+import weka.core.Instances;
+import weka.core.Instance;
+import weka.filters.Filter;
+
+<<<MYSQLIMPORTS>>>
+
+/**
+ * Automatically generated smoke and metamorphic tests.
+ */
+@Generated("atoml.testgen.TestclassGenerator")
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@RunWith(Parameterized.class)
+public class <<<CLASSNAME>>> {
+
+    <<<MYSQLHANDLER>>>
+
+    @Rule
+    public TestName testname = new TestName();
+
+    @Parameters(name = "{1}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+<<<HYPERPARAMETERS>>>
+           });
+    }
+
+    @Parameter
+    public String[] parameters;
+
+    @Parameter(1)
+    public String parameterName;
+
+    private void assertMorphTest(String evaluationType, String testcaseName, int iteration, int testsize, int deviationsCounts, double[] deviationVector, int deviationsScores, HashMap<Integer, ArrayList<Double>> expectedScoresMap, HashMap<Integer, ArrayList<Double>> morphedScoresMap, Boolean passed, String errorMessage, String exception, String stacktrace) {
+        if (passed) {
+            if( "clust_exact".equalsIgnoreCase(evaluationType) ) {
+                String message = String.format("clusters different (deviations of instances: %d out of %d)", deviationsCounts, testsize);
+                assertTrue(message, deviationsCounts==0);
+            }
+            else if( "clust_stat".equalsIgnoreCase(evaluationType) ) {
+                double pValueCounts;
+                if( deviationsCounts>0 ) {
+                    pValueCounts = tTest(0.0, deviationVector);
+                } else {
+                    pValueCounts = 1.0;
+                }
+                String message = String.format("results significantly different, p-value = %f (deviations of instances: %d out of %d)", pValueCounts, deviationsCounts, testsize);
+                assertTrue(message, pValueCounts>0.05);
+            }
+            else if ("score_stat".equalsIgnoreCase(evaluationType)) {
+                if (expectedScoresMap.isEmpty()) {
+                    throw new RuntimeException("no scores found! score-matching available only for soft clustering algorithms!");
+                }
+                double[] pValuesKS = new double[expectedScoresMap.size()];
+                int deviationsPValues = 0;
+                for (Integer cluster: expectedScoresMap.keySet()) {
+                    if (morphedScoresMap.containsKey(cluster) && morphedScoresMap.get(cluster).size() > 1 && expectedScoresMap.get(cluster).size() > 1) {
+                        pValuesKS[cluster] = KSTest.test(Doubles.toArray(expectedScoresMap.get(cluster)), Doubles.toArray(morphedScoresMap.get(cluster))).pvalue;
+                    } else {
+                        pValuesKS[cluster] = 1.0;
+                    }
+                    if (pValuesKS[cluster] < (0.05 / (double) expectedScoresMap.size())) {
+                        deviationsPValues++;
+                    }
+                }
+                String message = String.format("scores significantly different (deviations of scores: %d out of %d, %d of %d clusters with significantly different scores)", deviationsScores, testsize, deviationsPValues, expectedScoresMap.size());
+                assertTrue(message, deviationsScores==0);
+            }
+            else {
+                throw new RuntimeException("invalid evaluation type for morph test: " + evaluationType + " (allowed: clust_exact, clust_stat, score_stat)");
+            }
+        } else {
+            String message = errorMessage + '\n' + exception + '\n' + stacktrace;
+            assertTrue(message, passed);
+        }
+    }
+
+    private Instances loadData(String resourceName) {
+        Instances data;
+        InputStreamReader originalFile = new InputStreamReader(
+                 this.getClass().getResourceAsStream(resourceName));
+        try(BufferedReader reader = new BufferedReader(originalFile);) {
+            data = new Instances(reader);
+            reader.close();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(resourceName, e);
+        }
+        data.setClassIndex(data.numAttributes()-1);
+
+        weka.filters.unsupervised.attribute.Remove filter = new weka.filters.unsupervised.attribute.Remove();
+        filter.setAttributeIndices("" + (data.classIndex() + 1));
+        try {
+            filter.setInputFormat(data);
+            data = Filter.useFilter(data, filter);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return data;
+    }
+
+    private HashMap<Integer, HashSet<Integer>> flipSameClusters(HashMap<Integer, HashSet<Integer>> expectedClustersMap, HashMap<Integer, HashSet<Integer>> morphedClustersMap) {
+        HashMap<Integer, HashSet<Integer>> flippedMap = new HashMap<Integer, HashSet<Integer>>();
+        for (int i = 0; i < morphedClustersMap.size(); i++) {
+            boolean flipped = false;
+            for (int j = 0; j < expectedClustersMap.size(); j++) {
+                if (morphedClustersMap.get(i).equals(expectedClustersMap.get(j))) {
+                    flippedMap.put(j, new HashSet<>(expectedClustersMap.get(j)));
+                    flipped = true;
+                    break;
+                }
+            }
+            if (!flipped) {
+                flippedMap.put(i, new HashSet<>(morphedClustersMap.get(i)));
+            }
+        }
+        return flippedMap;
+    }
+
+    private HashMap<Integer, HashSet<Integer>> createClusterMap(int numClusters) {
+        HashMap<Integer, HashSet<Integer>> clusterMap = new HashMap<Integer, HashSet<Integer>>();
+        for (int i = 0; i < numClusters; i++) {
+            HashSet<Integer> clusterIndices = new HashSet<Integer>();
+            clusterMap.put(i, clusterIndices);
+        }
+        return clusterMap;
+    }
+
+    private HashMap<Integer, ArrayList<Double>> createScoresMap(HashMap<Integer, HashSet<Integer>> clusterMap, double[] scores) {
+		HashMap<Integer, ArrayList<Double>> scoresMap = new HashMap<>();
+		for (Integer cluster: clusterMap.keySet()) {
+			ArrayList<Double> clusterScores = new ArrayList<>();
+			for (Integer instance: clusterMap.get(cluster)) {
+				clusterScores.add(scores[instance]);
+			}
+			scoresMap.put(cluster, clusterScores);
+		}
+		return scoresMap;
+	}
+
+<<<METHODS>>>
+}
