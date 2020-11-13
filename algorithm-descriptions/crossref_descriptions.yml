@@ -156,6 +156,151 @@ parameters:
 #  priors: missing because arrays are not yet supported
 ---
 
+name: SKLEARN_SGDClassifier
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: SGDClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  loss:
+    type: values
+    values: [hinge, log, modified_huber, squared_hinge, perceptron]
+    default: hinge
+  penalty:
+    type: values
+    values: [l2, l1, elasticnet]
+    default: l2
+  alpha:
+    type: values
+    values: [0.00001, 0.0001, 0.001]
+    default: 0.0001
+  l1_ratio:
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.5
+    default: 0.15
+  max_iter:
+    type: integer
+    min: 1
+    max: 1999
+    stepsize: 999
+    default: 1000
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+  shuffle:
+    type: values
+    values: [True, False]
+    default: True
+  learning_rate:
+    type: values
+    values: [constant, optimal, invscaling, adaptive]
+    default: optimal
+  eta0:
+    type: double
+    min: 0.0
+    max: 0.1
+    stepsize: 0.05
+    default: 0.0
+  power_t:
+    type: double
+    min: 0.1
+    max: 0.9
+    stepsize: 0.4
+    default: 0.5
+  early_stopping:
+    type: values
+    values: [True, False]
+    default: False
+  validation_fraction:
+    type: double
+    min: 0.1
+    max: 0.9
+    stepsize: 0.4
+    default: 0.1
+  n_iter_no_change:
+    type: integer
+    min: 1
+    max: 9
+    stepsize: 4
+    default: 5
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+  average:
+    type: values
+    values: [True, False, 10]
+    default: False
+---
+    
+name: SKLEARN_BernoulliNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: BernoulliNB
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  alpha:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  binarize:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 0.0
+  fit_prior:
+    type: values
+    values: [True, False]
+    default: True
+#  class_prior: missing because arrays are not yet supported
+---
+
+name: SKLEARN_CategoricalNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: CategoricalNB
+features: categorical
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  alpha:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  fit_prior: # somehow not supported?!
+    type: values
+    values: [True, False]
+    default: True
+#  class_prior: missing because arrays are not yet supported
+---
+
 ################## SPARK ###########################
     
 name: SPARK_LogisticRegression

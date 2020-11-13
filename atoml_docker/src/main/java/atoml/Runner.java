@@ -40,7 +40,7 @@ public class Runner {
 		System.setProperty("atoml.weka.datapath", "/generated-tests/weka/src/test/resources/");
 		System.setProperty("atoml.weka.testcasepath", "/generated-tests/weka/src/test/java/");
 		System.setProperty("atoml.sklearn.datapath", "/generated-tests/sklearn/");
-		System.setProperty("atoml.sklearn.testcasepath", "/nerated-tests/sklearn/");
+		System.setProperty("atoml.sklearn.testcasepath", "/generated-tests/sklearn/");
 		System.setProperty("atoml.spark.datapath", "/generated-tests/spark/src/test/resources/");
 		System.setProperty("atoml.spark.testcasepath", "/generated-tests/spark/src/test/java/");
 		testsuiteGenerator.generateTests(algorithms, iterations, useMysql, generateSmokeTests, generateMorphTests);

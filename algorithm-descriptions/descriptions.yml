@@ -1,0 +1,2423 @@
+# Field:       name 
+# Description: name of the test, should be unique (duplicate name within same package+framework will lead to problems)
+
+# Field:       type
+# Description: type of the algorithm
+# Supported values:
+#  - classification
+#  - clustering+regression planned
+
+# Field:       framework
+# Description: Machine learning framework that where the current algorithm is defined
+# Supported values:
+#  - weka
+#  - spark
+#  - sklearn
+
+# Field:       package
+# Description: package in which the algorithm is implemented
+
+# Field:       class
+# Description: name of the class that implements the algorithm
+
+# Field:       features
+# Description: defines which features can be used for the training with this algorithm, can be a list if multiple feature types are supported
+# Supported values:
+#  - DOUBLE          all double values (Java)
+#  - FLOAT           all float values (Java)
+#  - POSITIVEDOUBLE  positive double values (Java)
+#  - POSITIVEFLOAT   positive float values (Java)
+#  - UNIT            floating point numbers in [0,1]
+#  - CATEGORICAL      categorical data
+
+# Field:       properties
+# Description: Defines which properties the algorithm should fulfill. 
+# supported properties:
+#  - same      re-train with the same data --> expect classes/scores to be the same
+#  - scramble  re-train with randomly reordered instances --> expect classes/scores to be the same
+#  - reorder   re-train with randomly reordered features --> expect classes/scores to be the same
+#  - const     re-train with +1 added to all numeric features --> expect classes/scores to be the same
+#  - opposite  re-train with all class labels flipped --> expect classes to be the same, scores inverted (1-priorScore)
+# supported evaluations:
+#  - score_exac  scores must be exactly the same after re-training
+#  - class_exac  classifications must be exactly the same after re-training
+#  - class_stat  classifications must not be significantly different from expectation after re-training (chi-squared test)
+#  - score_stat  scores of distributionForInstance must not be significantly different from expectation after re-training (KS test)
+
+# Field:       parameters
+# Description: List of relevant hyper parameters of the algorithm.
+#               Every parameter must specify a default value; the default value can be different from the default in the application
+# Supported parameter types:
+#  - double     double values; if min, max, and stepsize are defined these values will be tested together with the default values of all other parameters
+#  - integer    integer values; if min, max, and stepsize are defined these values will be tested together with the default values of all other parameters
+#  - flag       flag that is either enabled or disabled; both will be tested with the default values of the other parameters
+#  - fixedflag  a flag that is always used with the default value - probably only makes sense with the value enabled.
+#  - values     list of values that will be tested with the default values of the other parameters
+
+####################
+# Weka Classifiers #
+#################### 
+
+# Tree classifiers from the package weka.classifiers.trees
+
+name: WEKA_C45_UNPRUNED
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: J48
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+parameters:
+  U: # unpruned
+    type: fixedflag
+    default: enabled
+  M: # min number of objects
+    type: integer
+    min: 1
+    max: 10
+    stepsize: 1
+    default: 2
+  O: # collapse tree if training error is not reduced
+    type: flag
+    default: disabled
+  doNotMakeSplitPointActualValue:
+    type: flag
+    default: disabled
+  A: # use laplace correction
+    type: flag
+    default: disabled
+  J: # use MDL correction
+  # not compatible with doNotMakeSplitPointActualValue, but not both used in combination currently
+    type: flag
+    default: disabled
+---
+
+name: WEKA_C45_PRUNED
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: J48
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C: # confidence factor
+    type: double
+    min: 0.05
+    max: 0.95
+    stepsize: 0.05
+    default: 0.25
+  M: # min number of objects
+    type: integer
+    min: 1
+    max: 10
+    stepsize: 1
+    default: 2
+  O: # collapse tree if training error is not reduced
+    type: flag
+    default: disabled
+  doNotMakeSplitPointActualValue:
+    type: flag
+    default: disabled
+  S: # subtree raising when pruning
+    type: flag
+    default: disabled
+  A: # use laplace correction
+    type: flag
+    default: disabled
+  J: # use MDL correction
+  # not compatible with doNotMakeSplitPointActualValue, but not both used in combination currently
+    type: flag
+    default: disabled    
+---
+
+name: WEKA_C45_REP
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: J48
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  R: # unpruned
+    type: fixedflag
+    default: enabled
+  N: # number of folds for REP
+    type: integer
+    min: 2
+    max: 10
+    stepsize: 1
+    default: 3
+  M: # min number of objects
+    type: integer
+    min: 1
+    max: 10
+    stepsize: 1
+    default: 2
+  O: # collapse tree if training error is not reduced
+    type: flag
+    default: disabled
+  doNotMakeSplitPointActualValue:
+    type: flag
+    default: disabled
+  A: # use laplace correction
+    type: flag
+    default: disabled
+  J: # use MDL correction
+  # not compatible with doNotMakeSplitPointActualValue, but not both used in combination currently
+    type: flag
+    default: disabled
+---
+
+name: WEKA_DECISIONSTUMP
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: DecisionStump
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+---
+
+name: WEKA_HOEFFDING
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: HoeffdingTree
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  G: # grace period, i.e., weight of instances of inputs observed before splitting (default weight of an instance is 1.0)
+    type: double
+    min: 50
+    max: 250
+    stepsize: 50
+  H: # hoeffding tie threshold
+    type: values # actually double, but we get better test cases with values
+    values: [0.001, 0.05, 0.1]
+    default: 0.05
+  L: # leaf prediction strategy (0 = majority class; 1 = naive bayes; 2 = naive bayes adaptive)
+    type: values
+    values: [0, 1, 2]
+    default: 2
+  M: # minimum fraction of information gain required for a split
+    type: double
+    min: 0.005
+    max: 0.02
+    stepsize: 0.005
+    default: 0.01
+  N: # naive bayes prediction threshold
+    type: double
+    min: 0.005
+    max: 0.02
+    stepsize: 0.005
+    default: 0.01
+  E: # allowable error in split confidence
+    type: values # actually double, but we get better test cases with values
+    values: [1.0E-7, 1.0E-5, 1.0E-3]
+    default: 1.0E-7
+---
+
+name: WEKA_LMT
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: LMT
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  B: # convert nominal to binary attributes
+    type: flag
+    default: disabled
+  doNotMakeSplitPointActualValue:
+    type: flag
+    default: disabled
+  P: # minimize on probablities instead of misclassification error
+    type: flag
+    default: disabled
+  C: # use fast regression instead of cross validation
+    type: flag
+    default: enabled
+  M: # minimal number of instance in a node to consider splitting
+    type: integer
+    min: 1
+    max: 29
+    stepsize: 14
+    default: 15
+  I: # fixed number of logit-boost iteration, cross validation is used to determine this in case of -1
+    type: integer
+    min: -1
+    max: 9
+    stepsize: 2
+    default: -1
+  R: # split on residuals of logistic regression
+    type: flag
+    default: disabled
+  A: # use AIC to determine number of boosting iterations
+    type: flag
+    default: disabled
+  W: # sets the weight of the beta for test generation
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.2
+    default: 0.0
+---
+
+name: WEKA_RANDOMFOREST
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: RandomForest
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  B: # break ties randomly
+    type: flag
+    default: disabled
+  O: # calculate out of bag error
+    type: flag
+    default: disabled
+  attribute-importance: # calculate attribute importance
+    type: flag
+    default: disabled
+  depth: # depth of the trees
+    type: integer
+    min: 0
+    max: 4
+    stepsize: 1
+    default: 0
+  num-slots: # number of threads used
+    type: integer
+    min: 1
+    max: 2
+    stepsize: 1
+    default: 1
+  I: # number of random trees
+    type: integer
+    min: 10
+    max: 540
+    stepsize: 90
+    default: 100 
+  M: # minimal sum of weight of all instances in a leaf (default weight per instance is 1.0)
+    # this parameters is not visible in the Weka GUI - Possible BUG
+    type: double
+    min: 1.0
+    max: 9.0
+    stepsize: 2.0
+    default: 1.0
+  V: # minimal variance that must be covered for a split
+    # this parameters is not visible in the Weka GUI - Possible BUG
+    type: double
+    min: 0.001
+    max: 0.101
+    stepsize: 0.05
+    default: 0.001
+  N: # number of folds that are used for backfitting (0 means no backfitting)
+    # this parameters is not visible in the Weka GUI - Possible BUG
+    type: integer
+    min: 2
+    max: 4
+    stepsize: 1
+    default: 0 
+# check numFeatures, this is kinda difficult here
+---
+
+name: WEKA_RANDOMTREE
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: RandomTree
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  B: # break ties randomly
+    type: flag
+    default: disabled
+  depth: # depth of the trees
+    type: integer
+    min: 0
+    max: 4
+    stepsize: 1
+    default: 0
+  M: # minimal sum of weight of all instances in a leaf (default weight per instance is 1.0)
+    type: double
+    min: 1.0
+    max: 9.0
+    stepsize: 2.0
+    default: 1.0
+  V: # minimal variance that must be covered for a split
+    type: double
+    min: 0.001
+    max: 0.101
+    stepsize: 0.05
+    default: 0.001
+  N: # number of folds that are used for backfitting (0 means no backfitting
+    type: integer
+    min: 2
+    max: 6
+    stepsize: 2
+    default: 0 
+# check KValue (number of randomly selected instances), kinda difficult
+---
+
+name: WEKA_REPTREE
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: REPTree
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  I: # initial count of class values
+    type: double
+    min: 0.0
+    max: 2.0
+    stepsize: 1.0
+    default: 0.0
+  L: # maximum depth of the tree (-1 = no restriction)
+    type: integer
+    min: -1
+    max: 11
+    stepsize: 3
+    default: -1
+  M: # minimal number of instances in a leaf
+    type: integer
+    min: 1
+    max: 11
+    stepsize: 5
+    default: 2
+  V: # minimal variance that must be covered for a split
+    type: double
+    min: 0.001
+    max: 0.101
+    stepsize: 0.05
+    default: 0.001
+  P: # if enabled no pruning is performed
+    type: flag
+    default: disabled
+  N: # number of cross valdiations used for pruning
+    type: integer
+    min: 2
+    max: 6
+    stepsize: 2
+    default: 3
+  R: # spread initial counts across all values
+    type: flag
+    default: disabled
+---
+
+# Rule-based classifiers from the package weka.classifiers.rules
+
+name: WEKA_DECISIONTABLE
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: DecisionTable
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  X: # number of cross validation folds (1=leave one out)
+    type: integer
+    min: 1
+    max: 5
+    stepsize: 2
+    default: 1
+  E: # evaluation measure used to evaluate performance of attributes
+    type: values
+    values: [acc, rmse, mae, auc]
+  I: # use IBk instead of majority for class
+    type: flag
+    default: disabled
+  S: # search strategy for attributes
+    type: values
+    values: ["weka.attributeSelection.BestFirst -D 1 -N 5", "weka.attributeSelection.GreedyStepwise -T -1.7976931348623157E308 -N -1 -num-slots 1"]
+    default: "weka.attributeSelection.BestFirst -D 1 -N 5"
+---
+
+name: WEKA_RIPPER
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: JRip
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  E: # whether a check for the error rate is ignored
+    type: flag
+    default: disabled
+  F: # folds used for pruning
+    type: integer
+    min: 1
+    max: 5
+    stepsize: 2
+    default: 3
+  N: # minimal weight instances in a rule must have (default weight of an instance is 1.0)
+    type: double
+    min: 1.0
+    max: 10.0
+    stepsize: 3
+    default: 2.0
+  O: # number of optimization runs
+    type: integer
+    min: 1
+    max: 5
+    stepsize: 2
+    default: 2
+  P: # pruning disabled (i.e., pruning is disblaed if this flag is enabled)
+    type: flag
+    default: disabled
+---
+
+name: WEKA_ONER
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: OneR
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  B: # bucket size for bins
+    type: integer
+    min: 2
+    max: 10
+    stepsize: 4
+    default: 6
+---
+
+name: WEKA_PART_REP
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: PART
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  B: # binary splits
+    type: flag
+    default: disabled
+  doNotMakeSplitPointActualValue:
+    type: flag
+    default: disabled^
+  M: # minimal number of instances
+    type: integer
+    min: 1
+    max: 21
+    stepsize: 10
+    default: 2
+  N: # number of CV folds
+    min: 2
+    max: 6
+    stepize: 2
+    default: 3
+  U: # unpruned
+    type: fixedflag
+    default: disabled
+  R: # reduced error pruning
+    type: fixedflag
+    default: enabled
+  J: # use MDL correction
+  # not compatible with doNotMakeSplitPointActualValue, but not both used in combination currently
+    type: flag
+    default: disabled    
+---
+
+name: WEKA_PART_PRUNED
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: PART
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  B: # binary splits
+    type: flag
+    default: disabled
+  doNotMakeSplitPointActualValue:
+    type: flag
+    default: disabled^
+  M: # minimal number of instances
+    type: integer
+    min: 1
+    max: 21
+    stepsize: 10
+    default: 2
+  U: # unpruned
+    type: fixedflag
+    default: disabled
+  R: # reduced error pruning
+    type: fixedflag
+    default: disabled
+  J: # use MDL correction
+  # not compatible with doNotMakeSplitPointActualValue, but not both used in combination currently
+    type: flag
+    default: disabled    
+---
+
+name: WEKA_PART_UNPRUNED
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: PART
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  B: # binary splits
+    type: flag
+    default: disabled
+  C: # confidence factor
+    type: double
+    min: 0.01
+    max: 0.04
+    stepsize: 0.01
+    default: 0.25
+  doNotMakeSplitPointActualValue:
+    type: flag
+    default: disabled^
+  M: # minimal number of instances
+    type: integer
+    min: 1
+    max: 21
+    stepsize: 10
+    default: 2
+  U: # unpruned
+    type: fixedflag
+    default: enabled
+  R: # reduced error pruning
+    type: fixedflag
+    default: disabled
+  J: # use MDL correction
+  # not compatible with doNotMakeSplitPointActualValue, but not both used in combination currently
+    type: flag
+    default: disabled
+---
+
+name: WEKA_ZEROR
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: ZeroR
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+---
+
+# Lazy classifiers from the package weka.classifiers.lazy
+
+name: WEKA_KNN
+type: classification
+framework: weka
+package: weka.classifiers.lazy
+class: IBk
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  K: # number of neighbors
+    type: integer
+    min: 1
+    max: 10
+    stepsize: 3
+    default: 1
+  X: # use cross-validation to determine best K
+    type: flag
+    default: disabled
+  I: # weight by 1/distance (not compatible with F)
+    type: flag
+    default: disabled
+  F: # weight by 1-distance (not compatible with I)
+    type: flag
+    default: disabled
+  E: # weather mean-squared error is used instead of mean absolute error for CV
+    type: flag
+    default: disabled
+  A: # distance metric
+    type: values
+    values: ["weka.core.neighboursearch.LinearNNSearch -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\"", "weka.core.neighboursearch.BallTree -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\" -C \\\\\"weka.core.neighboursearch.balltrees.TopDownConstructor -S weka.core.neighboursearch.balltrees.PointsClosestToFurthestChildren -N 40\\\\\"", "weka.core.neighboursearch.CoverTree -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\" -B 1.3", "weka.core.neighboursearch.FilteredNeighbourSearch -F \\\\\"weka.filters.AllFilter \\\\\" -S \\\\\"weka.core.neighboursearch.LinearNNSearch -A \\\\\\\\\\\\\\\"weka.core.EuclideanDistance -R first-last\\\\\\\\\\\\\\\"\\\\\"", "weka.core.neighboursearch.KDTree -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\" -S weka.core.neighboursearch.kdtrees.SlidingMidPointOfWidestSide -W 0.01 -L 40 -N"]
+    default: "weka.core.neighboursearch.FilteredNeighbourSearch -F \\\\\"weka.filters.AllFilter \\\\\" -S \\\\\"weka.core.neighboursearch.LinearNNSearch -A \\\\\\\\\\\\\\\"weka.core.EuclideanDistance -R first-last\\\\\\\\\\\\\\\"\\\\\""
+---
+
+name: WEKA_KSTAR
+type: classification
+framework: weka
+package: weka.classifiers.lazy
+class: KStar
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  E: # weather entropy blending is used
+    type: flag
+    default: disabled
+  B: # global blending parameter
+    type: integer
+    min: 10
+    max: 30
+    stepsize: 10
+    default: 20
+  M: # mode for handling missing data
+    type: values
+    values: [d,m,n,a]
+    default: a 
+---
+
+# Bayesian classifiers from the package weka.classifiers.bayes
+
+name: WEKA_BAYESNET
+type: classification
+framework: weka
+package: weka.classifiers.bayes
+class: BayesNet
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  E: # estimator
+    # There is also the weka.classifiers.bayes.net.estimate.MultiNomialBMAEstimator, but this one does not support a lot of data, which is why it is currently left out
+    type: values
+    values: ["weka.classifiers.bayes.net.estimate.SimpleEstimator", "weka.classifiers.bayes.net.estimate.BMAEstimator"]
+    default: "weka.classifiers.bayes.net.estimate.SimpleEstimator"
+  Q: # search algorithm
+    type: values
+    values: ["weka.classifiers.bayes.net.search.local.HillClimber", "weka.classifiers.bayes.net.search.local.K2", "weka.classifiers.bayes.net.search.local.LAGDHillClimber", "weka.classifiers.bayes.net.search.local.TabuSearch", "weka.classifiers.bayes.net.search.local.TAN"]
+    # TODO: "weka.classifiers.bayes.net.search.local.RepeatedHillClimber" <--- extremely slow
+    # TODO:  "weka.classifiers.bayes.net.search.local.SimulatedAnnealing" <--- extremely slow 
+    # TODO: "weka.classifiers.bayes.net.search.local.GeneticSearch" <--- problem with parameters
+    default: "weka.classifiers.bayes.net.search.local.K2"
+  D: # if enabled, no ADTree is used
+    type: flag
+    default: disabled
+---
+
+name: WEKA_NAIVEBAYES
+type: classification
+framework: weka
+package: weka.classifiers.bayes
+class: NaiveBayes
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  K: # use gaussian kernel estimator
+    type: flag
+    default: disabled
+  D: # use supervised discretization
+    type: flag
+    default: disabled
+---
+
+name: WEKA_NAIVEBAYES_MULTINOMIAL
+type: classification
+framework: weka
+package: weka.classifiers.bayes
+class: NaiveBayesMultinomial
+features: [positivedouble] # can also binary but do not have that feature type yet
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+---
+
+# Functions as classifiers from the package weka.classifiers.functions
+
+name: WEKA_LOGISTIC
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: Logistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  R: # ridge value of the log likelihood
+    type: double
+    min: 1.0E-9
+    max: 1.0E-7
+    stepsize: 0.9E-8
+    default: 1.0E-8
+  C: # use conjugate gradiant descent
+    type: flag
+    default: disabled
+---
+
+# Functions as classifiers from the package weka.classifiers.functions
+
+name: WEKA_MLP
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: MultilayerPerceptron
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  D: # decay, i.e., decreasing learning rate
+    type: flag
+    default: disabled
+  H: # number of hidden layers (allows numbers and some wildcards, therefore, we use values)
+    type: values
+    values: [a, i, o, t, 1, 2, 3]
+    default: a
+  L: # learning rate of the gradiant descent
+    type: double
+    min: 0.001
+    max: 0.5
+    stepsize: 0.099
+    default: 0.3
+  M: # momentum applied to weight updates
+    type: double
+    min: 0.001
+    max: 0.5
+    stepsize: 0.099
+    default: 0.2
+  B: # no nominal to binary filter
+    type: flag
+    default: disabled
+  I: # no normalization of attributes
+    type: flag
+    default: disabled
+  C: # no internal normalization of numeric class attributes
+    type: flag
+    default: disabled
+  R: # no reset of network with lower learning rate in case of convergence
+    type: flag
+    default: disabled
+  N: # number of epochs for training
+    type: integer
+    min: 100
+    max: 900
+    stepsize: 400
+    default: 500
+  V: # validation set size
+    type: integer
+    min: 0
+    max: 90
+    stepsize: 30
+    default: 0
+  E: # validation threshold
+    type: integer
+    min: 1
+    max: 39
+    stepsize: 19
+    default: 20
+---
+
+name: WEKA_SGD
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SGD
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  N: # do not normalize
+    type: flag
+    default: disabled
+  E: # epochs
+    type: integer
+    min: 100
+    max: 900
+    stepsize: 400
+    default: 500
+  C: # epsilon for loss function
+    type: double
+    min: 0.0001
+    max: 0.02
+    stepsize: 0.05
+    default: 0.001
+  R: # regularization constant
+    type: double
+    min: 0.00001
+    max: 0.001
+    stepsize: 0.0005
+    default: 0.0001
+  L: # learning rate
+    type: double
+    min: 0.001
+    max: 0.5
+    stepsize: 0.099
+    default: 0.3
+  F: #
+    type: values
+    values: [0,1] # 0=hinge, 1=logistic (other types for regression)
+    default: 0
+---
+
+name: WEKA_SimpleLogistic
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SimpleLogistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  P: # error on probabilities
+    type: flag
+    default: disabled
+  H: # heuristic stoping criterion
+    type: integer
+    min: 0
+    max: 100
+    stepsize: 50
+    default: 50
+  M: # maximum of boosting iterations (actually, zero is allowed - is this a bug?)
+    type: integer
+    min: 1
+    max: 999
+    stepsize: 499
+    default: 500
+  I: # sets a fixed number of boosting iterations
+    type: integer
+    min: 0
+    max: 1000
+    stepsize: 500
+    default: 0
+  A: # use AIC to determine number of boosting iterations
+    type: flag
+    default: disabled
+  S: # whether cross-validation is used for determining the number of boosting iterations
+    type: flag
+    default: disabled
+  W: # beta value for weight trimming of boosting
+    type: double
+    min: 0.0
+    max: 0.9
+    stepsize: 0.3
+    default: 0.0
+---
+    
+name: WEKA_SVM
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SMO
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  M: # build calibration models
+    type: fixedflag
+    default: disabled
+  N: # preprocessing of data
+    type: values
+    values: [0,1,2] # 0=normalize, 1=standardize, 2=nothing
+    default: 0
+  C: # complexity parameter
+    type: double
+    min: 0.5
+    max: 2.0
+    stepsize: 0.5
+    default: 1.0
+  P: # epsilon for round-off error (should not be changed from default, according to documentation
+    type: values
+    values: [1E-12]
+    default: 1E-12
+  K: # Kernel
+    type: values
+    values: ["weka.classifiers.functions.supportVector.PolyKernel -E 1.0 -C 250007","weka.classifiers.functions.supportVector.NormalizedPolyKernel -E 2.0 -C 250007","weka.classifiers.functions.supportVector.RBFKernel -C 250007 -G 0.01","weka.classifiers.functions.supportVector.Puk -O 1.0 -S 1.0 -C 250007"]
+    default: "weka.classifiers.functions.supportVector.PolyKernel -E 1.0 -C 250007"
+---
+
+name: WEKA_SVM_CALIBRATED
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SMO
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  M: # build calibration models
+    type: fixedflag
+    default: disabled
+  N: # preprocessing of data
+    type: values
+    values: [0,1,2] # 0=normalize, 1=standardize, 2=nothing
+    default: 0
+  C: # complexity parameter
+    type: double
+    min: 0.5
+    max: 2.0
+    stepsize: 0.5
+    default: 1.0
+  P: # epsilon for round-off error (should not be changed from default, according to documentation
+    type: values
+    values: [1E-12]
+    default: 1E-12
+  K: # Kernel
+    type: values
+    values: ["weka.classifiers.functions.supportVector.PolyKernel -E 1.0 -C 250007","weka.classifiers.functions.supportVector.NormalizedPolyKernel -E 2.0 -C 250007","weka.classifiers.functions.supportVector.RBFKernel -C 250007 -G 0.01","weka.classifiers.functions.supportVector.Puk -O 1.0 -S 1.0 -C 250007"]
+    default: "weka.classifiers.functions.supportVector.PolyKernel -E 1.0 -C 250007"
+  V: # number of folds for training calibration models (-1 means use training data)
+    type: integer
+    min: -1
+    max: 3
+    stepsize: 2
+    default: -1
+  calibrator:
+    type: values
+    values: ["weka.classifiers.functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4","weka.classifiers.functions.SimpleLogistic -I 0 -M 500 -H 50 -W 0.0"]
+    default: "weka.classifiers.functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4"
+---
+
+name: WEKA_VOTEDPERCEPTRON
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: VotedPerceptron
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  E: # exponent of the polynomial kernel
+    type: double
+    min: 1.0
+    max: 3.0
+    stepsize: 1.0
+    default: 1.0
+  I: # number of iterations
+    type: integer
+    min: 1
+    max: 9
+    stepsize: 4
+    default: 1
+  M: # maximum number of alterations of the perceptron
+    type: integer
+    min: 1
+    max: 20001
+    stepsize: 5000
+    default: 10000
+---
+
+#################################
+# Scikit-Learn 0.22 Classifiers #
+#################################
+
+name: SKLEARN_DecisionTreeClassifier
+framework: sklearn
+type: classification
+package:  sklearn.tree
+class: DecisionTreeClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  criterion:
+    type: values
+    values: [gini, entropy]
+    default: gini
+  splitter:
+    type: values
+    values: [best, random]
+    default: best
+  min_samples_split:
+    type: integer
+    min: 2
+    max: 10
+    stepsize: 2
+    default: 2
+  max_depth:
+    type: integer
+    min: 1
+    max: 5
+    stepsize: 1
+    default: 2 
+  min_samples_leaf:
+    type: integer
+    min: 1
+    max: 13
+    stepsize: 4
+    default: 1
+  min_weight_fraction_leaf:
+    type: double
+    min: 0.0
+    max: 0.5
+    stepsize: 0.25
+    default: 0.0
+  max_features:
+    type: values
+    values: [auto, sqrt, log2, 0.1, 0.5, 0.8, None]
+    default: None
+  max_leaf_nodes:
+    type: integer
+    min: 10
+    max: 20
+    stepsize: 5
+    default: None
+  min_impurity_decrease:
+    type: double
+    min: 0.0
+    max: 0.4
+    stepsize: 0.2
+    default: 0.0
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+  ccp_alpha:
+    type: double
+    min: 0.0
+    max: 0.4
+    stepsize: 0.2
+    default: 0.0
+---
+
+name: SKLEARN_ExtraTreeClassifier
+framework: sklearn
+type: classification
+package:  sklearn.tree
+class: ExtraTreeClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  criterion:
+    type: values
+    values: [gini, entropy]
+    default: gini
+  splitter:
+    type: values
+    values: [best, random]
+    default: best
+  min_samples_split:
+    type: integer
+    min: 2
+    max: 10
+    stepsize: 2
+    default: 2
+  max_depth:
+    type: integer
+    min: 1
+    max: 5
+    stepsize: 1
+    default: 2 
+  min_samples_leaf:
+    type: integer
+    min: 1
+    max: 13
+    stepsize: 4
+    default: 1
+  min_weight_fraction_leaf:
+    type: double
+    min: 0.0
+    max: 0.5
+    stepsize: 0.25
+    default: 0.0
+  max_features:
+    type: values
+    values: [auto, sqrt, log2, 0.1, 0.5, 0.8, None]
+    default: None
+  max_leaf_nodes:
+    type: integer
+    min: 10
+    max: 20
+    stepsize: 5
+    default: None
+  min_impurity_decrease:
+    type: double
+    min: 0.0
+    max: 0.4
+    stepsize: 0.2
+    default: 0.0
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+  ccp_alpha:
+    type: double
+    min: 0.0
+    max: 0.4
+    stepsize: 0.2
+    default: 0.0
+---
+
+name: SKLEARN_RandomForestClassifier
+framework: sklearn
+type: classification
+package:  sklearn.ensemble
+class: RandomForestClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  n_estimators:
+    type: integer
+    min: 1
+    max: 100
+    stepsize: 100
+    default: 100
+  criterion:
+    type: values
+    values: [gini, entropy]
+    default: gini
+  min_samples_split:
+    type: integer
+    min: 2
+    max: 10
+    stepsize: 2
+    default: 2
+  max_depth:
+    type: integer
+    min: 1
+    max: 5
+    stepsize: 1
+    default: 2 
+  min_samples_leaf:
+    type: integer
+    min: 1
+    max: 13
+    stepsize: 4
+    default: 1
+  min_weight_fraction_leaf:
+    type: double
+    min: 0.0
+    max: 0.5
+    stepsize: 0.25
+    default: 0.0
+  max_features:
+    type: values
+    values: [auto, sqrt, log2, 0.1, 0.5, 0.8, None]
+    default: None
+  max_leaf_nodes:
+    type: integer
+    min: 10
+    max: 20
+    stepsize: 5
+    default: None
+  min_impurity_decrease:
+    type: double
+    min: 0.0
+    max: 0.4
+    stepsize: 0.2
+    default: 0.0
+  class_weight:
+    type: values
+    values: [balanced, balanced_subsample, None]
+    default: None
+  bootstrap:
+    type: values
+    values: [True, False]
+    default: True
+  ccp_alpha:
+    type: double
+    min: 0.0
+    max: 0.4
+    stepsize: 0.2
+    default: 0.0
+---
+
+name: SKLEARN_DummyClassifier
+framework: sklearn
+type: classification
+package:  sklearn.dummy
+class: DummyClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  strategy:
+    type: values
+    values: [stratified, most_frequent, prior, uniform, constant]
+    default: stratified
+  constant:
+    type: integer
+    min: 0
+    max: 1
+    stepsize: 1
+    default: 0
+---
+ 
+name: SKLEARN_GaussianProcessClassifier
+framework: sklearn
+type: classification
+package:  sklearn.gaussian_process
+class: GaussianProcessClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  optimizer:
+    type: values
+    values: [fmin_l_bfgs_b]
+    default: fmin_l_bfgs_b
+  n_restarts_optimizer:
+    type: integer
+    min: 0
+    max: 2
+    stepsize: 1
+    default: 0
+  max_iter_predict:
+    type: integer
+    min: 1
+    max: 199
+    stepsize: 99
+    default: 100
+  copy_X_train:
+    type: values
+    values: [True, False]
+    default: True
+# multi_class ignored because we only have binary data so far
+# kernel ignored, but may be added (this would require additional imports, which is not supported so far
+---
+
+name: SKLEARN_PassiveAggressiveClassifier
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: PassiveAggressiveClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C: # regularization parameter
+    type: double
+    min: 0.5
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  fit_intercept:
+    type: values
+    values: [True, False]
+    default: False
+  max_iter:
+    type: integer
+    min: 500
+    max: 1500
+    stepsize: 500
+    default: 1000
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+  early_stopping:
+    type: values
+    values: [True, False]
+    default: False
+  n_iter_no_change:
+    type: integer
+    min: 1
+    max: 9
+    stepsize: 4
+    default: 5
+  shuffle:
+    type: values
+    values: [True, False]
+    default: True
+  loss:
+    type: values
+    values: [hinge, squared_hinge]
+    default: hinge
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+  average:
+    type: values
+    values: [True, False, 10]
+    default: False
+---
+
+name: SKLEARN_RidgeClassifier
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: RidgeClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  alpha:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  fit_intercept:
+    type: values
+    values: [True, False]
+    default: True
+  normalize:
+    type: values
+    values: [True, False]
+    default: False
+  copy_X:
+    type: values
+    values: [True, False]
+    default: True
+  max_iter:
+    type: values
+    values: [100, 1000, 10000, None]
+    default: None
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+  solver:
+    type: values
+    values: [auto, svd, cholesky, lsqr, sparse_cg, sag, saga]
+    default: auto
+---
+
+name: SKLEARN_SGDClassifier
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: SGDClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  loss:
+    type: values
+    values: [hinge, log, modified_huber, squared_hinge, perceptron]
+    default: hinge
+  penalty:
+    type: values
+    values: [l2, l1, elasticnet]
+    default: l2
+  alpha:
+    type: values
+    values: [0.00001, 0.0001, 0.001]
+    default: 0.0001
+  l1_ratio:
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.5
+    default: 0.15
+  max_iter:
+    type: integer
+    min: 1
+    max: 1999
+    stepsize: 999
+    default: 1000
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+  shuffle:
+    type: values
+    values: [True, False]
+    default: True
+  learning_rate:
+    type: values
+    values: [constant, optimal, invscaling, adaptive]
+    default: optimal
+  eta0:
+    type: double
+    min: 0.0
+    max: 0.1
+    stepsize: 0.05
+    default: 0.0
+  power_t:
+    type: double
+    min: 0.1
+    max: 0.9
+    stepsize: 0.4
+    default: 0.5
+  early_stopping:
+    type: values
+    values: [True, False]
+    default: False
+  validation_fraction:
+    type: double
+    min: 0.1
+    max: 0.9
+    stepsize: 0.4
+    default: 0.1
+  n_iter_no_change:
+    type: integer
+    min: 1
+    max: 9
+    stepsize: 4
+    default: 5
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+  average:
+    type: values
+    values: [True, False, 10]
+    default: False
+---
+    
+name: SKLEARN_BernoulliNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: BernoulliNB
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  alpha:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  binarize:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 0.0
+  fit_prior:
+    type: values
+    values: [True, False]
+    default: True
+#  class_prior: missing because arrays are not yet supported
+---
+
+name: SKLEARN_CategoricalNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: CategoricalNB
+features: categorical
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  alpha:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  fit_prior: # somehow not supported?!
+    type: values
+    values: [True, False]
+    default: True
+#  class_prior: missing because arrays are not yet supported
+---
+
+name: SKLEARN_ComplementNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: ComplementNB
+features: positivedouble
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  alpha:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  fit_prior:
+    type: values
+    values: [True, False]
+    default: True
+  norm:
+    type: values
+    values: [True, False]
+    default: False
+#  class_prior: missing because arrays are not yet supported
+---
+
+name: SKLEARN_GaussianNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: GaussianNB
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  var_smoothing:
+    type: values
+    values: [0.000000001, 0.0000001]
+    default: 0.000000001
+#  priors: missing because arrays are not yet supported
+---
+
+name: SKLEARN_MultinomialNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: MultinomialNB
+features: positivedouble
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  alpha:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  fit_prior:
+    type: values
+    values: [True, False]
+    default: True
+#  class_prior: missing because arrays are not yet supported
+---
+
+name: SKLEARN_KNeighborsClassifier
+framework: sklearn
+type: classification
+package:  sklearn.neighbors
+class: KNeighborsClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  n_neighbors:
+    type: integer
+    min: 1
+    max: 9
+    stepsize: 4
+    default: 5
+  weights:
+    type: values
+    values: [uniform, distance]
+    default: uniform
+  algorithm:
+    type: values
+    values: [ball_tree, kd_tree, brute, auto] # execution shows that brute is incompatible with most metrics, even though this is not documented.
+    default: auto
+  leaf_size:
+    type: integer
+    min: 1
+    max: 59
+    stepsize: 29
+    default: 30
+  p: # the p for the lp norm
+    type: integer
+    min: 1
+    max: 3
+    stepsize: 1
+    default: 2
+  metric:
+    type: values
+    values: [euclidean, manhatten, chebyshev, minkowski] # wminkowski, seuclidean, mahalanobis maybe need additional classifiers, because they take arguments
+    default: minkowski
+# ommitted metric_params, n_jobs
+---
+
+name: SKLEARN_RadiusNeighborsClassifier
+framework: sklearn
+type: classification
+package:  sklearn.neighbors
+class: RadiusNeighborsClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  radius:
+    type: double
+    min: 0.1
+    max: 1.9
+    stepsize: 0.9
+    default: 1.0
+  weights:
+    type: values
+    values: [uniform, distance]
+    default: uniform
+  algorithm:
+    type: values
+    values: [ball_tree, kd_tree, brute, auto]
+    default: auto
+  leaf_size:
+    type: integer
+    min: 1
+    max: 59
+    stepsize: 29
+    default: 30
+  p: # the p for the lp norm
+    type: integer
+    min: 1
+    max: 3
+    stepsize: 1
+    default: 2
+  metric:
+    type: values
+    values: [euclidean, manhatten, chebyshev, minkowski, wminkowski, seuclidean, mahalabonis]
+    default: minkowski
+  outlier_label:
+    type: values
+    values: [None, most_frequent, 1.0, 0.0]
+    default: None
+# ommitted metric_params, n_jobs
+---
+
+name: SKLEARN_MLPClassifier
+framework: sklearn
+type: classification
+package:  sklearn.neural_network
+class: MLPClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  hidden_layer_sizes:
+    type: values
+    values: ['(100,50,10)', '(1, 1)', '(10, 20)']
+    default: '(100,)'
+  activation:
+    type: values
+    values: [identity, logistic, tanh, relu]
+    default: relu
+  solver:
+    type: values
+    values: [lbfgs, sgd, adam]
+    default: adam
+  alpha:
+    type: values
+    values: [0.001, 0.0001, 0.00001]
+    default: 0.0001
+  batch_size:
+    type: integer
+    min: 1
+    max: 19
+    stepsize: 9
+    default: auto
+  learning_rate:
+    type: values
+    values: [constant, invscaling, adaptive]
+    default: constant
+  learning_rate_init:
+    type: values
+    values: [0.01, 0.001, 0.0001]
+    default: 0.001
+  power_t:
+    type: double
+    min: 0.1
+    max: 0.9
+    stepsize: 0.4
+    default: 0.4
+  shuffle:
+    type: values
+    values: [True, False]
+    default: True
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  momentum:
+    type: double
+    min: 0.1
+    max: 0.9
+    stepsize: 0.4
+    default: 0.9
+  early_stopping:
+    type: values
+    values: [True, False]
+    default: False
+  validation_fraction:
+    type: double
+    min: 0.1
+    max: 0.9
+    stepsize: 0.4
+    default: 0.1
+  beta_1:
+    type: double
+    min: 0.0
+    max: 0.9
+    stepsize: 0.45
+    default: 0.9
+  beta_2:
+    type: double
+    min: 0.0
+    max: 0.9
+    stepsize: 0.45
+    default: 0.9
+  epsilon:
+    type: values
+    values: [0.00000001]
+    default: 0.00000001
+  n_iter_no_change:
+    type: integer
+    min: 1
+    max: 9
+    stepsize: 4
+    default: 5
+  max_fun:
+    type: integer
+    min: 10000
+    max: 20000
+    stepsize: 5000
+    default: 15000
+---
+
+name: SKLEARN_LinearSVC
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: LinearSVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  penalty:
+    type: values
+    values: [l1, l2]
+    default: l2
+  loss:
+    type: values
+    values: [hinge, squared_hinge]
+    default: squared_hinge
+  dual:
+    type: values
+    values: [True, False]
+    default: True
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  C: # regularization parameter
+    type: double
+    min: 0.1
+    max: 1.9
+    stepsize: 0.9
+    default: 1.0
+  fit_intercept:
+    type: values
+    values: [True, False]
+    default: True
+  intercept_scaling:
+    type: double
+    min: 0.5
+    max: 1.5
+    stepsize: 0.5
+    default: 1.0
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+  max_iter:
+    type: integer
+    min: 1
+    max: 1999
+    stepsize: 999
+    default: 1000
+# ignored multi_class
+---
+
+name: SKLEARN_NuSVC
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: NuSVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  nu:
+    type: double
+    min: 0.1
+    max: 0.7
+    stepsize: 0.3
+    default: 0.5
+  kernel:
+    type: values
+    values: [linear, rbf]
+    default: rbf
+  gamma:
+    type: values
+    values: [scale, auto, 0.1]
+    default: scale
+  shrinking:
+    type: values
+    values: [True, False]
+    default: True
+  probability:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+# max_iter ignored
+# decision_function_shape, break_ties ignored because we only have binary problems so far    
+---
+
+name: SKLEARN_NuSVC_Poly
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: NuSVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  nu:
+    type: double
+    min: 0.1
+    max: 0.7
+    stepsize: 0.3
+    default: 0.5
+  kernel:
+    type: values
+    values: [poly]
+    default: poly
+  degree:
+    type: integer
+    min: 1
+    max: 3
+    stepsize: 1
+    default: 3
+  coef0:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5 
+    default: 0.0
+  shrinking:
+    type: values
+    values: [True, False]
+    default: True
+  probability:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+# max_iter ignored
+# decision_function_shape, break_ties ignored because we only have binary problems so far    
+---
+
+name: SKLEARN_NuSVC_Sigmoid
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: NuSVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  nu:
+    type: double
+    min: 0.1
+    max: 0.7
+    stepsize: 0.3
+    default: 0.5
+  kernel:
+    type: values
+    values: [linear, rbf]
+    default: rbf
+  gamma:
+    type: values
+    values: [scale, auto, 0.1]
+    default: scale
+  coef0:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5 
+    default: 0.0
+  shrinking:
+    type: values
+    values: [True, False]
+    default: True
+  probability:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+# max_iter ignored
+# decision_function_shape, break_ties ignored because we only have binary problems so far    
+---
+
+name: SKLEARN_SVC
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: SVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C: # regularization parameter
+    type: double
+    min: 0.1
+    max: 1.9
+    stepsize: 0.9
+    default: 1.0
+  kernel:
+    type: values
+    values: [linear, rbf]
+    default: rbf
+  gamma:
+    type: values
+    values: [scale, auto, 0.1]
+    default: scale
+  shrinking:
+    type: values
+    values: [True, False]
+    default: True
+  probability:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+# max_iter ignored
+# decision_function_shape, break_ties ignored because we only have binary problems so far    
+---
+
+name: SKLEARN_SVC_Poly
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: SVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C: # regularization parameter
+    type: double
+    min: 0.1
+    max: 1.9
+    stepsize: 0.9
+    default: 1.0
+  kernel:
+    type: values
+    values: [poly]
+    default: poly
+  degree:
+    type: integer
+    min: 1
+    max: 3
+    stepsize: 1
+    default: 3
+  coef0:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5 
+    default: 0.0
+  shrinking:
+    type: values
+    values: [True, False]
+    default: True
+  probability:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+# max_iter ignored
+# decision_function_shape, break_ties ignored because we only have binary problems so far    
+---
+
+name: SKLEARN_SVC_Sigmoid
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: SVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C: # regularization parameter
+    type: double
+    min: 0.1
+    max: 1.9
+    stepsize: 0.9
+    default: 1.0
+  kernel:
+    type: values
+    values: [linear, rbf]
+    default: rbf
+  gamma:
+    type: values
+    values: [scale, auto, 0.1]
+    default: scale
+  coef0:
+    type: double
+    min: 0.0
+    max: 1.5
+    stepsize: 0.5 
+    default: 0.0
+  shrinking:
+    type: values
+    values: [True, False]
+    default: True
+  probability:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.001]
+    default: 0.001
+  class_weight:
+    type: values
+    values: [balanced, None]
+    default: None
+# max_iter ignored
+# decision_function_shape, break_ties ignored because we only have binary problems so far    
+---
+
+name: SKLEARN_LinearDiscriminantAnalysis_SVD
+framework: sklearn
+type: classification
+package:  sklearn.discriminant_analysis
+class: LinearDiscriminantAnalysis
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  solver:
+    type: values
+    values: [svd]
+    default: svd
+  shrinkage:
+    type: values
+    values: [None]
+    default: None
+  n_components:
+    type: integer
+    min: 1
+    max: 1
+    stepsize: 1
+    default: None
+  store_covariance:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+# priors ignored
+---
+
+name: SKLEARN_LinearDiscriminantAnalysis_LsqrEigen
+framework: sklearn
+type: classification
+package:  sklearn.discriminant_analysis
+class: LinearDiscriminantAnalysis
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  solver:
+    type: values
+    values: [lsqr, eigen]
+    default: lsqr
+  shrinkage:
+    type: values
+    values: [None, auto, 0.1, 0.5, 0.9]
+    default: None
+  n_components:
+    type: integer
+    min: 1
+    max: 1
+    stepsize: 1
+    default: None
+  store_covariance:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+# priors ignored
+---
+
+name: SKLEARN_QuadraticDiscriminantAnalysis
+framework: sklearn
+type: classification
+package:  sklearn.discriminant_analysis
+class: QuadraticDiscriminantAnalysis
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  reg_param:
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.5
+    default: 0.0
+  store_covariance:
+    type: values
+    values: [True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+---
+
+
+# Example for Spark. Due to rewrite currently not yet fully supported again. 
+
+#---
+#name: SPARK_DT
+#framework: spark
+#type: classification
+#package:  org.apache.spark.ml.classification
+#class: DecisionTreeClassifier
+#features: float
+#parameters:
+#  setMaxDepth:
+#    type: integer
+#    min: 1
+#    max: 10
+#    default: 5
+#  setMinInfoGain:
+#    type: double
+#    min: 0.0
+#    max: 1.0
+#    default: 0.1
+#properties:
+#  same: score_exact
+#  scramble: score_exact
+#  opposite: score_exact
