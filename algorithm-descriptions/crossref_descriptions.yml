@@ -60,189 +60,7 @@
 
 # Functions as classifiers from the package weka.classifiers.functions
 
-name: WEKA_LOGISTIC
-type: classification
-framework: weka
-package: weka.classifiers.functions
-class: Logistic
-features: [double,categorical]
-properties:
-  same: score_exact
-  scramble: score_exact
-  reorder: score_exact
-  const: score_exact
-  opposite: score_exact
-parameters:
-  R: # ridge value of the log likelihood
-    # actually a double, but values give better tests
-    type: values
-    values: [1.0E-7, 1.0E-8, 1.0E-9]
-    stepsize: 0.9E-8
-    default: 1.0E-8
-  C: # use conjugate gradiant descent
-    type: flag
-    default: disabled
----
 
-name: WEKA_SimpleLogistic
-type: classification
-framework: weka
-package: weka.classifiers.functions
-class: SimpleLogistic
-features: [double,categorical]
-properties:
-  same: score_exact
-  scramble: score_exact
-  reorder: score_exact
-  const: score_exact
-  opposite: score_exact
-parameters:
-  P: # error on probabilities
-    type: flag
-    default: disabled
-  H: # heuristic stoping criterion
-    type: integer
-    min: 0
-    max: 100
-    stepsize: 50
-    default: 50
-  M: # maximum of boosting iterations (actually, zero is allowed - is this a bug?)
-    type: integer
-    min: 1
-    max: 999
-    stepsize: 499
-    default: 500
-  I: # sets a fixed number of boosting iterations
-    type: integer
-    min: 0
-    max: 1000
-    stepsize: 500
-    default: 0
-  A: # use AIC to determine number of boosting iterations
-    type: flag
-    default: disabled
-  S: # whether cross-validation is used for determining the number of boosting iterations
-    type: flag
-    default: disabled
-  W: # beta value for weight trimming of boosting
-    type: double
-    min: 0.0
-    max: 0.9
-    stepsize: 0.45
-    default: 0.0
----
-
-#################################
-# Scikit-Learn 0.22 Classifiers #
-#################################
-
-name: SKLEARN_GaussianNB
-framework: sklearn
-type: classification
-package:  sklearn.naive_bayes
-class: GaussianNB
-features: double
-properties:
-  same: score_exact
-  scramble: score_exact
-  reorder: score_exact
-  const: score_exact
-  opposite: score_exact
-parameters:
-  var_smoothing:
-    type: values
-    values: [0.000000001, 0.0000001]
-    default: 0.000000001
-#  priors: missing because arrays are not yet supported
----
-
-name: SKLEARN_SGDClassifier
-framework: sklearn
-type: classification
-package:  sklearn.linear_model
-class: SGDClassifier
-features: double
-properties:
-  same: score_exact
-  scramble: score_exact
-  reorder: score_exact
-  const: score_exact
-  opposite: score_exact
-parameters:
-  loss:
-    type: values
-    values: [hinge, log, modified_huber, squared_hinge, perceptron]
-    default: hinge
-  penalty:
-    type: values
-    values: [l2, l1, elasticnet]
-    default: l2
-  alpha:
-    type: values
-    values: [0.00001, 0.0001, 0.001]
-    default: 0.0001
-  l1_ratio:
-    type: double
-    min: 0.0
-    max: 1.0
-    stepsize: 0.5
-    default: 0.15
-  max_iter:
-    type: integer
-    min: 1
-    max: 1999
-    stepsize: 999
-    default: 1000
-  tol:
-    type: values
-    values: [0.001]
-    default: 0.001
-  shuffle:
-    type: values
-    values: [True, False]
-    default: True
-  learning_rate:
-    type: values
-    values: [constant, optimal, invscaling, adaptive]
-    default: optimal
-  eta0:
-    type: double
-    min: 0.0
-    max: 0.1
-    stepsize: 0.05
-    default: 0.0
-  power_t:
-    type: double
-    min: 0.1
-    max: 0.9
-    stepsize: 0.4
-    default: 0.5
-  early_stopping:
-    type: values
-    values: [True, False]
-    default: False
-  validation_fraction:
-    type: double
-    min: 0.1
-    max: 0.9
-    stepsize: 0.4
-    default: 0.1
-  n_iter_no_change:
-    type: integer
-    min: 1
-    max: 9
-    stepsize: 4
-    default: 5
-  class_weight:
-    type: values
-    values: [balanced, None]
-    default: None
-  average:
-    type: values
-    values: [True, False, 10]
-    default: False
----
-    
 name: SKLEARN_BernoulliNB
 framework: sklearn
 type: classification
@@ -258,29 +76,23 @@ properties:
 parameters:
   alpha:
     type: double
-    min: 0.0
-    max: 1.5
-    stepsize: 0.5
     default: 1.0
   binarize:
     type: double
-    min: 0.0
-    max: 1.5
-    stepsize: 0.5
     default: 0.0
   fit_prior:
     type: values
-    values: [True, False]
+    values: [True]
     default: True
 #  class_prior: missing because arrays are not yet supported
 ---
 
-name: SKLEARN_CategoricalNB
+name: SKLEARN_LogisticRegression
 framework: sklearn
 type: classification
-package:  sklearn.naive_bayes
-class: CategoricalNB
-features: categorical
+package:  sklearn.linear_model
+class: LogisticRegression
+features: double
 properties:
   same: score_exact
   scramble: score_exact
@@ -288,72 +100,65 @@ properties:
   const: score_exact
   opposite: score_exact
 parameters:
-  alpha:
-    type: double
-    min: 0.0
-    max: 1.5
-    stepsize: 0.5
-    default: 1.0
-  fit_prior: # somehow not supported?!
+  penalty:
     type: values
-    values: [True, False]
-    default: True
-#  class_prior: missing because arrays are not yet supported
----
-
-################## SPARK ###########################
-    
-name: SPARK_LogisticRegression
-framework: spark
-type: classification
-package:  org.apache.spark.ml.classification
-class: LogisticRegression
-features: [double,categorical]
-properties:
-  same: score_exact
-  scramble: score_stat
-  reorder: class_exact
-  const: class_stat
-  opposite: score_stat
-parameters:
-  setRegParam:
-    type: double
-    min: 0.0
-    max: 1.0
-    stepsize: 0.5
-    default: 0.0
-  setElasticNetParam:
-    type: double
-    min: 0.0
-    max: 1.0
-    stepsize: 0.5
-    default: 0.0
-  setMaxIter:
-    type: integer
-    min: 1
-    max: 999
-    stepsize: 499
-    default: 100
-  setTol:
+    values: [none]
+    default: none
+  dual:
     type: values
-    values: [0.000001, 0.00001, 0.0000001]
+    values: [False]
+    default: False  
+  tol:
+    type: values
+    values: [0.000001]
     default: 0.000001
-  setFitIntercept:
+  C:
     type: values
-    values: [true, false]
-    default: true
-  setFamily:
+    values: [1.0]
+    default: 1.0
+  fit_intercept:
     type: values
-    values: [auto, binomial, multinomial]
+    values: [True]
+    default: True
+  intercept_scaling:
+    type: values
+    values: [1]
+    default: 1
+  class_weight:
+    type: values
+    values: [None]
+    default: None
+  random_state:
+    type: values
+    values: [42]
+    default: 42
+  solver:
+    type: values
+    values: [lbfgs]
+    default: lbfgs
+  max_iter:
+    type: values
+    values: [100]
+    default: 100
+  multi_class:
+    type: values
+    values: [auto]
     default: auto
-  setStandardization:
+  verbose:
     type: values
-    values: [true, false]
-    default: true
-  setThreshold:
-    type: double
-    min: 0.0
-    max: 1.0
-    stepsize: 0.5
-    default: 0.5
+    values: [0]
+    default: 0
+  warm_start:
+    type: values
+    values: [False]
+    default: False     
+  n_jobs:
+    type: values
+    values: [None]
+    default: None     
+  l1_ratio:
+    type: values
+    values: [None]
+    default: None       
+
 ---

@@ -1,2 +1,4 @@
-Changes in atoml for the docker compatibility:
-In atoml_docker/src/main/java/atoml/Runner added a leading "/" to the string for the generated-tests folder.
+Changes in atoml:
+-in atoml_docker/src/main/java/atoml/Runner added a leading "/" to the string for the generated-tests folder.
+-in atoml_docker/src/main/java/resources/sklearn-classification-smoketest.template added output the predictions in a .csv file
+#-in atoml_docker/src/main/java/resources/sklearn-classification-smoketest.template added a leading "/" to the smokedata-path
