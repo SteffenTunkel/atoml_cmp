@@ -162,3 +162,179 @@ parameters:
     default: None       
 
 ---
+
+################## SPARK ###########################
+    
+name: SPARK_LogisticRegression
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: LogisticRegression
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+parameters:
+  setRegParam:
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.5
+    default: 0.0
+  setElasticNetParam:
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.5
+    default: 0.0
+  setMaxIter:
+    type: integer
+    min: 1
+    max: 999
+    stepsize: 499
+    default: 100
+  setTol:
+    type: values
+    values: [0.000001, 0.00001, 0.0000001]
+    default: 0.000001
+  setFitIntercept:
+    type: values
+    values: [true, false]
+    default: true
+  setFamily:
+    type: values
+    values: [auto, binomial, multinomial]
+    default: auto
+  setStandardization:
+    type: values
+    values: [true, false]
+    default: true
+  setThreshold:
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.5
+    default: 0.5
+---
+
+name: SPARK_NaiveBayes_Gaussian
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: NaiveBayes
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+parameters:
+  setModelType:
+    type: values
+    values: [gaussian]
+    default: gaussian
+  setSmoothing:
+    type: double
+    min: 0.0
+    max: 1.0
+    stepsize: 0.5
+    default: 1.0
+---
+
+
+name: WEKA_LOGISTIC
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: Logistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  R: # ridge value of the log likelihood
+    # actually a double, but values give better tests
+    type: values
+    values: [1.0E-7, 1.0E-8, 1.0E-9]
+    stepsize: 0.9E-8
+    default: 1.0E-8
+  C: # use conjugate gradiant descent
+    type: flag
+    default: disabled
+---
+
+name: WEKA_SimpleLogistic
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SimpleLogistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  P: # error on probabilities
+    type: flag
+    default: disabled
+  H: # heuristic stoping criterion
+    type: integer
+    min: 0
+    max: 100
+    stepsize: 50
+    default: 50
+  M: # maximum of boosting iterations (actually, zero is allowed - is this a bug?)
+    type: integer
+    min: 1
+    max: 999
+    stepsize: 499
+    default: 500
+  I: # sets a fixed number of boosting iterations
+    type: integer
+    min: 0
+    max: 1000
+    stepsize: 500
+    default: 0
+  A: # use AIC to determine number of boosting iterations
+    type: flag
+    default: disabled
+  S: # whether cross-validation is used for determining the number of boosting iterations
+    type: flag
+    default: disabled
+  W: # beta value for weight trimming of boosting
+    type: double
+    min: 0.0
+    max: 0.9
+    stepsize: 0.45
+    default: 0.0
+---
+
+name: WEKA_NAIVEBAYES
+type: classification
+framework: weka
+package: weka.classifiers.bayes
+class: NaiveBayes
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  K: # use gaussian kernel estimator
+    type: flag
+    default: disabled
+  D: # use supervised discretization
+    type: flag
+    default: disabled
+---
