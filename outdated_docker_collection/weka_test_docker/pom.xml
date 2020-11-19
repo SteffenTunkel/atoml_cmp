@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>weka</groupId>
-  <artifactId>classifiers.functions</artifactId>
+  <groupId>mlcrossref</groupId>
+  <artifactId>weka_docker</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <!--<packaging>jar</packaging>-->
+  <packaging>jar</packaging>
 
   <name>weka_docker</name>
   <url>http://maven.apache.org</url>
@@ -26,7 +26,8 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>3.8.1</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -34,49 +35,10 @@
         <artifactId>weka-stable</artifactId>
         <version>3.8.0</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.github.haifengl/smile-core -->
-    <dependency>
-        <groupId>com.github.haifengl</groupId>
-        <artifactId>smile-core</artifactId>
-        <version>2.4.0</version>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-    <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.47</version>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
-    <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-math3</artifactId>
-        <version>3.6.1</version>
-    </dependency>
-
   </dependencies>
 
 
   <build>
-    <plugins>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19</version>
-        <configuration>
-            <argLine>-Xmx1024m</argLine>
-        </configuration>
-      </plugin>
-
-    </plugins>
-
-
-  </build>
-
-  <!--<build>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -87,7 +49,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>WEKA_SimpleLogistic_AtomlTest</mainClass>
+              <mainClass>mlcrossref.docker.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -102,6 +64,6 @@
         </executions>
       </plugin>
     </plugins>
-  </build>-->
+  </build>
 
 </project>

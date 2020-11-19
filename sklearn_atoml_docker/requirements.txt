@@ -1,6 +1,0 @@
-pandas
-xmlrunner
-numpy
-parameterized
-scipy
-sklearn

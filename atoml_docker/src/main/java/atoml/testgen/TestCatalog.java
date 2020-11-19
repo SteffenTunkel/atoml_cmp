@@ -41,26 +41,33 @@ public class TestCatalog {
 	public static final List<SmokeTest> SMOKETESTS = List.of(
 			new Uniform(), 
 			new Categorical(),
-			new MinFloat(), 
-			new VerySmall(),
-			new MinDouble(),
-			new MaxFloat(),
-			new VeryLarge(),
-			new MaxDouble(),
-			new Split(),
-			new LeftSkew(),
-			new RightSkew(),
-			new OneClass(),
-			new Bias(),
-			new Outlier(),
-			new Zeroes(),
 			new RandomNumeric(),
-			new RandomCategorial(),
-			new DisjointNumeric(),
-			new DisjointCategorical(),
-			new ManyCategories(),
-			new StarvedMany(),
-			new StarvedBinary());
+			new RandomCategorial());
+	
+			//new Uniform(), 
+			//new Categorical(),
+			//new MinFloat(), 
+			//new VerySmall(),
+			//new MinDouble(),
+			//new MaxFloat(),
+			//new VeryLarge(),
+			//new MaxDouble(),
+			//new Split(),
+			//new LeftSkew(),
+			//new RightSkew(),
+			//new OneClass(),
+			//new Bias(),
+			//new Outlier(),
+			//new Zeroes(),
+			//new RandomNumeric(),
+			//new RandomCategorial(),
+			//new DisjointNumeric(),
+			//new DisjointCategorical(),
+			//new ManyCategories(),
+			//new StarvedMany(),
+			//new StarvedBinary());
+
+
 	
 	/**
 	 * Immutable list of all metamorphic tests

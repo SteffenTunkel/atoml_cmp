@@ -1,5 +1,2 @@
 /generated-tests/
 /predictions/
-/spark_docker/target/
-/spark_docker/src/test/
-/spark_docker/.idea/
