@@ -46,6 +46,6 @@ def runMyDocker(name, *bindings):
 
 #runMyDocker("sklearn_atoml_docker", *[["/generated-tests/sklearn","/sklearn"],["/predictions","/log"]])
 
-sparkMounts = [["/generated-tests/spark/src" , "/code/src"], ["/predictions/spark", "/code/log"]]
+sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/code/log"]]
 runMyDocker("spark_docker", *sparkMounts)
 
