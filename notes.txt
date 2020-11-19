@@ -3,3 +3,5 @@ Changes in atoml:
 -in atoml_docker/src/main/java/resources/sklearn-classification-smoketest.template: added output the predictions in a .csv file
 #(-in atoml_docker/src/main/java/resources/sklearn-classification-smoketest.template: added a leading "/" to the smokedata-path)
 -in atoml_docker/src/main/java/atoml/testgen/TestCatalog.java: commented all but a subset of smoketests out.
+-in atoml_docker/src/main/java/resources/weka-classification-smoketest.template: add the csv file writing work around.
+-in atoml_docker/src/main/java/resources/weka-classification-smoketest.template: add the imports for the csv file writing work around.

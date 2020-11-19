@@ -24,6 +24,11 @@ import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 import weka.core.Instance;
 
+import java.io.File;  // Import the File class
+import java.io.FileWriter;   // Import the FileWriter class
+import weka.classifiers.evaluation.Evaluation;
+import java.util.ArrayList;
+
 <<<MYSQLIMPORTS>>>
 
 /**
