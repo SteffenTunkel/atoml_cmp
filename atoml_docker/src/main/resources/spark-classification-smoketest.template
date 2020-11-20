@@ -15,7 +15,10 @@
             setParameters(classifier, parameters);
             
             ClassificationModel<?, ?> model = classifier.fit(dataframe);
-            model.transform(testdata);<<<MYSQLEVALSMOKE_END>>>
+            Dataset<Row> pred = model.transform(testdata);
+            pred.select("prediction").write().option("header","true")
+                .mode(SaveMode.Overwrite).csv("/log/pred_<<<CLASSIFIER>>>_<<<NAME>>>");
+            <<<MYSQLEVALSMOKE_END>>>
         }
     }
 

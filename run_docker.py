@@ -27,8 +27,8 @@ sklearnMounts = [["/generated-tests/sklearn" , "/sklearn"], ["/predictions/sklea
 #runMyDocker("sklearn_docker", *sklearnMounts)
 
 wekaMounts = [["/generated-tests/weka/src", "/code/src"], ["/predictions/weka", "/log"]]
-runMyDocker("weka_docker", *wekaMounts)
+#runMyDocker("weka_docker", *wekaMounts)
 
-sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/code/log"]]
-#runMyDocker("spark_docker", *sparkMounts)
+sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/log"]]
+runMyDocker("spark_docker", *sparkMounts)
 
