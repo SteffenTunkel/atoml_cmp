@@ -1,0 +1,3 @@
+sklearn,spark,weka
+LogisticRegression,LogisticRegression,Logistic
+BernoulliNB,NaiveBayes,NaiveBayes

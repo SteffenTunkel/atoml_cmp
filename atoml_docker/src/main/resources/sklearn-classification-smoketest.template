@@ -22,7 +22,8 @@
             <<<MYSQLINDENT>>>np.random.seed(42)
             <<<MYSQLINDENT>>>classifier.fit(np.delete(data_df.values, classIndex, axis=1),data_df.values[:,classIndex])
             <<<MYSQLINDENT>>>predictions = classifier.predict(np.delete(testdata_df.values, classIndex, axis=1))
-            <<<MYSQLINDENT>>>predictionfile = "/log/pred_SKLEARN_" + "<<<CLASSIFIER>>>".split("(")[0] + "_<<<NAME>>>_%i.csv" % iter
+            <<<MYSQLINDENT>>>#predictionfile = "/log/pred_SKLEARN_" + "<<<CLASSIFIER>>>".split("(")[0] + "_<<<NAME>>>_%i.csv" % iter
+            <<<MYSQLINDENT>>>predictionfile = "/log/pred_SKLEARN_" + "<<<CLASSIFIER>>>".split("(")[0] + "_<<<NAME>>>.csv"
             <<<MYSQLINDENT>>>pd.DataFrame(predictions).to_csv(predictionfile, header=False, index=False)
             <<<MYSQLEVALSMOKE_END>>>
 
