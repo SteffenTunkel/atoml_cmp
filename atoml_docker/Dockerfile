@@ -11,5 +11,5 @@ WORKDIR /usr/local
 
 RUN gradle build
 
-CMD gradle run --args="-f /testdata/crossref_descriptions.yml --instances=1000 -nomorph "
+CMD gradle run --args="-f /testdata/crossref_descriptions.yml --instances 1000 -nomorph "
 
