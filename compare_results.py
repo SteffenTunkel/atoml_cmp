@@ -24,7 +24,7 @@ print('MatchingTable:')
 matching_table = pd.read_csv('algorithm-descriptions/framework_matching.csv')
 print(matching_table)
 
-result_columns = ["same","TP","FP","TN","FN","compared_algorithm"]
+result_columns = ["same","TP","FP","FN","TN","compared_algorithm"]
 results_df = pd.DataFrame(columns=result_columns)
 print(results_df)
 for index, row in matching_table.iterrows():
