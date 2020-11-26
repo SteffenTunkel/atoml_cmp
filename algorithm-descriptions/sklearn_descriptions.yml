@@ -1,0 +1,140 @@
+# Field:       name 
+# Description: name of the test, should be unique (duplicate name within same package+framework will lead to problems)
+
+# Field:       type
+# Description: type of the algorithm
+# Supported values:
+#  - classification
+#  - clustering+regression planned
+
+# Field:       framework
+# Description: Machine learning framework that where the current algorithm is defined
+# Supported values:
+#  - weka
+#  - spark
+#  - sklearn
+
+# Field:       package
+# Description: package in which the algorithm is implemented
+
+# Field:       class
+# Description: name of the class that implements the algorithm
+
+# Field:       features
+# Description: defines which features can be used for the training with this algorithm, can be a list if multiple feature types are supported
+# Supported values:
+#  - DOUBLE          all double values (Java)
+#  - FLOAT           all float values (Java)
+#  - POSITIVEDOUBLE  positive double values (Java)
+#  - POSITIVEFLOAT   positive float values (Java)
+#  - UNIT            floating point numbers in [0,1]
+#  - CATEGORICAL      categorical data
+
+# Field:       properties
+# Description: Defines which properties the algorithm should fulfill. 
+# supported properties:
+#  - same      re-train with the same data --> expect classes/scores to be the same
+#  - scramble  re-train with randomly reordered instances --> expect classes/scores to be the same
+#  - reorder   re-train with randomly reordered features --> expect classes/scores to be the same
+#  - const     re-train with +1 added to all numeric features --> expect classes/scores to be the same
+#  - opposite  re-train with all class labels flipped --> expect classes to be the same, scores inverted (1-priorScore)
+# supported evaluations:
+#  - score_exac  scores must be exactly the same after re-training
+#  - class_exac  classifications must be exactly the same after re-training
+#  - class_stat  classifications must not be significantly different from expectation after re-training (chi-squared test)
+#  - score_stat  scores of distributionForInstance must not be significantly different from expectation after re-training (KS test)
+
+# Field:       parameters
+# Description: List of relevant hyper parameters of the algorithm.
+#               Every parameter must specify a default value; the default value can be different from the default in the application
+# Supported parameter types:
+#  - double     double values; if min, max, and stepsize are defined these values will be tested together with the default values of all other parameters
+#  - integer    integer values; if min, max, and stepsize are defined these values will be tested together with the default values of all other parameters
+#  - flag       flag that is either enabled or disabled; both will be tested with the default values of the other parameters
+#  - fixedflag  a flag that is always used with the default value - probably only makes sense with the value enabled.
+#  - values     list of values that will be tested with the default values of the other parameters
+
+####################
+# Weka Classifiers #
+#################### 
+
+# Functions as classifiers from the package weka.classifiers.functions
+
+
+
+
+name: SKLEARN_LogisticRegression
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: LogisticRegression
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  penalty:
+    type: values
+    values: [none]
+    default: none
+  dual:
+    type: values
+    values: [False]
+    default: False  
+  tol:
+    type: values
+    values: [0.000001]
+    default: 0.000001
+  C:
+    type: values
+    values: [1.0]
+    default: 1.0
+  fit_intercept:
+    type: values
+    values: [True]
+    default: True
+  intercept_scaling:
+    type: values
+    values: [1]
+    default: 1
+  class_weight:
+    type: values
+    values: [None]
+    default: None
+  random_state:
+    type: values
+    values: [42]
+    default: 42
+  solver:
+    type: values
+    values: [lbfgs]
+    default: lbfgs
+  max_iter:
+    type: values
+    values: [100]
+    default: 100
+  multi_class:
+    type: values
+    values: [auto]
+    default: auto
+  verbose:
+    type: values
+    values: [0]
+    default: 0
+  warm_start:
+    type: values
+    values: [False]
+    default: False     
+  n_jobs:
+    type: values
+    values: [None]
+    default: None     
+  l1_ratio:
+    type: values
+    values: [None]
+    default: None       
+
+---
