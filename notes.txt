@@ -7,3 +7,5 @@ Changes in atoml:
 -in atoml_docker/src/main/java/resources/weka-classification-class.template: add the imports for the csv file writing work around.
 -in atoml_docker/src/main/java/resources/spark-classification-smoketest.template: add the csv file writing work around.
 -in atoml_docker/src/main/java/resources/spark-classification-class.template: add the SaveMode import
+
+SklearnTemplate.java - sklearn-classification-smoketest.template -> add name print

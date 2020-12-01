@@ -1,5 +1,7 @@
 import os
 
+import compare_results
+
 # cmd /k -> remain ___ cmd /c -> terminate
 # Example for a system call for a docker with a mount:
 #os.system('cmd /c "docker run --mount type=bind,source=%cd%/algorithm-descriptions,target=/testdata atoml_docker"')
@@ -22,13 +24,18 @@ def runMyDocker(name, *bindings):
 
 atomlMounts = [["/generated-tests", "/generated-tests"],["/algorithm-descriptions", "/testdata"]]
 runMyDocker("atoml_docker", *atomlMounts)
+#times with gradle: 29.4, 26.2, 32.0
+#times wo gradle: 10-13s
 
 sklearnMounts = [["/generated-tests/sklearn" , "/sklearn"], ["/predictions/sklearn", "/log"]]
-#runMyDocker("sklearn_docker", *sklearnMounts)
+runMyDocker("sklearn_docker", *sklearnMounts)
 
 wekaMounts = [["/generated-tests/weka/src", "/code/src"], ["/predictions/weka", "/log"]]
-#runMyDocker("weka_docker", *wekaMounts)
+runMyDocker("weka_docker", *wekaMounts)
 
 sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/log"]]
 runMyDocker("spark_docker", *sparkMounts)
 
+
+
+compare_results.comparePredictions()
