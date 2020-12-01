@@ -55,15 +55,13 @@
 #  - values     list of values that will be tested with the default values of the other parameters
 
 ####################
-# Weka Classifiers #
+# SKLEARN Classifiers #
 #################### 
 
 # Functions as classifiers from the package weka.classifiers.functions
 
 
-
-
-name: SKLEARN_LogisticRegression
+name: SKLEARN_LogisticRegression123
 framework: sklearn
 type: classification
 package:  sklearn.linear_model
@@ -88,7 +86,7 @@ parameters:
     type: values
     values: [0.000001]
     default: 0.000001
-  C:
+  C: #inverse of R
     type: values
     values: [1.0]
     default: 1.0
@@ -137,4 +135,60 @@ parameters:
     values: [None]
     default: None       
 
+---
+
+
+# name: SKLEARN_MultinomialNB
+# framework: sklearn
+# type: classification
+# package:  sklearn.naive_bayes
+# class: MultinomialNB
+# features: positivedouble
+# properties:
+#   same: score_exact
+#   scramble: score_exact
+#   reorder: score_exact
+#   const: score_exact
+#   opposite: score_exact
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   alpha:
+#     type: double
+#     default: 0.0 # 0.0: no smoothing
+#   fit_prior:
+#     type: values
+#     values: [True]
+#     default: True
+# #  class_prior: missing because arrays are not yet supported
+# ---
+
+name: SKLEARN_BernoulliNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: BernoulliNB
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  alpha:
+    type: double
+    default: 0.0
+  binarize:
+    type: double
+    default: 0.0
+  fit_prior:
+    type: values
+    values: [True]
+    default: True
+#  class_prior: missing because arrays are not yet supported
 ---

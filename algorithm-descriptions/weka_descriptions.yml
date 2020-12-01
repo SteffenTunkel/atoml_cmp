@@ -60,7 +60,8 @@
 
 # Functions as classifiers from the package weka.classifiers.functions
 
-name: WEKA_LOGISTIC
+
+name: WEKA_LOGISTIC_123
 type: classification
 framework: weka
 package: weka.classifiers.functions
@@ -76,10 +77,54 @@ parameters:
   R: # ridge value of the log likelihood
     # actually a double, but values give better tests
     type: values
-    values: [1.0E-8]
-    default: 1.0E-8
-  C: # use conjugate gradiant descent
-    type: fixedflag
+    values: [0] #1.0E-8
+    default: 0
+  #C: # use conjugate gradiant descent
+  #  type: fixedflag
+  #  default: disabled
+  M: # maximum number of iterations (default -1: until convergence)
+    type: integer
+    default: 100
+---
+
+# name: WEKA_NAIVEBAYES_MULTINOMIAL
+# type: classification
+# framework: weka
+# package: weka.classifiers.bayes
+# class: NaiveBayesMultinomial
+# features: [positivedouble] # can also binary but do not have that feature type yet
+# properties:
+#   same: score_exact
+#   scramble: score_exact
+#   reorder: score_exact
+#   const: score_exact
+#   opposite: score_exact
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# ---
+
+name: WEKA_NAIVEBAYES
+type: classification
+framework: weka
+package: weka.classifiers.bayes
+class: NaiveBayes
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  K: # use gaussian kernel estimator
+    type: flag
+    default: disabled
+  D: # use supervised discretization
+    type: flag
     default: disabled
 ---
 

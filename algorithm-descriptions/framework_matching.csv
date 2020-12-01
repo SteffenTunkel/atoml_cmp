@@ -1,3 +1,4 @@
 sklearn,spark,weka
 LogisticRegression,LogisticRegression,Logistic
+MultinomialNB,NaiveBayes,NaiveBayesMultinomial
 BernoulliNB,NaiveBayes,NaiveBayes
