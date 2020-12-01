@@ -17,7 +17,7 @@
             ClassificationModel<?, ?> model = classifier.fit(dataframe);
             Dataset<Row> pred = model.transform(testdata);
             pred.select("prediction").write().option("header","true")
-                .mode(SaveMode.Overwrite).csv("/log/pred_SPARK_<<<CLASSIFIER>>>_<<<NAME>>>");
+                .mode(SaveMode.Overwrite).csv("/log/pred_<<<IDENTIFIER>>>_<<<NAME>>>");
             <<<MYSQLEVALSMOKE_END>>>
         }
     }

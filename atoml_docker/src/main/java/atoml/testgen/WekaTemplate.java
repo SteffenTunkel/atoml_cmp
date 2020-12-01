@@ -72,6 +72,7 @@ public class WekaTemplate implements TemplateEngine {
 		Map<String, String> replacements = new HashMap<>();
 		replacements.put("<<<PACKAGENAME>>>", algorithmUnderTest.getPackage());
 		replacements.put("<<<CLASSIFIER>>>", algorithmUnderTest.getClassName());
+		replacements.put("<<<IDENTIFIER>>>", algorithmUnderTest.getName());
 		return replacements;
 	}
 	

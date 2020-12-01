@@ -67,6 +67,7 @@ public class SklearnTemplate implements TemplateEngine {
 	public Map<String, String> getSmoketestReplacements(SmokeTest smokeTest) {
 		Map<String, String> replacements = new HashMap<>();
 		replacements.put("<<<CLASSIFIER>>>", algorithmUnderTest.getClassName()+"(**kwargs)");
+		replacements.put("<<<IDENTIFIER>>>", algorithmUnderTest.getName());
 		return replacements;
 	}
 

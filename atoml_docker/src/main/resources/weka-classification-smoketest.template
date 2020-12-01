@@ -20,7 +20,7 @@
 
             // create a csv file
             try {
-                File myObj = new File("/log/pred_WEKA_<<<CLASSIFIER>>>_<<<NAME>>>.csv");
+                File myObj = new File("/log/pred_<<<IDENTIFIER>>>_<<<NAME>>>.csv");
                 if (myObj.createNewFile()) {
                     System.out.println("File created: " + myObj.getName());
                 } else {
@@ -33,7 +33,7 @@
 
             // write in csv
             try {
-                FileWriter myWriter = new FileWriter("/log/pred_WEKA_<<<CLASSIFIER>>>_<<<NAME>>>.csv");
+                FileWriter myWriter = new FileWriter("/log/pred_<<<IDENTIFIER>>>_<<<NAME>>>.csv");
                 // write header
                 myWriter.write("type,actual,prediction,weigth,dist_0,dist_1\\n");
                 // write predictions
