@@ -6,8 +6,6 @@ print(testScripts)
 print(os.system("dir"))
 os.chdir(path)
 print(os.system("dir"))
-#os.system('cd ' + path)
 for file in testScripts:
-	#os.system('python ' + path + '/' + file)
 	os.system('python ' + file)
 
