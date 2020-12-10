@@ -22,8 +22,10 @@ def runMyDocker(name, *bindings):
     cmdstr += '"'
     os.system(cmdstr)
 
+#os.system('cmd /c "docker build -t atoml_docker atoml_docker"')
+
 atomlMounts = [["/generated-tests", "/generated-tests"],["/algorithm-descriptions", "/testdata"]]
-runMyDocker("atoml_docker", *atomlMounts)
+#runMyDocker("atoml_docker", *atomlMounts)
 #times with gradle: 29.4, 26.2, 32.0
 #times wo gradle: 10-13s
 
@@ -31,11 +33,11 @@ sklearnMounts = [["/generated-tests/sklearn" , "/sklearn"], ["/predictions/sklea
 runMyDocker("sklearn_docker", *sklearnMounts)
 
 wekaMounts = [["/generated-tests/weka/src", "/code/src"], ["/predictions/weka", "/log"]]
-runMyDocker("weka_docker", *wekaMounts)
+#runMyDocker("weka_docker", *wekaMounts)
 
 sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/log"]]
-runMyDocker("spark_docker", *sparkMounts)
+#runMyDocker("spark_docker", *sparkMounts)
 
 
 
-compare_results.comparePredictions()
+compare_results.compareByMatchingTable()

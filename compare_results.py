@@ -19,7 +19,7 @@ def createConfusionMatrix(algorithm_identifier, predictions, frameworks, df, ite
 	return df, same, cm
 
 
-def comparePredictions():
+def compareByMatchingTable():
 	print('MatchingTable:')
 
 	matching_table = pd.read_csv('algorithm-descriptions/framework_matching.csv')
@@ -32,26 +32,44 @@ def comparePredictions():
 		algorithm_ident = row['sklearn']
 
 		print('\nThe predictions in the following files are compared with each other:')
-
-		# get sklearn csv file
-		sklearn_csvfile = 'predictions/sklearn/pred_SKLEARN_' + row['sklearn'] + '_Uniform.csv'
-		print(sklearn_csvfile)
-		pred_sklearn = pd.read_csv(sklearn_csvfile, header=None)
-
-		# get weka csv file
-		weka_csvfile = 'predictions/weka/pred_WEKA_' + row['weka'] + '_Uniform.csv'
-		print(weka_csvfile)
-		pred_weka = pd.read_csv(weka_csvfile)
-		pred_weka = pred_weka["prediction"]
 		
-		# spark CSVs are currently saved in a weird format (csv file is in a named folder)
-		spark_path= 'predictions/spark/pred_SPARK_' + row['spark'] + '_Uniform'
-		spark_csv_folder = [f for f in os.listdir(spark_path) if os.path.isfile(os.path.join(spark_path, f))]
-		for file in spark_csv_folder:
-			if file.endswith(".csv"):
-				print(spark_path + '/' + file)
-				pred_spark = pd.read_csv(spark_path + '/' + file)
-		print('\n')
+		if row['sklearn'] == "None":
+			flag_sklearn = False
+			algorithm_ident = row['spark']
+			
+		else:
+			algorithm_ident = row['sklearn']
+
+			# get sklearn csv file
+			flag_sklearn = True
+			sklearn_csvfile = 'predictions/sklearn/pred_SKLEARN_' + row['sklearn'] + '_Uniform.csv'
+			print(sklearn_csvfile)
+			pred_sklearn = pd.read_csv(sklearn_csvfile)
+			pred_sklearn = pred_sklearn["prediction"]
+
+		if row['weka'] == "None":
+			flag_weka = False
+		else:
+			# get weka csv file
+			flag_weka = True
+			weka_csvfile = 'predictions/weka/pred_WEKA_' + row['weka'] + '_Uniform.csv'
+			print(weka_csvfile)
+			pred_weka = pd.read_csv(weka_csvfile)
+			pred_weka = pred_weka["prediction"]
+		
+
+		if row['spark'] == "None":
+			flag_spark = False
+		else:
+			flag_spark = True
+			# spark CSVs are currently saved in a weird format (csv file is in a named folder)
+			spark_path= 'predictions/spark/pred_SPARK_' + row['spark'] + '_Uniform'
+			spark_csv_folder = [f for f in os.listdir(spark_path) if os.path.isfile(os.path.join(spark_path, f))]
+			for file in spark_csv_folder:
+				if file.endswith(".csv"):
+					print(spark_path + '/' + file)
+					pred_spark = pd.read_csv(spark_path + '/' + file)
+			print('\n')
 
 
 		# read the prediction csvs manually
@@ -68,9 +86,12 @@ def comparePredictions():
 		#le = LabelEncoder()
 		#pred_sklearn = le.fit_transform(pred_sklearn)
 
-		results_df, _, _=createConfusionMatrix(algorithm_ident, [pred_sklearn, pred_spark], ["sklearn", "spark"], results_df, index)
-		results_df, _, _=createConfusionMatrix(algorithm_ident, [pred_sklearn, pred_weka], ["sklearn", "weka"], results_df, index)
-		results_df, _, _=createConfusionMatrix(algorithm_ident, [pred_spark, pred_weka], ["spark", "weka"], results_df, index)
+		if flag_sklearn and flag_spark:
+			results_df, _, _=createConfusionMatrix(algorithm_ident, [pred_sklearn, pred_spark], ["sklearn", "spark"], results_df, index)
+		if flag_sklearn and flag_weka:
+			results_df, _, _=createConfusionMatrix(algorithm_ident, [pred_sklearn, pred_weka], ["sklearn", "weka"], results_df, index)
+		if flag_spark and flag_weka:
+			results_df, _, _=createConfusionMatrix(algorithm_ident, [pred_spark, pred_weka], ["spark", "weka"], results_df, index)
 
 	print("\n ResultDataFrame:")
 	print(results_df)
@@ -78,4 +99,4 @@ def comparePredictions():
 
 
 if __name__ == "__main__":
-	comparePredictions()
+	compareByMatchingTable()
