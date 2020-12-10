@@ -35,7 +35,7 @@
             try {
                 FileWriter myWriter = new FileWriter("/log/pred_<<<IDENTIFIER>>>_<<<NAME>>>.csv");
                 // write header
-                myWriter.write("type,actual,prediction,weigth,dist_0,dist_1\\n");
+                myWriter.write("type,actual,prediction,weigth,prob_0,prob_1\\n");
                 // write predictions
                 for (Object i : pred) {
                     myWriter.write(i.toString().replace(" ", ",") + '\\n');

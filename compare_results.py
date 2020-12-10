@@ -2,6 +2,7 @@
 
 import os
 import pandas as pd
+import numpy as np
 from sklearn.metrics import confusion_matrix
 #from sklearn.preprocessing import LabelEncoder
 
@@ -18,6 +19,45 @@ def createConfusionMatrix(algorithm_identifier, predictions, frameworks, df, ite
 	df = df.append(pd.DataFrame(data=frame_data, columns=df.columns), ignore_index=True)
 	return df, same, cm
 
+
+def jsonToCsvForSpark():
+	# Function for the conversion of the json file created by the atoml spark docker
+	#	to csv files, which are similar to the ones of sklearn.
+
+	sparkPath = 'predictions/spark/'
+	sparkJsonPath = sparkPath + "json/"
+
+	# get all json folder names
+	sparkJsonList = [f for f in os.listdir(sparkJsonPath)]
+	print("Convert json spark files into csv. Files found:")
+	print(sparkJsonList)
+	for jsonFolder in sparkJsonList:
+		oneJsonFolderContent = [f for f in os.listdir(sparkJsonPath + jsonFolder) if os.path.isfile(os.path.join(sparkJsonPath + jsonFolder, f))]
+		
+		# load a json file, process it and save it as a csv
+		for file in oneJsonFolderContent:
+			if file.endswith(".json"):
+				pred_spark = pd.read_json((sparkJsonPath + jsonFolder + "/" + file), lines=True)
+				prob_0 = []
+				prob_1 = []
+				for dictionary in pred_spark.probability.tolist():
+					prob_0.append(dictionary.get("values")[0])
+					prob_1.append(dictionary.get("values")[1])
+				save_df = pd.DataFrame()
+				save_df["prediction"]=pred_spark["prediction"]
+				save_df["prob_0"]=prob_0
+				save_df["prob_1"]=prob_1
+				csvFileName = sparkPath + jsonFolder + ".csv"
+				save_df.to_csv(csvFileName, index=False)
+				print("%s was created." % csvFileName)
+
+def getDataFromCsv(filename):
+	print(filename)
+	csv_df = pd.read_csv(filename)
+	prediction = csv_df["prediction"]
+	prob_0 = csv_df["prob_0"]
+	prob_1 = csv_df["prob_1"]
+	return prediction, prob_0, prob_1	
 
 def compareByMatchingTable():
 	print('MatchingTable:')
@@ -43,9 +83,7 @@ def compareByMatchingTable():
 			# get sklearn csv file
 			flag_sklearn = True
 			sklearn_csvfile = 'predictions/sklearn/pred_SKLEARN_' + row['sklearn'] + '_Uniform.csv'
-			print(sklearn_csvfile)
-			pred_sklearn = pd.read_csv(sklearn_csvfile)
-			pred_sklearn = pred_sklearn["prediction"]
+			pred_sklearn, prob_0_sklearn, prob_1_sklearn = getDataFromCsv(sklearn_csvfile)
 
 		if row['weka'] == "None":
 			flag_weka = False
@@ -53,9 +91,7 @@ def compareByMatchingTable():
 			# get weka csv file
 			flag_weka = True
 			weka_csvfile = 'predictions/weka/pred_WEKA_' + row['weka'] + '_Uniform.csv'
-			print(weka_csvfile)
-			pred_weka = pd.read_csv(weka_csvfile)
-			pred_weka = pred_weka["prediction"]
+			pred_weka, prob_0_weka, prob_1_weka = getDataFromCsv(weka_csvfile)
 		
 
 		if row['spark'] == "None":
@@ -63,13 +99,8 @@ def compareByMatchingTable():
 		else:
 			flag_spark = True
 			# spark CSVs are currently saved in a weird format (csv file is in a named folder)
-			spark_path= 'predictions/spark/pred_SPARK_' + row['spark'] + '_Uniform'
-			spark_csv_folder = [f for f in os.listdir(spark_path) if os.path.isfile(os.path.join(spark_path, f))]
-			for file in spark_csv_folder:
-				if file.endswith(".csv"):
-					print(spark_path + '/' + file)
-					pred_spark = pd.read_csv(spark_path + '/' + file)
-			print('\n')
+			spark_csvfile = 'predictions/spark/pred_SPARK_' + row['spark'] + '_Uniform.csv'
+			pred_spark, prob_0_spark, prob_1_spark = getDataFromCsv(spark_csvfile)
 
 
 		# read the prediction csvs manually
@@ -96,6 +127,10 @@ def compareByMatchingTable():
 	print("\n ResultDataFrame:")
 	print(results_df)
 	results_df.to_csv('algorithm-descriptions/framework_matching_results.csv', index=False)
+
+
+def compareByName(): # under construction
+	print("under construction")
 
 
 if __name__ == "__main__":
