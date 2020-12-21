@@ -39,10 +39,10 @@ public class TestCatalog {
 	 * Immutable list of all smoke tests
 	 */
 	public static final List<SmokeTest> SMOKETESTS = List.of(
-			new Uniform(), 
-			new Categorical(),
-			new RandomNumeric(),
-			new RandomCategorial());
+			new Uniform()); 
+			//new Categorical(),
+			//new RandomNumeric(),
+			//new RandomCategorial());
 	
 			//new Uniform(), 
 			//new Categorical(),
