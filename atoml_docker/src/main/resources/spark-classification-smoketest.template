@@ -16,7 +16,7 @@
             
             ClassificationModel<?, ?> model = classifier.fit(dataframe);
             Dataset<Row> pred = model.transform(testdata);
-            pred.select("prediction", "probability").write().mode(SaveMode.Overwrite)
+            pred.select("classAtt", "prediction", "probability").write().mode(SaveMode.Overwrite)
                 .json("/log/json/pred_<<<IDENTIFIER>>>_<<<NAME>>>");
             <<<MYSQLEVALSMOKE_END>>>
         }

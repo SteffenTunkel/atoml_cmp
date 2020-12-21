@@ -25,6 +25,7 @@
             <<<MYSQLINDENT>>>predProb = np.array(classifier.predict_proba(np.delete(testdata_df.values, classIndex, axis=1)))
             <<<MYSQLINDENT>>>predictionFile = "/log/pred_" + "<<<IDENTIFIER>>>" + "_<<<NAME>>>.csv"
             <<<MYSQLINDENT>>>pred_df = pd.DataFrame()
+            <<<MYSQLINDENT>>>pred_df['actual'] = testdata_df.classAtt
             <<<MYSQLINDENT>>>pred_df['prediction'] = predictedLabel
             <<<MYSQLINDENT>>>pred_df['prob_0'] = predProb[:,0]
             <<<MYSQLINDENT>>>pred_df['prob_1'] = predProb[:,1]
