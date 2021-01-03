@@ -3,14 +3,18 @@
 
 import os
 import itertools
+from datetime import datetime
 import pandas as pd
 import numpy as np
+from shutil import copyfile
 from sklearn.metrics import confusion_matrix, accuracy_score
-#from sklearn.preprocessing import LabelEncoder
+
 from scipy.stats import ttest_1samp, ks_2samp
 from scipy.stats import chi2_contingency 
 
+YAML_FOLDER = 'algorithm-descriptions/'
 PREDICTION_FOLDER = 'predictions/'
+ARCHIVE_FOLDER = 'archive/'
 RESULT_DF_COLUMNS = ["equal_pred","TP","FP","FN","TN","ks_pval","chi2_pval","accs_fw1","accs_fw2","algorithm", "parameters"]
 
 
@@ -18,8 +22,7 @@ RESULT_DF_COLUMNS = ["equal_pred","TP","FP","FN","TN","ks_pval","chi2_pval","acc
 
 
 def jsonToCsvForSpark():
-	# Function for the conversion of the json file created by the atoml spark docker
-	#	to csv files, which are similar to the ones of sklearn.
+	'''Converts the json files created by the Spark tests into the csv format, which is used for the evaluation.'''
 
 	sparkPath = PREDICTION_FOLDER + 'spark/'
 	sparkJsonPath = sparkPath + "json/"
@@ -52,6 +55,8 @@ def jsonToCsvForSpark():
 
 
 def getDataFromCsv(filename):
+	'''Reads in a csv file with certain format and extracts the different columns.'''
+
 	print("read: %s" % filename)
 	csv_df = pd.read_csv(filename)
 	actual = csv_df["actual"]
@@ -63,6 +68,12 @@ def getDataFromCsv(filename):
 
 
 def splitPredictionFile(filename):
+	'''
+	Splits the name a csv file to get the information it contains. The filename should consist of the keyword 'pred'
+	and 3 identifier, for the framework (in capital letters), the algorithm and the used dataset type.
+	All of them should be devided by exactly one '_'. Example: 'pred_FRAMEWORK_Algorithm_TestDataType.csv'.
+	'''
+
 	if filename.endswith(".csv"):
 		string = filename[:-4]
 		substring = string.split("_")
@@ -80,6 +91,8 @@ def splitPredictionFile(filename):
 
 
 def compareByMatchingTable():
+	'''missing doc'''
+
 	# get the information from the matching table
 	print('MatchingTable:')
 	matching_table = pd.read_csv('algorithm-descriptions/framework_matching.csv')
@@ -129,7 +142,9 @@ def compareByMatchingTable():
 	results_df.to_csv('algorithm-descriptions/framework_matching_results.csv', index=False)
 
 
+
 def createConfusionMatrix(predictions):
+	'''missing doc'''
 
 	cm = confusion_matrix(predictions[0], predictions[1])
 
@@ -153,6 +168,7 @@ def createConfusionMatrix(predictions):
 
 
 def KS_statistic(probabilities):
+	'''missing doc'''
 
 	ks_result = ks_2samp(probabilities[0], probabilities[1])
 	p = ks_result.pvalue
@@ -167,7 +183,11 @@ def KS_statistic(probabilities):
 	    print('Equal (H0 holds true)\n') 
 	return p, ks_score
 
+
+
 def chi2_statistic(pred):
+	'''missing doc'''
+
 	#data = [[207, 282, 241], [234, 242, 232]] # -> dummy
 	#data = [[207, 282, 241], [207, 282, 245]] # -> dummy
 	# get data values
@@ -184,14 +204,16 @@ def chi2_statistic(pred):
 	    print('Independent (H0 holds true)\n') 
 	return p
 
-def compareTwoAlgorithms(x, y, df, i):
-	print('%d: Comparation between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
 
+
+def compareTwoAlgorithms(x, y, df, i):
+	'''missing doc'''
+
+	print('%d: Comparation between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
 
 	df = df.append(pd.Series(), ignore_index=True)
 	df.loc[df.index[-1], 'algorithm'] = x.name
 	df.loc[df.index[-1], 'parameters'] = ('%s_%s_%s' % (x.framework, y.framework, x.datasetType))
-
 
 	equal_pred, cm = createConfusionMatrix([x.predictions, y.predictions])
 	df.loc[df.index[-1], 'equal_pred'] = equal_pred
@@ -200,14 +222,11 @@ def compareTwoAlgorithms(x, y, df, i):
 	df.loc[df.index[-1], 'FN'] = cm[1,0]
 	df.loc[df.index[-1], 'TN'] = cm[1,1]
 
-
 	ks_pval, _ = KS_statistic([x.probabilities, y.probabilities])
 	df.loc[df.index[-1], 'ks_pval'] = ("%0.3f" % ks_pval)
 
-
 	chi2_pval= chi2_statistic([x.predictions, y.predictions])
 	df.loc[df.index[-1], 'chi2_pval'] = ("%0.3f" % chi2_pval)
-
 
 	accs_fw_i = accuracy_score(x.actuals, x.predictions)
 	accs_fw_j = accuracy_score(y.actuals, y.predictions)
@@ -219,18 +238,22 @@ def compareTwoAlgorithms(x, y, df, i):
 
 	return df
 
+
+
 class Algorithm:
-	    def __init__(self, filename, path=None):
-	    	self.filename = filename
-	    	self.path = path
-	    	self.framework, self.name, self.datasetType = splitPredictionFile(filename)
-	    	self.predictions, self.probabilities, _, self.actuals = getDataFromCsv(self.path + self.filename)
-	    def __str__(self):
-	    	return self.framework + ' ' +  self.name
+	'''missing doc'''
+	def __init__(self, filename, path=None):
+		self.filename = filename
+		self.path = path
+		self.framework, self.name, self.datasetType = splitPredictionFile(filename)
+		self.predictions, self.probabilities, _, self.actuals = getDataFromCsv(self.path + self.filename)
+	def __str__(self):
+		return self.framework + ' ' +  self.name
 
 
 
 def compareByName():
+	'''missing doc'''
 # get list of files for all frameworks
 # list all csv files. compare them
 	
@@ -253,6 +276,9 @@ def compareByName():
 			datasetList.append(algorithm.datasetType)
 		if not algorithm.name in uniqueAlgorithmList:
 			uniqueAlgorithmList.append(algorithm.name)
+	print("\nList of unique algorithm identifier (for typo check):")
+	print(uniqueAlgorithmList)
+	print('')
 
 	# create a dataframe for the results
 	results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
@@ -272,13 +298,46 @@ def compareByName():
 	pd.set_option('display.width', None)
 	pd.set_option('display.max_colwidth', -1)
 
-	# store results
+	# show summary data frame
 	print("\nSummaryDataFrame:")
 	print(results_df)
-	results_df.to_csv('algorithm-descriptions/framework_matching_results.csv', index=False)
+	
+	# archive summary dataframe and other files, if function is run by another script
+	if __name__ != "__main__":
+		archiveData(results_df)
+
+
+
+def archiveData(results_df):
+	'''missing doc'''
+
+	if not os.path.exists(ARCHIVE_FOLDER):
+		os.makedirs(ARCHIVE_FOLDER)
+	
+	dateTimeObj = datetime.now()
+	timestamp = ("%d-%02d-%02d" % (dateTimeObj.year, dateTimeObj.month, dateTimeObj.day))
+	timestamp += ("_%02d-%02d/" % (dateTimeObj.hour, dateTimeObj.minute))
+	current_archive = ARCHIVE_FOLDER + timestamp
+	
+	if not os.path.exists(current_archive):
+		os.makedirs(current_archive)
+		os.makedirs(current_archive + 'yaml_descriptions')
+
+
+	results_df.to_csv((current_archive + "result_table.csv"), index=False)
+
+	fileList = [f for f in os.listdir(YAML_FOLDER)]
+	for file in fileList:
+		if file.endswith(".yml") or file.endswith(".yaml"):
+			copyfile(YAML_FOLDER + file, current_archive + 'yaml_descriptions/' + file)
+
+	copyfile("atoml_docker/docker_run_atoml_testgeneration.sh", current_archive + "docker_run_atoml_copy.sh")
+
+	print("\nArchived at: %s" % current_archive)
 
 
 
 if __name__ == "__main__":
 	#compareByMatchingTable()
-	#compareByName()
+	compareByName()
+
