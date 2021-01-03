@@ -10,66 +10,10 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 from scipy.stats import ttest_1samp, ks_2samp
 from scipy.stats import chi2_contingency 
 
-
-def createConfusionMatrix(algorithm_identifier, predictions, frameworks, df, iteration=0):
-	print('%d: Comparation between %s and %s for %s' % (iteration, frameworks[0].upper(), frameworks[1].upper(), algorithm_identifier))
-
-	cm = confusion_matrix(predictions[0], predictions[1])
-
-	# if all the values are the same, the confusion matrix has only one element
-	# this is checked and changed here
-	if cm.shape == (1,1):
-		num_elements = predictions[0].shape[0]
-		if predictions[0][0] == 0:
-			cm = np.array([[num_elements,0],[0,0]])
-		else:
-			cm = np.array([[0,0],[0,num_elements]])
-
-	print(cm)
-
-	if cm[0,1] == 0 and cm[1,0] == 0 and ( cm[0,0] != 0 or cm[1,1] != 0):
-		same = True
-	else:
-		same = False
-	frame_data = [[same, cm[0,0], cm[0,1], cm[1,0], cm[1,1], None, None, None, None,('%s_%s_%s'%(frameworks[0],frameworks[1],algorithm_identifier))]]
-	df = df.append(pd.DataFrame(data=frame_data, columns=df.columns), ignore_index=True)
-	return df, same, cm
+PREDICTION_FOLDER = 'predictions/'
+RESULT_DF_COLUMNS = ["equal_pred","TP","FP","FN","TN","ks_pval","chi2_pval","accs_fw1","accs_fw2","algorithm", "parameters"]
 
 
-
-def KS_statistic(probabilities):
-
-	ks_result = ks_2samp(probabilities[0], probabilities[1])
-	p = ks_result.pvalue
-	ks_score = ks_result.statistic
-						
-	# interpret p-value 
-	alpha = 0.05
-	print("KS p-value: %0.4f\t ks-statistic: %0.4f" % (p, ks_score)) 
-	if p <= alpha: 
-	    print('Different (reject H0)\n') 
-	else: 
-	    print('Equal (H0 holds true)\n') 
-	return p, ks_score
-
-
-
-def chi2_statistic(pred):
-	#data = [[207, 282, 241], [234, 242, 232]] # -> dummy
-	#data = [[207, 282, 241], [207, 282, 245]] # -> dummy
-	# get data values
-	data = [[sum(pred[0]), len(pred[0])-sum(pred[0])] , [sum(pred[1]), len(pred[1])-sum(pred[1])]]
-	print(data)
-	stat, p, dof, expected = chi2_contingency(data) 
-	  
-	# interpret p-value 
-	alpha = 0.05
-	print("Chi² p-value: %0.4f" % p) 
-	if p <= alpha: 
-	    print('Dependent (reject H0)\n') 
-	else: 
-	    print('Independent (H0 holds true)\n') 
-	return p
 
 
 
@@ -77,7 +21,7 @@ def jsonToCsvForSpark():
 	# Function for the conversion of the json file created by the atoml spark docker
 	#	to csv files, which are similar to the ones of sklearn.
 
-	sparkPath = 'predictions/spark/'
+	sparkPath = PREDICTION_FOLDER + 'spark/'
 	sparkJsonPath = sparkPath + "json/"
 
 	# get all json folder names
@@ -108,7 +52,7 @@ def jsonToCsvForSpark():
 
 
 def getDataFromCsv(filename):
-	print(filename)
+	print("read: %s" % filename)
 	csv_df = pd.read_csv(filename)
 	actual = csv_df["actual"]
 	prediction = csv_df["prediction"]
@@ -143,7 +87,7 @@ def compareByMatchingTable():
 	frameworks = matching_table.columns
 
 	# create a dataframe for the results
-	result_columns = ["ident_pred","TP","FP","FN","TN","ks_pval","chi2_pval","accs_fw1","accs_fw2","compared_algorithm"]
+	result_columns = RESULT_DF_COLUMNS
 	results_df = pd.DataFrame(columns=result_columns)
 
 	for index, row in matching_table.iterrows():
@@ -153,6 +97,7 @@ def compareByMatchingTable():
 		prob_0 			= [None] * len(frameworks)
 		prob_1 			= [None] * len(frameworks)
 		actuals			= [None] * len(frameworks)
+		algorithmList = []
 
 		# open the prediction files
 		print('\nThe predictions in the following files are compared with each other:')
@@ -163,32 +108,13 @@ def compareByMatchingTable():
 				if algorithm_ident == None:
 					algorithm_ident = row[framework]
 
-				csvfile = 'predictions/' + framework
-				csvfile += '/pred_' + framework.upper() + '_' + row[framework] + '_Uniform.csv'
-				predictions[i], prob_0[i], prob_1[i], actuals[i] = getDataFromCsv(csvfile)
+				csvpath = PREDICTION_FOLDER + framework + '/'
+				csvfile = '/pred_' + framework.upper() + '_' + row[framework] + '_Uniform.csv'
+				algorithmList.append(Algorithm(csvfile, csvpath))
 
 		# comparison between the frameworks
-		print('')
-		for i in range(len(frameworks)):
-			for j in range(len(frameworks)):
-				if i < j:
-					if framework_flags[i] and framework_flags[j]:
-						results_df, _, cm=createConfusionMatrix(algorithm_ident, [predictions[i], predictions[j]],
-																[frameworks[i], frameworks[j]], results_df, index)
-						ks_pval, _ = KS_statistic([prob_0[i], prob_0[j]])
-						results_df.loc[results_df.index[-1], 'ks_pval'] = ("%0.3f" % ks_pval)
-
-						chi2_pval= chi2_statistic([predictions[i], predictions[j]])
-						results_df.loc[results_df.index[-1], 'chi2_pval'] = ("%0.3f" % chi2_pval)
-
-						accs_fw_i = accuracy_score(actuals[i], predictions[i])
-						accs_fw_j = accuracy_score(actuals[j], predictions[j])
-						print("%s accuracy: %f" % (frameworks[i], accs_fw_i))
-						print("%s accuracy: %f" % (frameworks[j], accs_fw_j))
-						results_df.loc[results_df.index[-1], 'accs_fw1'] = ("%0.3f" % accs_fw_i)
-						results_df.loc[results_df.index[-1], 'accs_fw2'] = ("%0.3f" % accs_fw_j)
-						
-						print('')
+		for a, b in itertools.combinations(algorithmList, 2):
+		    results_df = compareTwoAlgorithms(a, b, results_df, index)
 
 
 	# set pandas options to print a full dataframe
@@ -203,23 +129,95 @@ def compareByMatchingTable():
 	results_df.to_csv('algorithm-descriptions/framework_matching_results.csv', index=False)
 
 
-def compareTwoAlgorithms(x, y, results_df, i):
-	results_df, _, cm=createConfusionMatrix(x.name, [x.predictions, y.predictions],
-											[x.framework, y.framework], results_df, i)
+def createConfusionMatrix(predictions):
+
+	cm = confusion_matrix(predictions[0], predictions[1])
+
+	# if all the values are the same, the confusion matrix has only one element
+	# this is checked and changed here
+	if cm.shape == (1,1):
+		num_elements = predictions[0].shape[0]
+		if predictions[0][0] == 0:
+			cm = np.array([[num_elements,0],[0,0]])
+		else:
+			cm = np.array([[0,0],[0,num_elements]])
+
+	print(cm)
+
+	if cm[0,1] == 0 and cm[1,0] == 0 and ( cm[0,0] != 0 or cm[1,1] != 0):
+		same = True
+	else:
+		same = False
+	return same, cm
+
+
+
+def KS_statistic(probabilities):
+
+	ks_result = ks_2samp(probabilities[0], probabilities[1])
+	p = ks_result.pvalue
+	ks_score = ks_result.statistic
+						
+	# interpret p-value 
+	alpha = 0.05
+	print("KS p-value: %0.4f\t ks-statistic: %0.4f" % (p, ks_score)) 
+	if p <= alpha: 
+	    print('Different (reject H0)\n') 
+	else: 
+	    print('Equal (H0 holds true)\n') 
+	return p, ks_score
+
+def chi2_statistic(pred):
+	#data = [[207, 282, 241], [234, 242, 232]] # -> dummy
+	#data = [[207, 282, 241], [207, 282, 245]] # -> dummy
+	# get data values
+	data = [[sum(pred[0]), len(pred[0])-sum(pred[0])] , [sum(pred[1]), len(pred[1])-sum(pred[1])]]
+	print(data)
+	stat, p, dof, expected = chi2_contingency(data) 
+	  
+	# interpret p-value 
+	alpha = 0.05
+	print("Chi² p-value: %0.4f" % p) 
+	if p <= alpha: 
+	    print('Dependent (reject H0)\n') 
+	else: 
+	    print('Independent (H0 holds true)\n') 
+	return p
+
+def compareTwoAlgorithms(x, y, df, i):
+	print('%d: Comparation between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
+
+
+	df = df.append(pd.Series(), ignore_index=True)
+	df.loc[df.index[-1], 'algorithm'] = x.name
+	df.loc[df.index[-1], 'parameters'] = ('%s_%s_%s' % (x.framework, y.framework, x.datasetType))
+
+
+	equal_pred, cm = createConfusionMatrix([x.predictions, y.predictions])
+	df.loc[df.index[-1], 'equal_pred'] = equal_pred
+	df.loc[df.index[-1], 'TP'] = cm[0,0]
+	df.loc[df.index[-1], 'FP'] = cm[0,1]
+	df.loc[df.index[-1], 'FN'] = cm[1,0]
+	df.loc[df.index[-1], 'TN'] = cm[1,1]
+
+
 	ks_pval, _ = KS_statistic([x.probabilities, y.probabilities])
-	results_df.loc[results_df.index[-1], 'ks_pval'] = ("%0.3f" % ks_pval)
+	df.loc[df.index[-1], 'ks_pval'] = ("%0.3f" % ks_pval)
+
 
 	chi2_pval= chi2_statistic([x.predictions, y.predictions])
-	results_df.loc[results_df.index[-1], 'chi2_pval'] = ("%0.3f" % chi2_pval)
+	df.loc[df.index[-1], 'chi2_pval'] = ("%0.3f" % chi2_pval)
+
 
 	accs_fw_i = accuracy_score(x.actuals, x.predictions)
 	accs_fw_j = accuracy_score(y.actuals, y.predictions)
 	print("%s accuracy: %f" % (x.framework, accs_fw_i))
 	print("%s accuracy: %f" % (y.framework, accs_fw_j))
-	results_df.loc[results_df.index[-1], 'accs_fw1'] = ("%0.3f" % accs_fw_i)
-	results_df.loc[results_df.index[-1], 'accs_fw2'] = ("%0.3f" % accs_fw_j)
+	df.loc[df.index[-1], 'accs_fw1'] = ("%0.3f" % accs_fw_i)
+	df.loc[df.index[-1], 'accs_fw2'] = ("%0.3f" % accs_fw_j)
 	print('')
-	return results_df
+
+	return df
 
 class Algorithm:
 	    def __init__(self, filename, path=None):
@@ -232,25 +230,21 @@ class Algorithm:
 
 
 
-def compareByName(): # under construction
+def compareByName():
 # get list of files for all frameworks
 # list all csv files. compare them
-	print("under construction")
-
 	
 	algorithmList = []
 
-	folderName = 'predictions'
 
-	# get all json folder names
-	frameworkList = [fw for fw in os.listdir(folderName)]
-	print(frameworkList)
+	frameworkList = [fw for fw in os.listdir(PREDICTION_FOLDER)]
+
 	for fw in frameworkList:
-		csv_list = [f for f in os.listdir(folderName + '/' + fw)]
+		csv_list = [f for f in os.listdir(PREDICTION_FOLDER + fw)]
 		for file in csv_list:
 			if file.endswith(".csv"):
-				algorithmList.append(Algorithm(file, (folderName + '/' + fw + '/')))
-	for algorithm in algorithmList: print(algorithm)
+				algorithmList.append(Algorithm(file, (PREDICTION_FOLDER + fw + '/')))
+	
 	datasetList = []
 	uniqueAlgorithmList = []
 
@@ -259,26 +253,19 @@ def compareByName(): # under construction
 			datasetList.append(algorithm.datasetType)
 		if not algorithm.name in uniqueAlgorithmList:
 			uniqueAlgorithmList.append(algorithm.name)
-	print(datasetList)
-	print(uniqueAlgorithmList)
-	print(frameworkList)
 
 	# create a dataframe for the results
-	result_columns = ["ident_pred","TP","FP","FN","TN","ks_pval","chi2_pval","accs_fw1","accs_fw2","compared_algorithm"]
-	results_df = pd.DataFrame(columns=result_columns)
+	results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
 	i = 0
 
 	for ds in datasetList:
-		print(ds)
-		subList = [x for i, x in enumerate(algorithmList) if x.datasetType == ds]
-		print(subList)
+		algorithmSubsetByDatasetType = [x for i, x in enumerate(algorithmList) if x.datasetType == ds]
 		for alg in uniqueAlgorithmList:
-			subSubList = [x for i, x in enumerate(subList) if x.name == alg]
-			print(subSubList)
-			for a, b in itertools.combinations(subSubList, 2):
+			algorithmSubset = [x for i, x in enumerate(algorithmSubsetByDatasetType) if x.name == alg]
+			for a, b in itertools.combinations(algorithmSubset, 2):
 			    results_df = compareTwoAlgorithms(a, b, results_df, i)
 			    i = i + 1
-			    
+
 	# set pandas options to print a full dataframe
 	pd.set_option('display.max_rows', None)
 	pd.set_option('display.max_columns', None)
@@ -294,4 +281,4 @@ def compareByName(): # under construction
 
 if __name__ == "__main__":
 	#compareByMatchingTable()
-	compareByName()
+	#compareByName()
