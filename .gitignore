@@ -1,3 +1,6 @@
 /generated-tests/
 /predictions/
 /spark_docker/.idea/
+/__pycache__/
+/.idea/
+/archive/*

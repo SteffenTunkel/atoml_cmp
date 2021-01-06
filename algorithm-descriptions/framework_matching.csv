@@ -1,5 +1,7 @@
 sklearn,spark,weka
 LogisticRegression,LogisticRegression,LogisticRegression
 MultinomialNB,MultinomialNB,MultinomialNB
+LinearSVC,LinearSVC,SVM
 KNeighborsClassifier,None,KNN
-MLPClassifier,MultilayerPerceptronClassifier,MLP
+MLPgd,MLPgd,MLP
+MLPlbfgs,MLPlbfgs,None

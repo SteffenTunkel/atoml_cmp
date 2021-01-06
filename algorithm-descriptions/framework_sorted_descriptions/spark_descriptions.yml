@@ -105,37 +105,13 @@ parameters:
     default: 0.5
 ---
 
-# name: SPARK_NaiveBayes # MultinomialNB
-# framework: spark
-# type: classification
-# package:  org.apache.spark.ml.classification
-# class: NaiveBayes
-# features: [positivedouble,categorical]
-# properties:
-#   same: score_exact
-#   scramble: score_stat
-#   reorder: class_exact
-#   const: class_stat
-#   opposite: score_stat
-#   rotate: class_exact
-#   rescale: class_exact
-#   clone: class_exact
-# parameters:
-#   setModelType:
-#     type: values
-#     values: [multinomial]
-#     default: multinomial
-#   setSmoothing:
-#     type: double
-#     default: 1.0
-# ---
 
-name: SPARK_NaiveBayes_Bernoulli
+name: SPARK_MultinomialNB
 framework: spark
 type: classification
 package:  org.apache.spark.ml.classification
 class: NaiveBayes
-features: categorical
+features: [positivedouble,categorical]
 properties:
   same: score_exact
   scramble: score_stat
@@ -148,9 +124,237 @@ properties:
 parameters:
   setModelType:
     type: values
-    values: [bernoulli]
-    default: bernoulli
+    values: [multinomial]
+    default: multinomial
   setSmoothing:
     type: double
-    default: 0.0
+    default: 1.0
 ---
+
+
+# name: SPARK_LinearSVC
+# framework: spark
+# type: classification
+# package:  org.apache.spark.ml.classification
+# class: LinearSVC
+# features: [double,categorical]
+# properties:
+#   same: score_exact
+#   scramble: score_stat
+#   reorder: class_exact
+#   const: class_stat
+#   opposite: score_stat
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   setRegParam:
+#     type: double
+#     default: 1.0
+#   setMaxIter:
+#     type: integer
+#     default: 1000
+#   setFitIntercept:
+#     type: values
+#     values: [false]
+#     default: false
+#   setTol:
+#     type: values
+#     values: [0.000001]
+#     default: 0.000001
+#   setStandardization:
+#     type: values
+#     values: [false]
+#     default: false
+#   setThreshold:
+#     type: double
+#     default: 0.5
+# ---
+
+# name: SPARK_LinearSVC
+# framework: spark
+# type: classification
+# package:  org.apache.spark.ml.classification
+# class: LinearSVC
+# features: [double,categorical]
+# properties:
+#   same: score_exact
+#   scramble: score_stat
+#   reorder: class_exact
+#   const: class_stat
+#   opposite: score_stat
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   setRegParam:
+#     type: double
+#     default: 0.0
+#   setMaxIter:
+#     type: integer
+#     default: 100
+#   setFitIntercept:
+#     type: values
+#     values: [false]
+#     default: false
+#   setTol:
+#     type: values
+#     values: [0.000001]
+#     default: 0.000001
+#   setStandardization:
+#     type: values
+#     values: [true]
+#     default: true
+#   setThreshold:
+#     type: double
+#     default: 0.5
+# ---
+
+
+# name: SPARK_NaiveBayes_Bernoulli
+# framework: spark
+# type: classification
+# package:  org.apache.spark.ml.classification
+# class: NaiveBayes
+# features: categorical
+# properties:
+#   same: score_exact
+#   scramble: score_stat
+#   reorder: class_exact
+#   const: class_stat
+#   opposite: score_stat
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   setModelType:
+#     type: values
+#     values: [bernoulli]
+#     default: bernoulli
+#   setSmoothing:
+#     type: double
+#     default: 0.0
+# ---
+
+name: SPARK_MLPgd
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: MultilayerPerceptronClassifier
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  setSolver:
+    type: values
+    values: [gd] #[gd, l-bfgs]
+    default: gd
+  setStepSize:
+    type: double
+    default: 0.2
+  setMaxIter:
+    type: integer
+    default: 1000
+  setTol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  setLayers:
+    type: values
+    values: ["10,10,2"]
+    default: "10,10,2"
+  setBlockSize:
+    type: integer
+    default: 200
+---
+
+
+name: SPARK_MLPlbfgs
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: MultilayerPerceptronClassifier
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  setSolver:
+    type: values
+    values: [l-bfgs] #[gd, l-bfgs]
+    default: l-bfgs
+  setStepSize:
+    type: double
+    default: 0.002
+  setMaxIter:
+    type: integer
+    default: 10000
+  setTol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  setLayers:
+    type: values
+    values: ["10,10,2"]
+    default: "10,10,2"
+---
+
+
+
+
+# name: SPARK_RandomForestClassifier
+# framework: spark
+# type: classification
+# package:  org.apache.spark.ml.classification
+# class: RandomForestClassifier
+# features: [double,categorical]
+# properties:
+#   same: score_exact
+#   scramble: score_stat
+#   reorder: class_exact
+#   const: class_stat
+#   opposite: score_stat
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   setMaxDepth:
+#     type: integer
+#     default: 3
+#   setMinInfoGain:
+#     type: double
+#     default: 0.0
+#   setMaxBins:
+#     type: integer
+#     default: 32
+#   setMinInstancesPerNode:
+#     type: integer
+#     default: 1
+#   setImpurity:
+#     type: values
+#     values: [gini] #[gini, entropy]
+#     default: gini
+#   setNumTrees:
+#     type: integer
+#     default: 20
+#   setSubsamplingRate:
+#     type: double
+#     default: 1.0
+#   setFeatureSubsetStrategy:
+#     type: values
+#     values: [sqrt] #[auto, all, sqrt, onethird, log2, 0.5, 2]
+#     default: sqrt
+# ---

@@ -1,0 +1,527 @@
+# Field:       name 
+# Description: name of the test, should be unique (duplicate name within same package+framework will lead to problems)
+
+# Field:       type
+# Description: type of the algorithm
+# Supported values:
+#  - classification
+#  - clustering+regression planned
+
+# Field:       framework
+# Description: Machine learning framework that where the current algorithm is defined
+# Supported values:
+#  - weka
+#  - spark
+#  - sklearn
+
+# Field:       package
+# Description: package in which the algorithm is implemented
+
+# Field:       class
+# Description: name of the class that implements the algorithm
+
+# Field:       features
+# Description: defines which features can be used for the training with this algorithm, can be a list if multiple feature types are supported
+# Supported values:
+#  - DOUBLE          all double values (Java)
+#  - FLOAT           all float values (Java)
+#  - POSITIVEDOUBLE  positive double values (Java)
+#  - POSITIVEFLOAT   positive float values (Java)
+#  - UNIT            floating point numbers in [0,1]
+#  - CATEGORICAL      categorical data
+
+# Field:       properties
+# Description: Defines which properties the algorithm should fulfill. 
+# supported properties:
+#  - same      re-train with the same data --> expect classes/scores to be the same
+#  - scramble  re-train with randomly reordered instances --> expect classes/scores to be the same
+#  - reorder   re-train with randomly reordered features --> expect classes/scores to be the same
+#  - const     re-train with +1 added to all numeric features --> expect classes/scores to be the same
+#  - opposite  re-train with all class labels flipped --> expect classes to be the same, scores inverted (1-priorScore)
+# supported evaluations:
+#  - score_exac  scores must be exactly the same after re-training
+#  - class_exac  classifications must be exactly the same after re-training
+#  - class_stat  classifications must not be significantly different from expectation after re-training (chi-squared test)
+#  - score_stat  scores of distributionForInstance must not be significantly different from expectation after re-training (KS test)
+
+# Field:       parameters
+# Description: List of relevant hyper parameters of the algorithm.
+#               Every parameter must specify a default value; the default value can be different from the default in the application
+# Supported parameter types:
+#  - double     double values; if min, max, and stepsize are defined these values will be tested together with the default values of all other parameters
+#  - integer    integer values; if min, max, and stepsize are defined these values will be tested together with the default values of all other parameters
+#  - flag       flag that is either enabled or disabled; both will be tested with the default values of the other parameters
+#  - fixedflag  a flag that is always used with the default value - probably only makes sense with the value enabled.
+#  - values     list of values that will be tested with the default values of the other parameters
+
+####################
+# SKLEARN Classifiers #
+#################### 
+
+# Functions as classifiers from the package weka.classifiers.functions
+
+
+name: SKLEARN_LogisticRegression
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: LogisticRegression
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  penalty:
+    type: values
+    values: [none]
+    default: none
+  dual:
+    type: values
+    values: [False]
+    default: False  
+  tol:
+    type: values
+    values: [0.000001]
+    default: 0.000001
+  C: #inverse of R
+    type: values
+    values: [1.0]
+    default: 1.0
+  fit_intercept:
+    type: values
+    values: [True]
+    default: True
+  intercept_scaling:
+    type: values
+    values: [1]
+    default: 1
+  class_weight:
+    type: values
+    values: [None]
+    default: None
+  random_state:
+    type: values
+    values: [42]
+    default: 42
+  solver:
+    type: values
+    values: [lbfgs]
+    default: lbfgs
+  max_iter:
+    type: values
+    values: [100]
+    default: 100
+  multi_class:
+    type: values
+    values: [auto]
+    default: auto
+  verbose:
+    type: values
+    values: [0]
+    default: 0
+  warm_start:
+    type: values
+    values: [False]
+    default: False     
+  n_jobs:
+    type: values
+    values: [None]
+    default: None     
+  l1_ratio:
+    type: values
+    values: [None]
+    default: None       
+---
+
+
+name: SKLEARN_MultinomialNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: MultinomialNB
+features: positivedouble
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  alpha:
+    type: values
+    values: [0.0]
+    default: 0.0 # 0.0: no smoothing
+  fit_prior:
+    type: values
+    values: [True]
+    default: True
+#  class_prior: missing because arrays are not yet supported
+---
+
+name: SKLEARN_KNN
+framework: sklearn
+type: classification
+package:  sklearn.neighbors
+class: KNeighborsClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  n_neighbors:
+    type: integer
+    default: 3
+  weights:
+    type: values
+    values: [uniform] #[uniform, distance]
+    default: uniform
+  algorithm:
+    type: values
+    values: [auto] #[ball_tree, kd_tree, auto] # (brute) execution shows that brute is incompatible with most metrics, even though this is not documented.
+    default: auto
+  leaf_size:
+    type: integer
+    default: 30
+  p: # the p for the lp norm
+    type: integer
+    default: 2
+  metric:
+    type: values
+    values: [euclidean] # [euclidean, manhatten, chebyshev, minkowski] # wminkowski, seuclidean, mahalanobis maybe need additional classifiers, because they take arguments
+    default: euclidean
+# ommitted metric_params, n_jobs
+---
+
+
+
+# name: SKLEARN_SVC
+# framework: sklearn
+# type: classification
+# package:  sklearn.svm
+# class: SVC
+# features: double
+# properties:
+#   same: score_exact
+#   scramble: score_exact
+#   reorder: score_exact
+#   const: score_exact
+#   opposite: score_exact
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   C: # regularization parameter
+#     type: double
+#     default: 1.0
+#   kernel:
+#     type: values
+#     values: [linear]
+#     default: linear
+#   gamma: #?
+#     type: values
+#     values: [scale]
+#     default: scale
+#   shrinking: #?
+#     type: values
+#     values: [True]
+#     default: True
+#   probability:
+#     type: values
+#     values: [True]
+#     default: True
+#   tol:
+#     type: values
+#     values: [0.000001]
+#     default: 0.000001
+#   class_weight:
+#     type: values
+#     values: [None]
+#     default: None
+# # max_iter ignored
+# # decision_function_shape, break_ties ignored because we only have binary problems so far    
+# ---
+
+
+
+
+
+
+name: SKLEARN_KNNweighted
+framework: sklearn
+type: classification
+package:  sklearn.neighbors
+class: KNeighborsClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  n_neighbors:
+    type: integer
+    default: 5
+  weights:
+    type: values
+    values: [distance] #[uniform, distance]
+    default: distance
+  algorithm:
+    type: values
+    values: [auto] #[ball_tree, kd_tree, auto] # (brute) execution shows that brute is incompatible with most metrics, even though this is not documented.
+    default: auto
+  leaf_size:
+    type: integer
+    default: 30
+  p: # the p for the lp norm
+    type: integer
+    default: 2
+  metric:
+    type: values
+    values: [euclidean] # [euclidean, manhatten, chebyshev, minkowski] # wminkowski, seuclidean, mahalanobis maybe need additional classifiers, because they take arguments
+    default: euclidean
+# ommitted metric_params, n_jobs
+---
+
+
+
+
+
+
+
+
+# name: SKLEARN_BernoulliNB
+# framework: sklearn
+# type: classification
+# package:  sklearn.naive_bayes
+# class: BernoulliNB
+# features: double
+# properties:
+#   same: score_exact
+#   scramble: score_exact
+#   reorder: score_exact
+#   const: score_exact
+#   opposite: score_exact
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   alpha:
+#     type: double
+#     default: 0.0
+#   binarize:
+#     type: double
+#     default: 0.0
+#   fit_prior:
+#     type: values
+#     values: [True]
+#     default: True
+# #  class_prior: missing because arrays are not yet supported
+# ---
+
+
+name: SKLEARN_MLPgd
+framework: sklearn
+type: classification
+package:  sklearn.neural_network
+class: MLPClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  hidden_layer_sizes:
+    type: values
+    values: ['(10,)']
+    default: '(10,)' # values: ['(10,)'] #['(100,50,10)', '(1, 1)', '(10, 20)']
+  activation:
+    type: values
+    values: [logistic] #[identity, logistic, tanh, relu]
+    default: logistic
+  solver:
+    type: values
+    values: [sgd] #[lbfgs, sgd, adam]
+    default: sgd
+  alpha:
+    type: double
+    default: 0.0
+  batch_size:
+    type: integer
+    default: 200
+  learning_rate:
+    type: values
+    values: [constant] #[constant, invscaling, adaptive]
+    default: constant
+  learning_rate_init:
+    type: values
+    values: [0.2]
+    default: 0.2
+  shuffle:
+    type: values
+    values: [False] #[True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  momentum:
+    type: double
+    default: 0.0
+  early_stopping:
+    type: values
+    values: [False]
+    default: False
+  n_iter_no_change:
+    type: integer
+    default: 1000
+  max_iter:
+    type: integer
+    default: 1000
+---
+
+
+name: SKLEARN_MLPlbfgs
+framework: sklearn
+type: classification
+package:  sklearn.neural_network
+class: MLPClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  hidden_layer_sizes:
+    type: values
+    values: ['(10,)'] #['(100,50,10)', '(1, 1)', '(10, 20)']
+    default: '(10,)'
+  activation:
+    type: values
+    values: [logistic] #[identity, logistic, tanh, relu]
+    default: logistic
+  solver:
+    type: values
+    values: [lbfgs] #[lbfgs, sgd, adam]
+    default: lbfgs
+  alpha:
+    type: values
+    values: [0.001]
+    default: 0.001
+  batch_size:
+    type: values
+    values: [auto]
+    default: auto
+  learning_rate:
+    type: values
+    values: [constant] #[constant, invscaling, adaptive]
+    default: constant
+  learning_rate_init:
+    type: values
+    values: [0.2]
+    default: 0.2
+  shuffle:
+    type: values
+    values: [False] #[True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  momentum:
+    type: double
+    default: 0.0
+  early_stopping:
+    type: values
+    values: [False]
+    default: False
+  n_iter_no_change:
+    type: integer
+    default: 10000
+  max_iter:
+    type: integer
+    default: 10000
+---
+
+# name: SKLEARN_RandomForestClassifier
+# framework: sklearn
+# type: classification
+# package:  sklearn.ensemble
+# class: RandomForestClassifier
+# features: double
+# properties:
+#   same: score_exact
+#   scramble: score_exact
+#   reorder: score_exact
+#   const: score_exact
+#   opposite: score_exact
+#   rotate: class_exact
+#   rescale: class_exact
+#   clone: class_exact
+# parameters:
+#   n_estimators:
+#     type: integer
+#     default: 20
+#   criterion:
+#     type: values
+#     values: [gini] #[gini, entropy]
+#     default: gini
+#   min_samples_split:
+#     type: integer
+#     default: 2
+#   max_depth:
+#     type: integer
+#     default: 3 
+#   min_samples_leaf:
+#     type: integer
+#     default: 1
+#   min_weight_fraction_leaf:
+#     type: double
+#     default: 0.001
+#   max_features:
+#     type: values
+#     values: [sqrt] # [auto, sqrt, log2, 0.1, 0.5, 0.8, None]
+#     default: sqrt
+#   max_leaf_nodes:
+#     type: integer
+#     default: 32
+#   min_impurity_decrease:
+#     type: double
+#     default: 0.0
+#   class_weight:
+#     type: values
+#     values: [balanced] #[balanced, balanced_subsample, None]
+#     default: balanced
+#   bootstrap:
+#     type: values
+#     values: [True] #[True, False]
+#     default: True
+#   ccp_alpha:
+#     type: double
+#     default: 0.0
+# ---

@@ -1,0 +1,68 @@
+name: SKLEARN_MultinomialNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: MultinomialNB
+features: positivedouble
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  alpha:
+    type: values
+    values: [0.0]
+    default: 0.0 # 0.0: no smoothing
+  fit_prior:
+    type: values
+    values: [True]
+    default: True
+#  class_prior: missing because arrays are not yet supported
+---
+
+name: WEKA_MultinomialNB
+type: classification
+framework: weka
+package: weka.classifiers.bayes
+class: NaiveBayesMultinomial
+features: [positivedouble] # can also binary but do not have that feature type yet
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+---
+
+name: SPARK_MultinomialNB
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: NaiveBayes
+features: [positivedouble,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  setModelType:
+    type: values
+    values: [multinomial]
+    default: multinomial
+  setSmoothing:
+    type: double
+    default: 1.0
+---

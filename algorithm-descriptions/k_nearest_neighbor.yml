@@ -1,0 +1,76 @@
+name: SKLEARN_KNN
+framework: sklearn
+type: classification
+package:  sklearn.neighbors
+class: KNeighborsClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  n_neighbors:
+    type: integer
+    default: 3
+  weights:
+    type: values
+    values: [uniform] #[uniform, distance]
+    default: uniform
+  algorithm:
+    type: values
+    values: [auto] #[ball_tree, kd_tree, auto] # (brute) execution shows that brute is incompatible with most metrics, even though this is not documented.
+    default: auto
+  leaf_size:
+    type: integer
+    default: 30
+  p: # the p for the lp norm
+    type: integer
+    default: 2
+  metric:
+    type: values
+    values: [euclidean] # [euclidean, manhatten, chebyshev, minkowski] # wminkowski, seuclidean, mahalanobis maybe need additional classifiers, because they take arguments
+    default: euclidean
+# ommitted metric_params, n_jobs
+---
+
+name: WEKA_KNN
+type: classification
+framework: weka
+package: weka.classifiers.lazy
+class: IBk
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  K: # number of neighbors
+    type: integer
+    default: 3
+  X: # use cross-validation to determine best K
+    type: fixedflag
+    default: disabled
+  I: # weight by 1/distance (not compatible with F)
+    type: fixedflag
+    default: disabled
+  F: # weight by 1-distance (not compatible with I)
+    type: fixedflag
+    default: disabled
+  E: # weather mean-squared error is used instead of mean absolute error for CV
+    type: fixedflag
+    default: disabled
+  A: # distance metric
+    type: values
+    values: ["weka.core.neighboursearch.FilteredNeighbourSearch -F \\\\\"weka.filters.AllFilter \\\\\" -S \\\\\"weka.core.neighboursearch.LinearNNSearch -A \\\\\\\\\\\\\\\"weka.core.EuclideanDistance -R first-last\\\\\\\\\\\\\\\"\\\\\""] #"weka.core.neighboursearch.LinearNNSearch -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\"", "weka.core.neighboursearch.BallTree -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\" -C \\\\\"weka.core.neighboursearch.balltrees.TopDownConstructor -S weka.core.neighboursearch.balltrees.PointsClosestToFurthestChildren -N 40\\\\\"", "weka.core.neighboursearch.CoverTree -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\" -B 1.3", "weka.core.neighboursearch.FilteredNeighbourSearch -F \\\\\"weka.filters.AllFilter \\\\\" -S \\\\\"weka.core.neighboursearch.LinearNNSearch -A \\\\\\\\\\\\\\\"weka.core.EuclideanDistance -R first-last\\\\\\\\\\\\\\\"\\\\\"", "weka.core.neighboursearch.KDTree -A \\\\\"weka.core.EuclideanDistance -R first-last\\\\\" -S weka.core.neighboursearch.kdtrees.SlidingMidPointOfWidestSide -W 0.01 -L 40 -N"]
+    default: "weka.core.neighboursearch.FilteredNeighbourSearch -F \\\\\"weka.filters.AllFilter \\\\\" -S \\\\\"weka.core.neighboursearch.LinearNNSearch -A \\\\\\\\\\\\\\\"weka.core.EuclideanDistance -R first-last\\\\\\\\\\\\\\\"\\\\\""
+---

@@ -1,8 +1,9 @@
+'''System calls for the building of different docker container.'''
+
 import os
 
 # stop all container, especially needed for the notebooks
-
-#os.system('cmd /c "docker container stop $(docker container ls -aq)"')
+os.system('cmd /c "docker container stop $(docker container ls -aq)"')
 
 # run atoml docker build
 os.system('cmd /c "docker build -t atoml_docker atoml_docker"')

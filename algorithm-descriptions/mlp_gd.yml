@@ -1,0 +1,158 @@
+name: SKLEARN_MLPgd
+framework: sklearn
+type: classification
+package:  sklearn.neural_network
+class: MLPClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  hidden_layer_sizes:
+    type: values
+    values: ['(10,)']
+    default: '(10,)' # values: ['(10,)'] #['(100,50,10)', '(1, 1)', '(10, 20)']
+  activation:
+    type: values
+    values: [logistic] #[identity, logistic, tanh, relu]
+    default: logistic
+  solver:
+    type: values
+    values: [sgd] #[lbfgs, sgd, adam]
+    default: sgd
+  alpha:
+    type: double
+    default: 0.0
+  batch_size:
+    type: integer
+    default: 200
+  learning_rate:
+    type: values
+    values: [constant] #[constant, invscaling, adaptive]
+    default: constant
+  learning_rate_init:
+    type: values
+    values: [0.2]
+    default: 0.2
+  shuffle:
+    type: values
+    values: [False] #[True, False]
+    default: False
+  tol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  momentum:
+    type: double
+    default: 0.0
+  early_stopping:
+    type: values
+    values: [False]
+    default: False
+  n_iter_no_change:
+    type: integer
+    default: 1000
+  max_iter:
+    type: integer
+    default: 1000
+---
+
+name: WEKA_MLPgd
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: MultilayerPerceptron
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  D: # decay, i.e., decreasing learning rate
+    type: flag
+    default: disabled
+  H: # number of hidden layers (allows numbers and some wildcards, therefore, we use values)
+    type: values
+    values: ['10'] #[a, i, o, t, 1, 2, 3]
+    default: '10'
+  L: # learning rate of the gradiant descent
+    # actually a double, but values give better tests
+    type: double
+    default: 0.2
+  M: # momentum applied to weight updates
+    # actually a double, but values give better tests
+    type: values
+    values: [0.0] #[0.001, 0.01, 0.1, 0.2]
+    default: 0.0
+  B: # no nominal to binary filter
+    type: fixedflag
+    default: disabled
+  I: # no normalization of attributes
+    type: fixedflag
+    default: disabled
+  C: # no internal normalization of numeric class attributes
+    type: fixedflag
+    default: disabled
+  R: # no reset of network with lower learning rate in case of convergence
+    type: fixedflag
+    default: disabled
+  N: # number of epochs for training
+    type: integer
+    default: 100
+  V: # validation set size
+    type: integer
+    default: 0
+  E: # validation threshold
+    type: integer
+    default: 100
+---
+
+name: SPARK_MLPgd
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: MultilayerPerceptronClassifier
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  setSolver:
+    type: values
+    values: [gd] #[gd, l-bfgs]
+    default: gd
+  setStepSize:
+    type: double
+    default: 0.2
+  setMaxIter:
+    type: integer
+    default: 1000
+  setTol:
+    type: values
+    values: [0.0001]
+    default: 0.0001
+  setLayers:
+    type: values
+    values: ["10,10,2"]
+    default: "10,10,2"
+  setBlockSize:
+    type: integer
+    default: 200
+---
