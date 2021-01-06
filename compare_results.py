@@ -9,6 +9,9 @@ import numpy as np
 from shutil import copyfile
 from sklearn.metrics import confusion_matrix, accuracy_score
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from scipy.stats import ttest_1samp, ks_2samp
 from scipy.stats import chi2_contingency 
 
@@ -250,13 +253,69 @@ class Algorithm:
 	def __str__(self):
 		return self.framework + ' ' +  self.name
 
+class Archive:
+	'''missing doc'''
+	def __init__(self, name=None, save_yaml=True):
+		# create the archive folder
+		if not os.path.exists(ARCHIVE_FOLDER):
+			os.makedirs(ARCHIVE_FOLDER)
+		
+		if name is None:
+			# create timestamp for the naming of the archive folder
+			dateTimeObj = datetime.now()
+			timestamp = ("%d-%02d-%02d" % (dateTimeObj.year, dateTimeObj.month, dateTimeObj.day))
+			timestamp += ("_%02d-%02d/" % (dateTimeObj.hour, dateTimeObj.minute))
+			self.path = ARCHIVE_FOLDER + timestamp
+		else:
+			if name.endswith("/") or name.endswith('\\'):
+				self.path = ARCHIVE_FOLDER + name
+			else:
+				self.path = ARCHIVE_FOLDER + name + '/'
+		
+		if not os.path.exists(self.path):
+			os.makedirs(self.path)
+
+		if save_yaml is True:
+			if not os.path.exists(self.path + 'yaml_descriptions'):
+				os.makedirs(self.path + 'yaml_descriptions')
+
+			# save the current yml files
+			fileList = [f for f in os.listdir(YAML_FOLDER)]
+			for file in fileList:
+				if file.endswith(".yml") or file.endswith(".yaml"):
+					copyfile(YAML_FOLDER + file, self.path + 'yaml_descriptions/' + file)
+
+		# save the call function for the atoml test generation, not needed when the whole yml folder is run automatically
+		#copyfile("atoml_docker/docker_run_atoml_testgeneration.sh", self.path + "docker_run_atoml_copy.sh")
+
+		print("\nNew archive folder created: %s" % self.path)
+
+
+	def archiveDataframe(self, df, filename="result_table.csv"):
+		# save the summary of the evaluation in a csv file
+		df.to_csv((self.path + name), index=False)
+		print("\nResult dataframe saved at: %s%s" % (self.path, filename))
+
+
+def plotProbabilities(algorithms, archive=None, show_plot=False):
+	plt.figure()
+	for x in algorithms:
+		sns.distplot(x.probabilities, label=x.framework, hist_kws={'alpha':0.5})
+	plt.title(x.name)
+	plt.legend()
+	
+	if show_plot:
+		plt.show()
+
+	if archive is not None:
+		plt.savefig(archive.path + algorithms[0].name + "_probabilities.pdf")
 
 
 def compareByName():
 	'''missing doc'''
-# get list of files for all frameworks
-# list all csv files. compare them
-	
+	# get list of files for all frameworks
+	# list all csv files. compare them
+	archive = Archive()
 	algorithmList = []
 
 
@@ -288,6 +347,7 @@ def compareByName():
 		algorithmSubsetByDatasetType = [x for i, x in enumerate(algorithmList) if x.datasetType == ds]
 		for alg in uniqueAlgorithmList:
 			algorithmSubset = [x for i, x in enumerate(algorithmSubsetByDatasetType) if x.name == alg]
+			plotProbabilities(algorithmSubset, archive)
 			for a, b in itertools.combinations(algorithmSubset, 2):
 			    results_df = compareTwoAlgorithms(a, b, results_df, i)
 			    i = i + 1
@@ -303,41 +363,11 @@ def compareByName():
 	print(results_df)
 	
 	# archive summary dataframe and other files, if function is run by another script
-	if __name__ != "__main__":
-		archiveData(results_df)
-
-
-
-def archiveData(results_df):
-	'''missing doc'''
-
-	if not os.path.exists(ARCHIVE_FOLDER):
-		os.makedirs(ARCHIVE_FOLDER)
-	
-	dateTimeObj = datetime.now()
-	timestamp = ("%d-%02d-%02d" % (dateTimeObj.year, dateTimeObj.month, dateTimeObj.day))
-	timestamp += ("_%02d-%02d/" % (dateTimeObj.hour, dateTimeObj.minute))
-	current_archive = ARCHIVE_FOLDER + timestamp
-	
-	if not os.path.exists(current_archive):
-		os.makedirs(current_archive)
-		os.makedirs(current_archive + 'yaml_descriptions')
-
-
-	results_df.to_csv((current_archive + "result_table.csv"), index=False)
-
-	fileList = [f for f in os.listdir(YAML_FOLDER)]
-	for file in fileList:
-		if file.endswith(".yml") or file.endswith(".yaml"):
-			copyfile(YAML_FOLDER + file, current_archive + 'yaml_descriptions/' + file)
-
-	copyfile("atoml_docker/docker_run_atoml_testgeneration.sh", current_archive + "docker_run_atoml_copy.sh")
-
-	print("\nArchived at: %s" % current_archive)
+	#if __name__ != "__main__":
+	archive.archiveDataframe(results_df)
 
 
 
 if __name__ == "__main__":
-	#compareByMatchingTable()
 	compareByName()
 
