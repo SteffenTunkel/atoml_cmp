@@ -11,14 +11,15 @@ import evaluation
 #os.system('cmd /c "docker run --mount type=bind,source=%cd%/algorithm-descriptions,target=/testdata atoml_docker"')
 
 def runMyDocker(name, *bindings):
-	'''
-    Starts a docker container.
-	The parameter name includes the container image name, which needs to be build before.
-	The parameter bindings is a list of string couples. It contains the mount bindings with the source relative 
-    to the current dictionary as the first string and the target as the second cmdstr = 'cmd /c"docker run '
     '''
-
+    Starts a docker container.
+    The parameter name includes the container image name, which needs to be build before.
+    The parameter bindings is a list of string couples. It contains the mount bindings with the source relative 
+    to the current dictionary as the first string and the target as the second 
+    '''
+    
     # build command string
+    cmdstr = 'cmd /c"docker run '
     for bind in bindings:
         cmdstr += '--mount type=bind,source=%cd%'
         cmdstr += bind[0]

@@ -4,7 +4,7 @@ cd /usr/local/build/libs
 
 for file in /testdata/*.yml
 do
-echo \ncreate tests from "$file":
+echo create tests from "$file":
 java -jar atoml-0.1.0.jar -f "$file" -nomorph -n 1000
 done
 
