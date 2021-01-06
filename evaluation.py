@@ -338,58 +338,6 @@ def evaluateResults():
 
 
 
-def evaluateResultsWithMatchingTable():
-	'''missing doc and outdated at the moment'''
-
-	# get the information from the matching table
-	print('MatchingTable:')
-	matching_table = pd.read_csv('algorithm-descriptions/framework_matching.csv')
-	print(matching_table)
-	frameworks = matching_table.columns
-
-	# create a dataframe for the results
-	result_columns = RESULT_DF_COLUMNS
-	results_df = pd.DataFrame(columns=result_columns)
-
-	for index, row in matching_table.iterrows():
-		algorithm_ident = None
-		framework_flags	= [False] * len(frameworks)
-		predictions		= [None] * len(frameworks)
-		prob_0 			= [None] * len(frameworks)
-		prob_1 			= [None] * len(frameworks)
-		actuals			= [None] * len(frameworks)
-		algorithmList = []
-
-		# open the prediction files
-		print('\nThe predictions in the following files are compared with each other:')
-		for i, framework in enumerate(frameworks):
-			if row[framework] != "None":
-				framework_flags[i] = True
-
-				if algorithm_ident == None:
-					algorithm_ident = row[framework]
-
-				csvpath = PREDICTION_FOLDER + framework + '/'
-				csvfile = '/pred_' + framework.upper() + '_' + row[framework] + '_Uniform.csv'
-				algorithmList.append(Algorithm(csvfile, csvpath))
-
-		# comparison between the frameworks
-		for a, b in itertools.combinations(algorithmList, 2):
-		    results_df = compareTwoAlgorithms(a, b, results_df, index)
-
-
-	# set pandas options to print a full dataframe
-	pd.set_option('display.max_rows', None)
-	pd.set_option('display.max_columns', None)
-	pd.set_option('display.width', None)
-	pd.set_option('display.max_colwidth', -1)
-
-	# store results
-	print("\nSummaryDataFrame:")
-	print(results_df)
-	results_df.to_csv('algorithm-descriptions/framework_matching_results.csv', index=False)
-
-
 
 if __name__ == "__main__":
 	evaluateResults()
