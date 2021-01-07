@@ -17,9 +17,9 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 from scipy.stats import ttest_1samp, ks_2samp
 from scipy.stats import chi2_contingency 
 
-YAML_FOLDER = 'algorithm-descriptions/'
-PREDICTION_FOLDER = 'predictions/'
-ARCHIVE_FOLDER = 'archive/'
+YAML_FOLDER = 'algorithm-descriptions'
+PREDICTION_FOLDER = 'predictions'
+ARCHIVE_FOLDER = 'archive'
 RESULT_DF_COLUMNS = ["equal_pred","TP","FP","FN","TN","ks_pval","chi2_pval","accs_fw1","accs_fw2","algorithm", "parameters"]
 
 
@@ -35,7 +35,7 @@ class Algorithm:
 		self.filename = filename
 		self.path = path
 		self.framework, self.name, self.datasetType = splitPredictionFile(filename)
-		self.predictions, self.probabilities, _, self.actuals = getDataFromCsv(self.path + self.filename)
+		self.predictions, self.probabilities, _, self.actuals = getDataFromCsv(os.path.join(self.path, self.filename))
 	def __str__(self):
 		return self.framework + ' ' +  self.name
 
@@ -52,37 +52,34 @@ class Archive:
 			# create timestamp for the naming of the archive folder
 			dateTimeObj = datetime.now()
 			timestamp = ("%d-%02d-%02d" % (dateTimeObj.year, dateTimeObj.month, dateTimeObj.day))
-			timestamp += ("_%02d-%02d/" % (dateTimeObj.hour, dateTimeObj.minute))
-			self.path = ARCHIVE_FOLDER + timestamp
+			timestamp += ("_%02d-%02d" % (dateTimeObj.hour, dateTimeObj.minute))
+			self.path = os.path.join(ARCHIVE_FOLDER, timestamp)
 		else:
-			if name.endswith("/") or name.endswith('\\'):
-				self.path = ARCHIVE_FOLDER + name
-			else:
-				self.path = ARCHIVE_FOLDER + name + '/'
+			self.path = os.path.join(ARCHIVE_FOLDER, name)
 		
 		if not os.path.exists(self.path):
 			os.makedirs(self.path)
 
 		if save_yaml is True:
-			if not os.path.exists(self.path + 'yaml_descriptions'):
-				os.makedirs(self.path + 'yaml_descriptions')
+			if not os.path.exists(os.path.join(self.path, 'yaml_descriptions')):
+				os.makedirs(os.path.join(self.path, 'yaml_descriptions'))
 
 			# save the current yml files
 			fileList = [f for f in os.listdir(YAML_FOLDER)]
 			for file in fileList:
 				if file.endswith(".yml") or file.endswith(".yaml"):
-					copyfile(YAML_FOLDER + file, self.path + 'yaml_descriptions/' + file)
+					copyfile(os.path.join(YAML_FOLDER, file), os.path.join(self.path, 'yaml_descriptions', file) )
 
 		# save the call function for the atoml test generation, not needed when the whole yml folder is run automatically
-		#copyfile("atoml_docker/docker_run_atoml_testgeneration.sh", self.path + "docker_run_atoml_copy.sh")
+		#copyfile(os.path.join("atoml_docker", docker_run_atoml_testgeneration.sh"), os.path.join(self.path, "docker_run_atoml_copy.sh"))
 
 		print("\nNew archive folder created: %s" % self.path)
 
 
 	def archiveDataframe(self, df, filename="result_table.csv"):
 		# save the summary of the evaluation in a csv file
-		df.to_csv((self.path + filename), index=False)
-		print("\nResult dataframe saved at: %s%s" % (self.path, filename))
+		df.to_csv(os.path.join(self.path, filename), index=False)
+		print("\nResult dataframe saved at: %s" % os.path.join(self.path, filename))
 
 
 
@@ -94,20 +91,21 @@ class Archive:
 def jsonToCsvForSpark():
 	'''Converts the json files created by the Spark tests into the csv format, which is used for the evaluation.'''
 
-	sparkPath = PREDICTION_FOLDER + 'spark/'
-	sparkJsonPath = sparkPath + "json/"
-
+	sparkPath = os.path.join(PREDICTION_FOLDER, 'spark')
+	sparkJsonPath = os.path.join(sparkPath, "json")
+	print(sparkJsonPath)
 	# get all json folder names
 	sparkJsonList = [f for f in os.listdir(sparkJsonPath)]
 	print("Convert json spark files into csv. Files found:")
 	print(sparkJsonList)
 	for jsonFolder in sparkJsonList:
-		oneJsonFolderContent = [f for f in os.listdir(sparkJsonPath + jsonFolder) if os.path.isfile(os.path.join(sparkJsonPath + jsonFolder, f))]
+		print(jsonFolder)
+		oneJsonFolderContent = [f for f in os.listdir(os.path.join(sparkJsonPath, jsonFolder)) if os.path.isfile(os.path.join(sparkJsonPath, jsonFolder, f))]
 		
 		# load a json file, process it and save it as a csv
 		for file in oneJsonFolderContent:
 			if file.endswith(".json"):
-				pred_spark = pd.read_json((sparkJsonPath + jsonFolder + "/" + file), lines=True)
+				pred_spark = pd.read_json(os.path.join(sparkJsonPath, jsonFolder, file), lines=True)
 				prob_0 = []
 				prob_1 = []
 				for dictionary in pred_spark.probability.tolist():
@@ -118,7 +116,7 @@ def jsonToCsvForSpark():
 				save_df["prediction"]=pred_spark["prediction"]
 				save_df["prob_0"]=prob_0
 				save_df["prob_1"]=prob_1
-				csvFileName = sparkPath + jsonFolder + ".csv"
+				csvFileName = os.path.join(sparkPath, jsonFolder + ".csv")
 				save_df.to_csv(csvFileName, index=False)
 				print("%s was created." % csvFileName)
 
@@ -277,7 +275,7 @@ def plotProbabilities(algorithms, archive=None, show_plot=False):
 		plt.show()
 
 	if archive is not None:
-		plt.savefig(archive.path + algorithms[0].name + "_probabilities.pdf")
+		plt.savefig(os.path.join(archive.path, algorithms[0].name + "_probabilities.pdf") )
 
 
 
@@ -292,10 +290,10 @@ def evaluateResults():
 	frameworkList = [fw for fw in os.listdir(PREDICTION_FOLDER)]
 
 	for fw in frameworkList:
-		csv_list = [f for f in os.listdir(PREDICTION_FOLDER + fw)]
+		csv_list = [f for f in os.listdir(os.path.join(PREDICTION_FOLDER, fw))]
 		for file in csv_list:
 			if file.endswith(".csv"):
-				algorithmList.append(Algorithm(file, (PREDICTION_FOLDER + fw + '/')))
+				algorithmList.append(Algorithm(file, os.path.join(PREDICTION_FOLDER, fw) ))
 	
 	datasetList = []
 	uniqueAlgorithmList = []
@@ -335,7 +333,6 @@ def evaluateResults():
 	# archive summary dataframe and other files, if function is run by another script
 	#if __name__ != "__main__":
 	archive.archiveDataframe(results_df)
-
 
 
 
