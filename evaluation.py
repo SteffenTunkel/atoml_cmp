@@ -36,7 +36,7 @@ class Algorithm:
     def __init__(self, filename, path=None):
         self.filename = filename
         self.path = path
-        self.framework, self.name, self.datasetType = split_prediction_file(filename)
+        self.framework, self.name, self.dataset_type = split_prediction_file(filename)
         self.predictions, self.probabilities, _, self.actuals = get_data_from_csv(
             os.path.join(self.path, self.filename))
 
@@ -229,7 +229,7 @@ def compare_two_algorithms(x, y, df, i):
 
     df = df.append(pd.Series(), ignore_index=True)
     df.loc[df.index[-1], 'algorithm'] = x.name
-    df.loc[df.index[-1], 'parameters'] = ('%s_%s_%s' % (x.framework, y.framework, x.datasetType))
+    df.loc[df.index[-1], 'parameters'] = ('%s_%s_%s' % (x.framework, y.framework, x.dataset_type))
 
     equal_pred, cm = create_confusion_matrix([x.predictions, y.predictions])
     df.loc[df.index[-1], 'equal_pred'] = equal_pred
@@ -272,7 +272,8 @@ def plot_probabilities(algorithms, archive=None, show_plot=False):
         plt.show()
 
     if archive is not None:
-        plt.savefig(os.path.join(archive.path, algorithms[0].name + "_probabilities.pdf"))
+        plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
+        plt.savefig(os.path.join(archive.path, plot_file_name))
 
 
 def evaluate_results():
@@ -294,8 +295,8 @@ def evaluate_results():
     unique_algorithm_list = []
 
     for algorithm in algorithm_list:
-        if algorithm.datasetType not in dataset_list:
-            dataset_list.append(algorithm.datasetType)
+        if algorithm.dataset_type not in dataset_list:
+            dataset_list.append(algorithm.dataset_type)
         if algorithm.name not in unique_algorithm_list:
             unique_algorithm_list.append(algorithm.name)
     print("\nList of unique algorithm identifier (for typo check):")
@@ -307,7 +308,7 @@ def evaluate_results():
     i = 0
 
     for ds in dataset_list:
-        algorithm_subset_by_dataset_type = [x for i, x in enumerate(algorithm_list) if x.datasetType == ds]
+        algorithm_subset_by_dataset_type = [x for i, x in enumerate(algorithm_list) if x.dataset_type == ds]
         for alg in unique_algorithm_list:
             algorithm_subset = [x for i, x in enumerate(algorithm_subset_by_dataset_type) if x.name == alg]
             plot_probabilities(algorithm_subset, archive)
@@ -315,19 +316,17 @@ def evaluate_results():
                 results_df = compare_two_algorithms(a, b, results_df, i)
                 i = i + 1
 
-    # set pandas options to print a full dataframe
-    pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.width', None)
-    pd.set_option('display.max_colwidth', -1)
+        # set pandas options to print a full dataframe
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.width', None)
+        pd.set_option('display.max_colwidth', -1)
 
-    # show summary data frame
-    print("\nSummaryDataFrame:")
-    print(results_df)
+        # show summary data frame
+        print("\nSummary DataFrame for %s dataset:" % ds)
+        print(results_df)
 
-    # archive summary dataframe and other files, if function is run by another script
-    # if __name__ != "__main__":
-    archive.archive_data_frame(results_df)
+        archive.archive_data_frame(results_df, filename=(ds + "_result_summary.csv"))
 
 
 if __name__ == "__main__":
