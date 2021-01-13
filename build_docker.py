@@ -1,4 +1,4 @@
-'''System calls for the building of different docker container.'''
+"""System calls for the building of different docker container."""
 
 import os
 

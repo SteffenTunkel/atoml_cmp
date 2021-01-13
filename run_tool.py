@@ -1,22 +1,21 @@
-'''This module runs the tool'''
+"""This module runs the tool"""
 
 import os
-import sys
 import shutil
-
 import evaluation
+
 
 # cmd /k -> remain ___ cmd /c -> terminate
 # Example for a system call for a docker with a mount:
-#os.system('cmd /c "docker run --mount type=bind,source=%cd%/algorithm-descriptions,target=/testdata atoml_docker"')
+# os.system('cmd /c "docker run --mount type=bind,source=%cd%/algorithm-descriptions,target=/testdata atoml_docker"')
 
-def runMyDocker(name, *bindings):
-    '''
+def run_my_docker(name, *bindings):
+    """
     Starts a docker container.
     The parameter name includes the container image name, which needs to be build before.
-    The parameter bindings is a list of string couples. It contains the mount bindings with the source relative 
-    to the current dictionary as the first string and the target as the second 
-    '''
+    The parameter bindings is a list of string couples. It contains the mount bindings with the source relative
+    to the current dictionary as the first string and the target as the second
+    """
     
     # build command string
     cmdstr = 'cmd /c"docker run '
@@ -32,36 +31,35 @@ def runMyDocker(name, *bindings):
     os.system(cmdstr)
 
 
-
-def deleteFolder(name):
+def delete_folder(name):
     try:
         shutil.rmtree(name)
         print("successfully deleted: %s" % name)
     except OSError as e:
-        print ("Error: %s - %s." % (e.filename, e.strerror))
+        print("Error: %s - %s." % (e.filename, e.strerror))
 
 
 # clear generated-tests and predictions folder
-deleteFolder("generated-tests")
-deleteFolder("predictions")
+delete_folder("generated-tests")
+delete_folder("predictions")
 
 # run atoml docker build
-#os.system('cmd /c "docker build -t atoml_docker atoml_docker"')
+os.system('cmd /c "docker build -t atoml_docker atoml_docker"')
 
-atomlMounts = [["/generated-tests", "/generated-tests"],["/algorithm-descriptions", "/testdata"]]
-runMyDocker("atoml_docker", *atomlMounts)
-#times with gradle: 29.4, 26.2, 32.0
-#times w/o gradle: 10-13s
+atomlMounts = [["/generated-tests", "/generated-tests"], ["/algorithm-descriptions", "/testdata"]]
+run_my_docker("atoml_docker", *atomlMounts)
+# times with gradle: 29.4, 26.2, 32.0
+# times w/o gradle: 10-13s
 
-sklearnMounts = [["/generated-tests/sklearn" , "/sklearn"], ["/predictions/sklearn", "/log"]]
-runMyDocker("sklearn_docker", *sklearnMounts)
+sklearnMounts = [["/generated-tests/sklearn", "/sklearn"], ["/predictions/sklearn", "/log"]]
+run_my_docker("sklearn_docker", *sklearnMounts)
 
 wekaMounts = [["/generated-tests/weka/src", "/code/src"], ["/predictions/weka", "/log"]]
-runMyDocker("weka_docker", *wekaMounts)
+run_my_docker("weka_docker", *wekaMounts)
 
 sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/log"]]
-runMyDocker("spark_docker", *sparkMounts)
-evaluation.jsonToCsvForSpark()
+run_my_docker("spark_docker", *sparkMounts)
+evaluation.json2csv4spark()
 
 
-evaluation.evaluateResults()
+evaluation.evaluate_results()
