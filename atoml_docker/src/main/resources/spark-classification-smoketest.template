@@ -16,8 +16,39 @@
             
             ClassificationModel<?, ?> model = classifier.fit(dataframe);
             Dataset<Row> pred = model.transform(testdata);
-            pred.select("classAtt", "prediction", "probability").write().mode(SaveMode.Overwrite)
-                .json("/log/json/pred_<<<IDENTIFIER>>>_<<<NAME>>>");
+
+            // create a csv file
+            try {
+                File myObj = new File("/log/pred_<<<IDENTIFIER>>>_<<<NAME>>>.csv");
+                if (myObj.createNewFile()) {
+                    System.out.println("File created: " + myObj.getName());
+                } else {
+                    System.out.println("File already exists.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+
+            // write in csv
+            try {
+                FileWriter myWriter = new FileWriter("/log/pred_<<<IDENTIFIER>>>_<<<NAME>>>.csv");
+                // write header
+                myWriter.write("actual,prediction,prob_0,prob_1\\n");
+                // write predictions
+                Dataset<Row> predSelect = pred.select("classAtt", "prediction", "probability");
+                List<String> predString = predSelect.map((MapFunction<Row, String>) row -> row.mkString(","), Encoders.STRING()).collectAsList();
+                for (String s : predString) {
+                    myWriter.write(s.replace("[", "").replace("]", "") + '\\n');
+                };
+                myWriter.close();
+                System.out.println("Successfully wrote to the file.");
+
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+
             <<<MYSQLEVALSMOKE_END>>>
         }
     }

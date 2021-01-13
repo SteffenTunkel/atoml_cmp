@@ -91,40 +91,6 @@ class Archive:
 ########################################
 
 
-def json2csv4spark():
-    """Converts the json files created by the Spark tests into the csv format, which is used for the evaluation."""
-
-    spark_path = os.path.join(PREDICTION_FOLDER, 'spark')
-    spark_json_path = os.path.join(spark_path, "json")
-    print(spark_json_path)
-    # get all json folder names
-    spark_json_list = [f for f in os.listdir(spark_json_path)]
-    print("Convert json spark files into csv. Files found:")
-    print(spark_json_list)
-    for json_folder in spark_json_list:
-        print(json_folder)
-        folder_content = [f for f in os.listdir(os.path.join(spark_json_path, json_folder))
-                          if os.path.isfile(os.path.join(spark_json_path, json_folder, f))]
-
-        # load a json file, process it and save it as a csv
-        for file in folder_content:
-            if file.endswith(".json"):
-                pred_spark = pd.read_json(os.path.join(spark_json_path, json_folder, file), lines=True)
-                prob_0 = []
-                prob_1 = []
-                for dictionary in pred_spark.probability.tolist():
-                    prob_0.append(dictionary.get("values")[0])
-                    prob_1.append(dictionary.get("values")[1])
-                save_df = pd.DataFrame()
-                save_df["actual"] = pred_spark["classAtt"]
-                save_df["prediction"] = pred_spark["prediction"]
-                save_df["prob_0"] = prob_0
-                save_df["prob_1"] = prob_1
-                csv_file_name = os.path.join(spark_path, json_folder + ".csv")
-                save_df.to_csv(csv_file_name, index=False)
-                print("%s was created." % csv_file_name)
-
-
 def split_prediction_file(filename):
     """
     Splits the name a csv file to get the information it contains. The filename should consist of the keyword 'pred'

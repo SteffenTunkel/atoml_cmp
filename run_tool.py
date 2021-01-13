@@ -16,7 +16,6 @@ def run_my_docker(name, *bindings):
     The parameter bindings is a list of string couples. It contains the mount bindings with the source relative
     to the current dictionary as the first string and the target as the second
     """
-    
     # build command string
     cmdstr = 'cmd /c"docker run '
     for bind in bindings:
@@ -59,7 +58,5 @@ run_my_docker("weka_docker", *wekaMounts)
 
 sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/log"]]
 run_my_docker("spark_docker", *sparkMounts)
-evaluation.json2csv4spark()
-
 
 evaluation.evaluate_results()
