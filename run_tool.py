@@ -44,15 +44,15 @@ delete_folder("generated-tests")
 delete_folder("predictions")
 
 # run atoml docker build
-#os.system('cmd /c "docker build -t atoml_docker atoml_docker"')
-#build_docker.build_my_docker()
+#os.system('cmd /c "docker build -t sklearn_docker sklearn_docker"')
+build_docker.build_my_docker()
 
-atomlMounts = [["/generated-tests", "/generated-tests"], ["/algorithm-descriptions", "/testdata"]]
+atomlMounts = [["/generated-tests", "/container/generated-tests"], ["/algorithm-descriptions", "/container/testdata"]]
 run_my_docker("atoml_docker", *atomlMounts)
 # times with gradle: 29.4, 26.2, 32.0
 # times w/o gradle: 10-13s
 
-sklearnMounts = [["/generated-tests/sklearn", "/sklearn"], ["/predictions/sklearn", "/log"]]
+sklearnMounts = [["/generated-tests/sklearn", "/container/generated-tests/sklearn"], ["/predictions/sklearn", "/container/predictions"]]
 run_my_docker("sklearn_docker", *sklearnMounts)
 
 wekaMounts = [["/generated-tests/weka/src", "/code/src"], ["/predictions/weka", "/log"]]
@@ -62,9 +62,9 @@ sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark
 run_my_docker("spark_docker", *sparkMounts)
 
 
-copy_tree("generated-tests/sklearn/smokedata", "tempCaretFolder/generated-tests/caret/smokedata")
+#copy_tree("generated-tests/sklearn/smokedata", "tempCaretFolder/generated-tests/caret/smokedata")
 caretMounts = [["/tempCaretFolder/generated-tests/caret", "/home/tests"], ["/tempCaretFolder/predictions/caret", "/home/log"]]
-run_my_docker("caret_docker", *caretMounts)
-copy_tree("tempCaretFolder/predictions/caret", "predictions/caret")
+#run_my_docker("caret_docker", *caretMounts)
+#copy_tree("tempCaretFolder/predictions/caret", "predictions/caret")
 
 evaluation.evaluate_results()

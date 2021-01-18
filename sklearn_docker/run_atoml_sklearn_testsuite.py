@@ -1,11 +1,9 @@
 import os
 
-path="/sklearn"
-testScripts = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-print(testScripts)
-print(os.system("dir"))
+path="generated-tests/sklearn"
+test_scripts = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+print(test_scripts)
 os.chdir(path)
-print(os.system("dir"))
-for file in testScripts:
+for file in test_scripts:
 	os.system('python ' + file)
 

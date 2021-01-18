@@ -1,11 +1,11 @@
 #!/bin/sh
 
-cd /usr/local/build/libs
+#cd /usr/local/build/libs
 
-for file in /testdata/*.yml
+for file in testdata/*.yml
 do
 echo create tests from "$file":
-java -jar atoml-0.1.0.jar -f "$file" -nomorph -n 1000
+java -jar build/libs/atoml-0.1.0.jar -f "$file" -nomorph -n 10
 done
 
 # old version

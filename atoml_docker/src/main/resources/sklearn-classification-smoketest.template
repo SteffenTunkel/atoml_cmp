@@ -23,7 +23,8 @@
             <<<MYSQLINDENT>>>classifier.fit(np.delete(data_df.values, classIndex, axis=1),data_df.values[:,classIndex])
             <<<MYSQLINDENT>>>predictedLabel = classifier.predict(np.delete(testdata_df.values, classIndex, axis=1))
             <<<MYSQLINDENT>>>predProb = np.array(classifier.predict_proba(np.delete(testdata_df.values, classIndex, axis=1)))
-            <<<MYSQLINDENT>>>predictionFile = "/log/pred_" + "<<<IDENTIFIER>>>" + "_<<<NAME>>>.csv"
+            <<<MYSQLINDENT>>>main_dir = Path(__file__).resolve().parents[2]
+            <<<MYSQLINDENT>>>predictionFile = os.path.join(main_dir, "predictions", "pred_" + "<<<IDENTIFIER>>>" + "_<<<NAME>>>.csv")
             <<<MYSQLINDENT>>>pred_df = pd.DataFrame()
             <<<MYSQLINDENT>>>pred_df['actual'] = testdata_df.classAtt
             <<<MYSQLINDENT>>>pred_df['prediction'] = predictedLabel
