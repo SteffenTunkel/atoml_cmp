@@ -3,7 +3,8 @@
 import os
 import shutil
 import evaluation
-
+from distutils.dir_util import copy_tree
+import build_docker
 
 # cmd /k -> remain ___ cmd /c -> terminate
 # Example for a system call for a docker with a mount:
@@ -43,7 +44,8 @@ delete_folder("generated-tests")
 delete_folder("predictions")
 
 # run atoml docker build
-os.system('cmd /c "docker build -t atoml_docker atoml_docker"')
+#os.system('cmd /c "docker build -t atoml_docker atoml_docker"')
+#build_docker.build_my_docker()
 
 atomlMounts = [["/generated-tests", "/generated-tests"], ["/algorithm-descriptions", "/testdata"]]
 run_my_docker("atoml_docker", *atomlMounts)
@@ -58,5 +60,11 @@ run_my_docker("weka_docker", *wekaMounts)
 
 sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/log"]]
 run_my_docker("spark_docker", *sparkMounts)
+
+
+copy_tree("generated-tests/sklearn/smokedata", "tempCaretFolder/generated-tests/caret/smokedata")
+caretMounts = [["/tempCaretFolder/generated-tests/caret", "/home/tests"], ["/tempCaretFolder/predictions/caret", "/home/log"]]
+run_my_docker("caret_docker", *caretMounts)
+copy_tree("tempCaretFolder/predictions/caret", "predictions/caret")
 
 evaluation.evaluate_results()
