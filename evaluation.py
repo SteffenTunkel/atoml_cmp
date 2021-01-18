@@ -78,12 +78,12 @@ class Archive:
         if save_bash is True:
             copyfile(os.path.join("atoml_docker", BASH_FILE), os.path.join(self.path, BASH_FILE))
 
-        print("\nNew archive folder created: %s" % self.path)
+        print("New archive folder created: %s\n" % self.path)
 
     def archive_data_frame(self, df, filename="result_table.csv"):
         # save the summary of the evaluation in a csv file
         df.to_csv(os.path.join(self.path, filename), index=False)
-        print("\nResult DataFrame saved at: %s" % os.path.join(self.path, filename))
+        print("\nResult DataFrame saved at: %s\n" % os.path.join(self.path, filename))
 
 
 ########################################
@@ -228,18 +228,22 @@ def compare_two_algorithms(x, y, df, i):
 
 def plot_probabilities(algorithms, archive=None, show_plot=False):
     """missing doc"""
-    plt.figure()
-    for x in algorithms:
-        sns.distplot(x.probabilities, label=x.framework, hist_kws={'alpha': 0.5})
-    plt.title(algorithms[0].name)
-    plt.legend()
+    if algorithms == []:
+        print("Nothing to plot. The algorihm list is empty.\n")
+    else:
+        plt.figure()
+        print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
+        for x in algorithms:
+            sns.distplot(x.probabilities, label=x.framework, hist_kws={'alpha': 0.5})
+        plt.title(algorithms[0].name)
+        plt.legend()
 
-    if show_plot:
-        plt.show()
+        if show_plot:
+            plt.show()
 
-    if archive is not None:
-        plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
-        plt.savefig(os.path.join(archive.path, plot_file_name))
+        if archive is not None:
+            plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
+            plt.savefig(os.path.join(archive.path, plot_file_name))
 
 
 def evaluate_results():
@@ -249,17 +253,17 @@ def evaluate_results():
     archive = Archive()
     algorithm_list = []
 
+    # read prediction files and save data for every algorithm implementation in a Algorithm class
     framework_list = [fw for fw in os.listdir(PREDICTION_FOLDER)]
-
     for fw in framework_list:
         csv_list = [f for f in os.listdir(os.path.join(PREDICTION_FOLDER, fw))]
         for file in csv_list:
             if file.endswith(".csv"):
                 algorithm_list.append(Algorithm(file, os.path.join(PREDICTION_FOLDER, fw)))
 
+    # get all types of algorithm (unique_algorithm_list) and all types of datasets
     dataset_list = []
     unique_algorithm_list = []
-
     for algorithm in algorithm_list:
         if algorithm.dataset_type not in dataset_list:
             dataset_list.append(algorithm.dataset_type)
@@ -269,18 +273,20 @@ def evaluate_results():
     print(unique_algorithm_list)
     print('')
 
-    # create a dataframe for the results
-    results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
-    i = 0
 
     for ds in dataset_list:
-        algorithm_subset_by_dataset_type = [x for i, x in enumerate(algorithm_list) if x.dataset_type == ds]
+        # create a dataframe for the results
+        results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
+        i = 0
+
+        algorithm_subset_by_dataset_type = [x for x in algorithm_list if x.dataset_type == ds]
         for alg in unique_algorithm_list:
-            algorithm_subset = [x for i, x in enumerate(algorithm_subset_by_dataset_type) if x.name == alg]
-            plot_probabilities(algorithm_subset, archive)
-            for a, b in itertools.combinations(algorithm_subset, 2):
-                results_df = compare_two_algorithms(a, b, results_df, i)
-                i = i + 1
+            algorithm_subset = [x for x in algorithm_subset_by_dataset_type if x.name == alg]
+            if algorithm_subset != []:
+                plot_probabilities(algorithm_subset, archive)
+                for a, b in itertools.combinations(algorithm_subset, 2):
+                    results_df = compare_two_algorithms(a, b, results_df, i)
+                    i = i + 1
 
         # set pandas options to print a full dataframe
         pd.set_option('display.max_rows', None)
