@@ -101,8 +101,8 @@ def split_prediction_file(filename):
     if filename.endswith(".csv"):
         string = filename[:-4]
         substring = string.split("_")
-        if len(substring) != 4:
-            print("Error The prediction filename: %s doesn't consist out the right amount of substrings" % filename)
+        if len(substring) != 5:
+            print("Warning: The prediction filename: %s doesn't consist out the right amount of substrings." % filename)
             return
         framework = substring[1]
         algorithm = substring[2]

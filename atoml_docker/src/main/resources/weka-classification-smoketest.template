@@ -9,7 +9,7 @@
                 classifier.classifyInstance(instance);
                 classifier.distributionForInstance(instance);
             }
-            // make predictions on full dataset
+            // get predictions on full testdata
             Evaluation eval = null;
             try {
                 eval = new Evaluation(data);
@@ -19,8 +19,9 @@
             ArrayList pred = eval.predictions();
 
             // create a csv file
+            String filePath = "predictions/pred_<<<IDENTIFIER>>>_<<<NAME>>>_" + iter + ".csv";
             try {
-                File outFile = new File("predictions/pred_<<<IDENTIFIER>>>_<<<NAME>>>.csv");
+                File outFile = new File(filePath);
                 if (outFile.createNewFile()) {
                     System.out.println("File created: " + outFile.getName());
                 } else {
@@ -33,7 +34,7 @@
 
             // write in csv
             try {
-                FileWriter outWriter = new FileWriter("predictions/pred_<<<IDENTIFIER>>>_<<<NAME>>>.csv");
+                FileWriter outWriter = new FileWriter(filePath);
                 // write header
                 outWriter.write("type,actual,prediction,weigth,prob_0,prob_1\\n");
                 // write predictions
