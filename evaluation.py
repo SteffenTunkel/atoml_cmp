@@ -6,6 +6,7 @@ The main function is 'evaluateResults()'.
 """
 
 import os
+import sys
 import itertools
 from datetime import datetime
 import pandas as pd
@@ -231,20 +232,22 @@ def plot_probabilities(algorithms, archive=None, show_plot=False):
     if algorithms == []:
         print("Nothing to plot. The algorihm list is empty.\n")
     else:
-        plt.figure()
-        print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
-        for x in algorithms:
-            sns.distplot(x.probabilities, label=x.framework, hist_kws={'alpha': 0.5})
-        plt.title(algorithms[0].name)
-        plt.legend()
+        try:
+            plt.figure()
+            print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
+            for x in algorithms:
+                sns.distplot(x.probabilities, label=x.framework, hist_kws={'alpha': 0.5})
+            plt.title(algorithms[0].name)
+            plt.legend()
 
-        if show_plot:
-            plt.show()
+            if show_plot:
+                plt.show()
 
-        if archive is not None:
-            plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
-            plt.savefig(os.path.join(archive.path, plot_file_name))
-
+            if archive is not None:
+                plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
+                plt.savefig(os.path.join(archive.path, plot_file_name))
+        except:
+            print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n" % (algorithms[0].name, algorithms[0].dataset_type))
 
 def evaluate_results():
     """missing doc"""
