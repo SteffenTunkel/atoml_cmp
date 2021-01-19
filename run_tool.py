@@ -20,7 +20,7 @@ def run_my_docker(name, *bindings):
     # build command string
     cmdstr = 'cmd /c"docker run '
     for bind in bindings:
-        cmdstr += '--mount type=bind,source=%cd%'
+        cmdstr += '--mount type=bind,source=%cd%/'
         cmdstr += bind[0]
         cmdstr += ',target='
         cmdstr += bind[1]
@@ -47,23 +47,23 @@ delete_folder("predictions")
 #os.system('cmd /c "docker build -t sklearn_docker sklearn_docker"')
 build_docker.build_my_docker()
 
-atomlMounts = [["/generated-tests", "/container/generated-tests"], ["/algorithm-descriptions", "/container/testdata"]]
+atomlMounts = [["generated-tests", "/container/generated-tests"], ["algorithm-descriptions", "/container/testdata"]]
 run_my_docker("atoml_docker", *atomlMounts)
 # times with gradle: 29.4, 26.2, 32.0
 # times w/o gradle: 10-13s
 
-sklearnMounts = [["/generated-tests/sklearn", "/container/generated-tests/sklearn"], ["/predictions/sklearn", "/container/predictions"]]
+sklearnMounts = [["generated-tests/sklearn", "/container/generated-tests/sklearn"], ["predictions/sklearn", "/container/predictions"]]
 run_my_docker("sklearn_docker", *sklearnMounts)
 
-wekaMounts = [["/generated-tests/weka/src", "/code/src"], ["/predictions/weka", "/log"]]
+wekaMounts = [["generated-tests/weka/src", "/container/src"], ["predictions/weka", "/container/predictions"]]
 run_my_docker("weka_docker", *wekaMounts)
 
-sparkMounts = [["/generated-tests/spark/src", "/code/src"], ["/predictions/spark", "/log"]]
+sparkMounts = [["generated-tests/spark/src", "/container/src"], ["predictions/spark", "/container/predictions"]]
 run_my_docker("spark_docker", *sparkMounts)
 
 
 #copy_tree("generated-tests/sklearn/smokedata", "tempCaretFolder/generated-tests/caret/smokedata")
-caretMounts = [["/tempCaretFolder/generated-tests/caret", "/home/tests"], ["/tempCaretFolder/predictions/caret", "/home/log"]]
+caretMounts = [["tempCaretFolder/generated-tests/caret", "/home/tests"], ["tempCaretFolder/predictions/caret", "/home/log"]]
 #run_my_docker("caret_docker", *caretMounts)
 #copy_tree("tempCaretFolder/predictions/caret", "predictions/caret")
 
