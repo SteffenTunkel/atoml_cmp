@@ -21,10 +21,10 @@ from scipy.stats import chi2_contingency, ks_2samp
 YAML_FOLDER = 'algorithm-descriptions'
 PREDICTION_FOLDER = 'predictions'
 ARCHIVE_FOLDER = 'archive'
-BASH_FILE = "docker_run_atoml_testgeneration.sh"
+BASH_FILE = "run_atoml_testgeneration.sh"
 RESULT_DF_COLUMNS = ["equal_pred", "TP", "FP", "FN", "TN", "ks_pval", "chi2_pval",
                      "accs_fw1", "accs_fw2", "algorithm", "parameters"]
-
+ALPHA_THRESHOLD = 0.05
 
 ########################################
 # CLASSES
@@ -84,7 +84,7 @@ class Archive:
     def archive_data_frame(self, df, filename="result_table.csv"):
         # save the summary of the evaluation in a csv file
         df.to_csv(os.path.join(self.path, filename), index=False)
-        print("\nResult DataFrame saved at: %s\n" % os.path.join(self.path, filename))
+        print("\nResult DataFrame saved at: %s" % os.path.join(self.path, filename))
 
 
 ########################################
@@ -116,7 +116,6 @@ def split_prediction_file(filename):
 
 def get_data_from_csv(filename):
     """Reads in a csv file with certain format and extracts the different columns."""
-
     print("read: %s" % filename)
     csv_df = pd.read_csv(filename)
     actual = csv_df["actual"]
@@ -131,7 +130,7 @@ def get_data_from_csv(filename):
 ########################################
 
 
-def create_confusion_matrix(predictions):
+def create_confusion_matrix(predictions, print_all=True):
     """missing doc"""
 
     cm = confusion_matrix(predictions[0], predictions[1])
@@ -144,9 +143,8 @@ def create_confusion_matrix(predictions):
             cm = np.array([[num_elements, 0], [0, 0]])
         else:
             cm = np.array([[0, 0], [0, num_elements]])
-
-    print(cm)
-
+    if print_all:
+        print(cm)
     if cm[0, 1] == 0 and cm[1, 0] == 0 and (cm[0, 0] != 0 or cm[1, 1] != 0):
         equal = True
     else:
@@ -154,7 +152,7 @@ def create_confusion_matrix(predictions):
     return equal, cm
 
 
-def ks_statistic(probabilities):
+def ks_statistic(probabilities, print_all=True):
     """missing doc"""
 
     ks_result = ks_2samp(probabilities[0], probabilities[1])
@@ -162,62 +160,65 @@ def ks_statistic(probabilities):
     ks_score = ks_result.statistic
 
     # interpret p-value
-    alpha = 0.05
-    print("KS p-value: %0.4f\t ks-statistic: %0.4f" % (p, ks_score))
-    if p <= alpha:
-        print('Different (reject H0)\n')
-    else:
-        print('Equal (H0 holds true)\n')
+    alpha = ALPHA_THRESHOLD
+    if print_all:
+        print("KS p-value: %0.4f\t ks-statistic: %0.4f" % (p, ks_score))
+        if p <= alpha:
+            print('Different (reject H0)\n')
+        else:
+            print('Equal (H0 holds true)\n')
     return p, ks_score
 
 
-def chi2_statistic(pred):
+def chi2_statistic(pred, print_all=True):
     """missing doc"""
 
     # get data values
     data = [[sum(pred[0]), len(pred[0]) - sum(pred[0])], [sum(pred[1]), len(pred[1]) - sum(pred[1])]]
-    print(data)
+    #print(data)
     stat, p, dof, expected = chi2_contingency(data)
 
     # interpret p-value
-    alpha = 0.05
-    print("Chi² p-value: %0.4f" % p)
-    if p <= alpha:
-        print('Dependent (reject H0)\n')
-    else:
-        print('Independent (H0 holds true)\n')
+    alpha = ALPHA_THRESHOLD
+    if print_all:
+        print("Chi² p-value: %0.4f" % p)
+        if p <= alpha:
+            print('Dependent (reject H0)\n')
+        else:
+            print('Independent (H0 holds true)\n')
     return p
 
 
-def compare_two_algorithms(x, y, df, i):
+def compare_two_algorithms(x, y, df, i, print_all=True):
     """missing doc"""
-
-    print('%d: Comparision between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
+    if print_all:
+        print('%d: Comparision between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
 
     df = df.append(pd.Series(), ignore_index=True)
     df.loc[df.index[-1], 'algorithm'] = x.name
     df.loc[df.index[-1], 'parameters'] = ('%s_%s_%s' % (x.framework, y.framework, x.dataset_type))
 
-    equal_pred, cm = create_confusion_matrix([x.predictions, y.predictions])
+    equal_pred, cm = create_confusion_matrix([x.predictions, y.predictions], print_all)
     df.loc[df.index[-1], 'equal_pred'] = equal_pred
     df.loc[df.index[-1], 'TP'] = cm[0, 0]
     df.loc[df.index[-1], 'FP'] = cm[0, 1]
     df.loc[df.index[-1], 'FN'] = cm[1, 0]
     df.loc[df.index[-1], 'TN'] = cm[1, 1]
 
-    ks_pval, _ = ks_statistic([x.probabilities, y.probabilities])
+    ks_pval, _ = ks_statistic([x.probabilities, y.probabilities], print_all)
     df.loc[df.index[-1], 'ks_pval'] = ("%0.3f" % ks_pval)
 
-    chi2_pval = chi2_statistic([x.predictions, y.predictions])
+    chi2_pval = chi2_statistic([x.predictions, y.predictions], print_all)
     df.loc[df.index[-1], 'chi2_pval'] = ("%0.3f" % chi2_pval)
 
     accs_fw_i = accuracy_score(x.actuals, x.predictions)
     accs_fw_j = accuracy_score(y.actuals, y.predictions)
-    print("%s accuracy: %f" % (x.framework, accs_fw_i))
-    print("%s accuracy: %f" % (y.framework, accs_fw_j))
+    if print_all:
+        print("%s accuracy: %f" % (x.framework, accs_fw_i))
+        print("%s accuracy: %f\n" % (y.framework, accs_fw_j))
     df.loc[df.index[-1], 'accs_fw1'] = ("%0.3f" % accs_fw_i)
     df.loc[df.index[-1], 'accs_fw2'] = ("%0.3f" % accs_fw_j)
-    print('')
+
 
     return df
 
@@ -227,14 +228,15 @@ def compare_two_algorithms(x, y, df, i):
 ########################################
 
 
-def plot_probabilities(algorithms, archive=None, show_plot=False):
+def plot_probabilities(algorithms, archive=None, show_plot=False, print_all=True):
     """missing doc"""
     if algorithms == []:
         print("Nothing to plot. The algorihm list is empty.\n")
     else:
         try:
             plt.figure()
-            print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
+            if print_all:
+                print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
             for x in algorithms:
                 sns.distplot(x.probabilities, label=x.framework, hist_kws={'alpha': 0.5})
             plt.title(algorithms[0].name)
@@ -249,7 +251,8 @@ def plot_probabilities(algorithms, archive=None, show_plot=False):
         except:
             print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n" % (algorithms[0].name, algorithms[0].dataset_type))
 
-def evaluate_results():
+
+def evaluate_results(print_all=True):
     """missing doc"""
     # get list of files for all frameworks
     # list all csv files. compare them
@@ -272,9 +275,8 @@ def evaluate_results():
             dataset_list.append(algorithm.dataset_type)
         if algorithm.name not in unique_algorithm_list:
             unique_algorithm_list.append(algorithm.name)
-    print("\nList of unique algorithm identifier (for typo check):")
-    print(unique_algorithm_list)
-    print('')
+    if print_all:
+        print("\nList of unique algorithm identifier:\n", unique_algorithm_list, "\n")
 
 
     for ds in dataset_list:
@@ -286,9 +288,9 @@ def evaluate_results():
         for alg in unique_algorithm_list:
             algorithm_subset = [x for x in algorithm_subset_by_dataset_type if x.name == alg]
             if algorithm_subset != []:
-                plot_probabilities(algorithm_subset, archive)
+                plot_probabilities(algorithm_subset, archive, print_all=print_all)
                 for a, b in itertools.combinations(algorithm_subset, 2):
-                    results_df = compare_two_algorithms(a, b, results_df, i)
+                    results_df = compare_two_algorithms(a, b, results_df, i, print_all=print_all)
                     i = i + 1
 
         # set pandas options to print a full dataframe
@@ -305,4 +307,4 @@ def evaluate_results():
 
 
 if __name__ == "__main__":
-    evaluate_results()
+    evaluate_results(print_all=False)
