@@ -1,19 +1,21 @@
 FROM gradle:jdk11
 
-# set working directory
+# get repo of atoml
+WORKDIR /
+RUN apt-get update && apt-get install -y git
+RUN git clone -b master https://github.com/SteffenTunkel/atoml.git container
+
+# set actual working directory
 WORKDIR /container
 
-# copy files/folder to build the system
-COPY src src
-COPY testdata testdata
-COPY build.gradle .
-COPY settings.gradle .
+# switch TestCatalog.java in atoml code (to choose the test data)
+COPY TestCatalogSelection.java src/main/java/atoml/testgen/TestCatalog.java
 
 # build atoml
 RUN gradle build
 
-# COPY the bash script to execute the test generation (later copy to have the build cached)
-COPY docker_run_atoml_testgeneration.sh .
+# COPY the bash script to execute the test generation
+COPY run_atoml_testgeneration.sh .
 
 # run the bash script
-CMD ["./docker_run_atoml_testgeneration.sh"]
+CMD ["./run_atoml_testgeneration.sh"]

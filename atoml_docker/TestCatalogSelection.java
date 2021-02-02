@@ -2,11 +2,14 @@ package atoml.testgen;
 
 import java.util.List;
 
+import atoml.metamorphic.Clone;
 import atoml.metamorphic.Const;
 import atoml.metamorphic.MetamorphicTest;
 import atoml.metamorphic.Opposite;
 import atoml.metamorphic.Rename;
 import atoml.metamorphic.Reorder;
+import atoml.metamorphic.Rescale;
+import atoml.metamorphic.Rotate;
 import atoml.metamorphic.Same;
 import atoml.metamorphic.Scramble;
 import atoml.smoke.Bias;
@@ -41,32 +44,26 @@ public class TestCatalog {
 	public static final List<SmokeTest> SMOKETESTS = List.of(
 			new Uniform(),
 			new RandomNumeric());
-			//new RandomCategorial());
-	
-			//new Uniform(), 
-			//new Categorical(),
-			//new MinFloat(), 
-			//new VerySmall(),
-			//new MinDouble(),
-			//new MaxFloat(),
-			//new VeryLarge(),
-			//new MaxDouble(),
-			//new Split(),
-			//new LeftSkew(),
-			//new RightSkew(),
-			//new OneClass(),
-			//new Bias(),
-			//new Outlier(),
-			//new Zeroes(),
-			//new RandomNumeric(),
-			//new RandomCategorial(),
-			//new DisjointNumeric(),
-			//new DisjointCategorical(),
-			//new ManyCategories(),
-			//new StarvedMany(),
-			//new StarvedBinary());
-
-
+//			new Categorical(),
+//			new MinFloat(),
+//			new VerySmall(),
+//			new MinDouble(),
+//			new MaxFloat(),
+//			new VeryLarge(),
+//			new MaxDouble(),
+//			new Split(),
+//			new LeftSkew(),
+//			new RightSkew(),
+//			new OneClass(),
+//			new Bias(),
+//			new Outlier(),
+//			new Zeroes(),
+//			new RandomCategorial(),
+//			new DisjointNumeric(),
+//			new DisjointCategorical(),
+//			new ManyCategories(),
+//			new StarvedMany(),
+//			new StarvedBinary());
 	
 	/**
 	 * Immutable list of all metamorphic tests
@@ -77,5 +74,8 @@ public class TestCatalog {
 			new Scramble(),
 			new Reorder(),
 			new Same(),
-			new Rename());
+			new Rename(),
+			new Rotate(),
+			new Rescale(),
+			new Clone());
 }
