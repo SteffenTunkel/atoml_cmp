@@ -1,6 +1,9 @@
-install.packages("testthat") # for unit tests
-install.packages("foreign") # for the arff import
 install.packages("caret") # main package
+install.packages("foreign") # for the arff import
+install.packages("testthat") # for unit tests
+install.packages("patrick") # for parameterized tests
+install.packages("R.utils") # for timeouts
+
 
 # suggested additions to caret
 install.packages(c("BradleyTerry2", "e1071", "earth", "fastICA", "gam",
