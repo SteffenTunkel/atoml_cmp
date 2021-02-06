@@ -48,7 +48,9 @@ class Algorithm:
 class Archive:
     """missing doc"""
 
-    def __init__(self, name=None, save_yaml=True, save_bash=False):
+    def __init__(self, name=None, save_yaml=True, save_bash=False, print_all=True):
+        self.print_all = print_all
+
         # create the archive folder
         if not os.path.exists(ARCHIVE_FOLDER):
             os.makedirs(ARCHIVE_FOLDER)
@@ -78,13 +80,14 @@ class Archive:
         # save the call function for the atoml test generation, not needed if the whole yml folder is run automatically
         if save_bash is True:
             copyfile(os.path.join("atoml_docker", BASH_FILE), os.path.join(self.path, BASH_FILE))
-
-        print("New archive folder created: %s\n" % self.path)
+        if self.print_all:
+            print("New archive folder created: %s\n" % self.path)
 
     def archive_data_frame(self, df, filename="result_table.csv"):
         # save the summary of the evaluation in a csv file
         df.to_csv(os.path.join(self.path, filename), index=False)
-        print("\nResult DataFrame saved at: %s" % os.path.join(self.path, filename))
+        if self.print_all:
+            print("\nResult DataFrame saved at: %s" % os.path.join(self.path, filename))
 
 
 ########################################
@@ -176,16 +179,19 @@ def chi2_statistic(pred, print_all=True):
     # get data values
     data = [[sum(pred[0]), len(pred[0]) - sum(pred[0])], [sum(pred[1]), len(pred[1]) - sum(pred[1])]]
     #print(data)
-    stat, p, dof, expected = chi2_contingency(data)
-
-    # interpret p-value
-    alpha = ALPHA_THRESHOLD
-    if print_all:
-        print("Chi² p-value: %0.4f" % p)
-        if p <= alpha:
-            print('Dependent (reject H0)\n')
-        else:
-            print('Independent (H0 holds true)\n')
+    try:
+        stat, p, dof, expected = chi2_contingency(data)
+        # interpret p-value
+        alpha = ALPHA_THRESHOLD
+        if print_all:
+            print("Chi² p-value: %0.4f" % p)
+            if p <= alpha:
+                print('Dependent (reject H0)\n')
+            else:
+                print('Independent (H0 holds true)\n')
+    except ValueError:
+        print("Chi-squared test failed, probably all elements are identical")
+        p = 0.0
     return p
 
 
@@ -238,8 +244,8 @@ def plot_probabilities(algorithms, archive=None, show_plot=False, print_all=True
             if print_all:
                 print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
             for x in algorithms:
-                sns.distplot(x.probabilities, label=x.framework, hist_kws={'alpha': 0.5})
-            plt.title(algorithms[0].name)
+                sns.distplot(x.probabilities, kde=False, label=x.framework, hist_kws=dict(alpha=0.4), bins=100)
+            plt.title(("prediction probability of " + algorithms[0].name + " on " + algorithms[0].dataset_type))
             plt.legend()
 
             if show_plot:
@@ -256,7 +262,7 @@ def evaluate_results(print_all=True):
     """missing doc"""
     # get list of files for all frameworks
     # list all csv files. compare them
-    archive = Archive()
+    archive = Archive(print_all=print_all)
     algorithm_list = []
 
     # read prediction files and save data for every algorithm implementation in a Algorithm class
