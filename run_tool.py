@@ -10,7 +10,8 @@ import build_docker
 # Example for a system call for a docker with a mount:
 # os.system('cmd /c "docker run --mount type=bind,source=%cd%/algorithm-descriptions,target=/testdata atoml_docker"')
 
-def run_my_docker(name, *bindings):
+
+def run_my_docker(name, *bindings, option=None):
     """
     Starts a docker container.
     The parameter name includes the container image name, which needs to be build before.
@@ -26,6 +27,8 @@ def run_my_docker(name, *bindings):
         cmdstr += bind[1]
         cmdstr += ' '
     cmdstr += name
+    if option is not None:
+        cmdstr += ' ' + str(option)
     cmdstr += '"'
     # run command
     os.system(cmdstr)
@@ -44,16 +47,16 @@ delete_folder("generated-tests")
 delete_folder("predictions")
 
 # run atoml docker build
-#os.system('cmd /c "docker build -t sklearn_docker sklearn_docker"')
-build_docker.build_my_docker()
+#os.system('cmd /c "docker build -t atoml_docker atoml_docker"')  # --no-cache
 
 atomlMounts = [["generated-tests", "/container/generated-tests"], ["algorithm-descriptions", "/container/testdata"]]
-run_my_docker("atoml_docker", *atomlMounts)
-# times with gradle: 29.4, 26.2, 32.0
-# times w/o gradle: 10-13s
+run_my_docker("atoml_docker", *atomlMounts, option=200)
 
 sklearnMounts = [["generated-tests/sklearn", "/container/generated-tests/sklearn"], ["predictions/sklearn", "/container/predictions"]]
 run_my_docker("sklearn_docker", *sklearnMounts)
+
+caretMounts = [["generated-tests/caret", "/container/generated-tests/caret"], ["predictions/caret", "/container/predictions"]]
+run_my_docker("caret_docker", *caretMounts)
 
 wekaMounts = [["generated-tests/weka/src", "/container/src"], ["predictions/weka", "/container/predictions"]]
 run_my_docker("weka_docker", *wekaMounts)
@@ -61,10 +64,4 @@ run_my_docker("weka_docker", *wekaMounts)
 sparkMounts = [["generated-tests/spark/src", "/container/src"], ["predictions/spark", "/container/predictions"]]
 run_my_docker("spark_docker", *sparkMounts)
 
-
-#copy_tree("generated-tests/sklearn/smokedata", "tempCaretFolder/generated-tests/caret/smokedata")
-caretMounts = [["tempCaretFolder/generated-tests/caret", "/home/tests"], ["tempCaretFolder/predictions/caret", "/home/log"]]
-#run_my_docker("caret_docker", *caretMounts)
-#copy_tree("tempCaretFolder/predictions/caret", "predictions/caret")
-
-evaluation.evaluate_results()
+evaluation.evaluate_results(print_all=False)

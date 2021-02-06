@@ -18,4 +18,5 @@ RUN gradle build
 COPY run_atoml_testgeneration.sh .
 
 # run the bash script
-CMD ["./run_atoml_testgeneration.sh"]
+ENTRYPOINT ["./run_atoml_testgeneration.sh"]
+CMD ["100"]
