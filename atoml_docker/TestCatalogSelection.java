@@ -43,21 +43,21 @@ public class TestCatalog {
 	 */
 	public static final List<SmokeTest> SMOKETESTS = List.of(
 			new Uniform(),
-			new RandomNumeric());
+			new RandomNumeric(),
 //			new Categorical(),
 //			new MinFloat(),
-//			new VerySmall(),
+			new VerySmall(),
 //			new MinDouble(),
 //			new MaxFloat(),
 //			new VeryLarge(),
 //			new MaxDouble(),
 //			new Split(),
-//			new LeftSkew(),
-//			new RightSkew(),
+			new LeftSkew(),
+			new RightSkew(),
 //			new OneClass(),
-//			new Bias(),
-//			new Outlier(),
-//			new Zeroes(),
+			new Bias(),
+			new Outlier(),
+			new Zeroes());
 //			new RandomCategorial(),
 //			new DisjointNumeric(),
 //			new DisjointCategorical(),

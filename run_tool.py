@@ -3,8 +3,9 @@
 import os
 import shutil
 import evaluation
-from distutils.dir_util import copy_tree
 import build_docker
+from external_data_utils import overwrite_dataset, rename_prediction_file
+from distutils.dir_util import copy_tree
 
 # cmd /k -> remain ___ cmd /c -> terminate
 # Example for a system call for a docker with a mount:
@@ -50,7 +51,14 @@ delete_folder("predictions")
 #os.system('cmd /c "docker build -t atoml_docker atoml_docker"')  # --no-cache
 
 atomlMounts = [["generated-tests", "/container/generated-tests"], ["algorithm-descriptions", "/container/testdata"]]
-run_my_docker("atoml_docker", *atomlMounts, option=200)
+run_my_docker("atoml_docker", *atomlMounts, option=100)
+
+overwrite_datasets = [["BreastCancer", "Zeroes"], ["BreastCancerMinMaxNorm", "VerySmall"], ["BreastCancerMeanNorm", "Bias"],
+                      ["Wine", "LeftSkew"], ["WineMinMaxNorm", "RightSkew"], ["WineMeanNorm", "Outlier"]]
+for overwrite_pair in overwrite_datasets:
+    overwrite_dataset(overwrite_pair[0]+"_1_training.arff", overwrite_pair[1]+"_1_training.arff")
+    overwrite_dataset(overwrite_pair[0]+"_1_test.arff", overwrite_pair[1]+"_1_test.arff")
+
 
 sklearnMounts = [["generated-tests/sklearn", "/container/generated-tests/sklearn"], ["predictions/sklearn", "/container/predictions"]]
 run_my_docker("sklearn_docker", *sklearnMounts)
@@ -63,5 +71,8 @@ run_my_docker("weka_docker", *wekaMounts)
 
 sparkMounts = [["generated-tests/spark/src", "/container/src"], ["predictions/spark", "/container/predictions"]]
 run_my_docker("spark_docker", *sparkMounts)
+
+for overwrite_pair in overwrite_datasets:
+    rename_prediction_file(overwrite_pair[0], overwrite_pair[1])
 
 evaluation.evaluate_results(print_all=False)
