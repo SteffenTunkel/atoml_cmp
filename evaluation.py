@@ -243,8 +243,11 @@ def plot_probabilities(algorithms, archive=None, show_plot=False, print_all=True
             plt.figure()
             if print_all:
                 print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
+            num_bins = 20
+            if algorithms[0].probabilities.shape[0] > 500:
+                num_bins = 100
             for x in algorithms:
-                sns.distplot(x.probabilities, kde=False, label=x.framework, hist_kws=dict(alpha=0.4), bins=100)
+                sns.distplot(x.probabilities, kde=False, label=x.framework, hist_kws=dict(alpha=0.4), bins=num_bins)
             plt.title(("prediction probability of " + algorithms[0].name + " on " + algorithms[0].dataset_type))
             plt.legend()
 
@@ -254,6 +257,7 @@ def plot_probabilities(algorithms, archive=None, show_plot=False, print_all=True
             if archive is not None:
                 plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
                 plt.savefig(os.path.join(archive.path, plot_file_name))
+            plt.close()
         except:
             print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n" % (algorithms[0].name, algorithms[0].dataset_type))
 
@@ -283,7 +287,6 @@ def evaluate_results(print_all=True):
             unique_algorithm_list.append(algorithm.name)
     if print_all:
         print("\nList of unique algorithm identifier:\n", unique_algorithm_list, "\n")
-
 
     for ds in dataset_list:
         # create a dataframe for the results
