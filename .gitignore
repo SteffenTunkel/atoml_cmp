@@ -5,3 +5,6 @@
 /.idea/
 /archive/*
 tempCaretFolder/predictions/
+atoml_docker/debug_atoml/
+/external_data/*
+!external_data/raw_datasets/

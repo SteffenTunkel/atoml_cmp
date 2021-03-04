@@ -1,0 +1,149 @@
+
+name: CARET_LogisticRegression
+type: classification
+framework: caret
+package: stepPlr
+class: plr
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  lambda:
+    type: double
+    default: 0.0
+  cp:
+    type: values
+    values: ["bic"] # ["bic", "aic"]
+    default: "bic"
+---
+
+name: SKLEARN_LogisticRegression
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: LogisticRegression
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  penalty:
+    default: "none"
+  dual:
+    type: values
+    values: [False]
+    default: False  
+  tol:
+    type: values
+    values: [0.000001]
+    default: 0.000001
+  C: #inverse of R
+    default: 0.0
+  fit_intercept:
+    default: True
+  intercept_scaling:
+    type: values
+    values: [1]
+    default: 1
+  class_weight:
+    type: values
+    values: [None]
+    default: None
+  random_state:
+    type: values
+    values: [42]
+    default: 42
+  solver:
+    type: values
+    values: [lbfgs]
+    default: lbfgs
+  max_iter:
+    default: 100
+  multi_class:
+    default: multinomial
+  verbose:
+    type: values
+    values: [0]
+    default: 0
+  warm_start:
+    type: values
+    values: [False]
+    default: False     
+  n_jobs:
+    type: values
+    values: [None]
+    default: None     
+  l1_ratio:
+    type: values
+    values: [None]
+    default: None       
+---
+
+name: WEKA_LogisticRegression
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: Logistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  R: # ridge value of the log likelihood
+    default: 0.0 #1.0E-8
+  #S: # Do not standardize the attributes in the input data.
+  #  type: fixedflag
+  #  default: disabled
+  M: # maximum number of iterations (default -1: until convergence)
+    default: 100
+---
+
+name: SPARK_LogisticRegression
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: LogisticRegression
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+parameters:
+  setRegParam:
+    type: double
+    default: 0.0
+  setElasticNetParam:
+    type: double
+    default: 0.0
+  setMaxIter:
+    default: 100
+  setTol:
+    type: values
+    values: [0.000001]
+    default: 0.000001
+  setFitIntercept:
+    type: fixedflag
+    default: true
+  setFamily:
+    default: "multinomial"
+  setStandardization:
+    type: values
+    values: [false]
+    default: false
+  setThreshold:
+    type: values
+    values: [0.5]
+    default: 0.5
+---
