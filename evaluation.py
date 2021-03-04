@@ -1,8 +1,8 @@
-"""
-Set of functions needed for the evaluation of the results.
-Takes the output of the atoml tests (predictions folder)
-    and the algorithm-descriptions folder as input.
-The main function is 'evaluateResults()'.
+"""Set of functions needed for the evaluation of the results.
+
+With a call of the evaluateResults() function the module takes the output of the atoml tests (predictions folder)
+and the algorithm-descriptions folder as input. From that it generates result metrics and plots.
+The results can be saved in an archive.
 """
 
 import os
@@ -16,15 +16,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score
 from scipy.stats import chi2_contingency, ks_2samp
-
+from typing import List
 
 YAML_FOLDER = 'algorithm-descriptions'
 PREDICTION_FOLDER = 'predictions'
 ARCHIVE_FOLDER = 'archive'
 BASH_FILE = "run_atoml_testgeneration.sh"
 RESULT_DF_COLUMNS = ["equal_pred", "TP", "FP", "FN", "TN", "ks_pval", "chi2_pval",
-                     "accs_fw1", "accs_fw2", "algorithm", "parameters"]
+                     "accs_fw1", "accs_fw2", "algorithm", "framework_1", "framework_2", "dataset"]
 ALPHA_THRESHOLD = 0.05
+
 
 ########################################
 # CLASSES
@@ -32,9 +33,20 @@ ALPHA_THRESHOLD = 0.05
 
 
 class Algorithm:
-    """missing doc"""
+    """Holds all information about one specific implementation tested on one specific dataset.
 
-    def __init__(self, filename, path=None):
+    Attributes:
+        filename: csv file name of the data file
+        path: path to the csv file folder
+        framework: framework of the implementation
+        name: name of the implemented algorithm
+        dataset_type: name of the dataset the implementation was tested with
+        predictions: predicted labels of the implementation on the data set
+        probabilities: tuple of predicted probabilities for both classes of the implementation on the data set
+        actuals: actual labels of the data set
+    """
+
+    def __init__(self, filename: str, path: str = None):
         self.filename = filename
         self.path = path
         self.framework, self.name, self.dataset_type = split_prediction_file(filename)
@@ -46,9 +58,19 @@ class Algorithm:
 
 
 class Archive:
-    """missing doc"""
+    """Instance of an archive where all the generated metrics and plots can be saved.
 
-    def __init__(self, name=None, save_yaml=True, save_bash=False, print_all=True):
+    The archive folder name is generated with a time stamp by default.
+    Alternativly, a name can be given to the constructor.
+    In addition to the evaluation results also the foundation can be saved, meaning the current yaml-folder.
+    Be aware that this can lead to inconsistencies.
+
+   Attributes:
+       path: path of the archive
+       print_all (boolean): if flag is set results are printed in the function
+   """
+
+    def __init__(self, name: str = None, save_yaml=True, save_bash=False, print_all=True):
         self.print_all = print_all
 
         # create the archive folder
@@ -70,12 +92,14 @@ class Archive:
         if save_yaml is True:
             if not os.path.exists(os.path.join(self.path, 'yaml_descriptions')):
                 os.makedirs(os.path.join(self.path, 'yaml_descriptions'))
-
             # save the current yml files
             file_list = [f for f in os.listdir(YAML_FOLDER)]
             for file in file_list:
                 if file.endswith(".yml") or file.endswith(".yaml"):
                     copyfile(os.path.join(YAML_FOLDER, file), os.path.join(self.path, 'yaml_descriptions', file))
+
+        if not os.path.exists(os.path.join(self.path, 'plots')):
+            os.makedirs(os.path.join(self.path, 'plots'))
 
         # save the call function for the atoml test generation, not needed if the whole yml folder is run automatically
         if save_bash is True:
@@ -95,19 +119,26 @@ class Archive:
 ########################################
 
 
-def split_prediction_file(filename):
-    """
-    Splits the name a csv file to get the information it contains. The filename should consist of the keyword 'pred'
-    and 3 identifier, for the framework (in capital letters), the algorithm and the used data set type.
-    All of them should be divided by exactly one '_'. Example: 'pred_FRAMEWORK_Algorithm_TestDataType.csv'.
-    """
+def split_prediction_file(filename: str):
+    """Splits a prediction csv filename to get the information it contains.
 
+    Args:
+        filename:
+            The filename should consist of the keyword 'pred' and 3 identifier:
+            for the framework (in capital letters), the algorithm and the used data set type.
+            Example: 'pred_FRAMEWORK_Algorithm_TestDataType.csv'
+
+    Returns:
+        (str, str, str):
+            - Name of the framework
+            - Name of the algorithm
+            - Name of the dataset
+    """
     if filename.endswith(".csv"):
         string = filename[:-4]
         substring = string.split("_")
         if len(substring) != 5:
             print("Warning: The prediction filename: %s doesn't consist out the right amount of substrings." % filename)
-            return
         framework = substring[1]
         algorithm = substring[2]
         dataset_type = substring[3]
@@ -117,8 +148,19 @@ def split_prediction_file(filename):
     return framework, algorithm, dataset_type
 
 
-def get_data_from_csv(filename):
-    """Reads in a csv file with certain format and extracts the different columns."""
+def get_data_from_csv(filename: str):
+    """Reads in a csv file with the specified format and extracts the different columns.
+
+    Args:
+        filename (str): relative or absolute filepath
+
+    Returns: a tuple with 4 variables
+        (Series, Series, Series, Series):
+            - predicted labels
+            - predicted probability for class 0
+            - predicted probability for class 1
+            - actual labels
+    """
     print("read: %s" % filename)
     csv_df = pd.read_csv(filename)
     actual = csv_df["actual"]
@@ -133,13 +175,20 @@ def get_data_from_csv(filename):
 ########################################
 
 
-def create_confusion_matrix(predictions, print_all=True):
-    """missing doc"""
+def create_confusion_matrix(predictions: [pd.Series, pd.Series], print_all=True):
+    """Creates the confusion matrix between 2 sets of labels.
 
+    Args:
+        predictions ([Series, Series]): 2 sets of prediction labels
+        print_all (boolean): if flag is set results are printed in the function
+
+    Returns:
+        (boolean, 2x2 array):
+            - Equality flag: True, if predicted labels are identical
+            - Confusion matrix
+    """
     cm = confusion_matrix(predictions[0], predictions[1])
-
-    # if all the values are the same, the confusion matrix has only one element
-    # this is checked and changed here
+    # if all the values are the same, the confusion matrix has only one element this is checked and changed here
     if cm.shape == (1, 1):
         num_elements = predictions[0].shape[0]
         if predictions[0][0] == 0:
@@ -155,9 +204,18 @@ def create_confusion_matrix(predictions, print_all=True):
     return equal, cm
 
 
-def ks_statistic(probabilities, print_all=True):
-    """missing doc"""
+def ks_statistic(probabilities: [pd.Series, pd.Series], print_all=True):
+    """Does the Kolmogorov–Smirnov test with two probability distributions.
 
+    Args:
+        probabilities ([Series, Series): Two sets of propability distributions
+        print_all (boolean): if flag is set results are printed in the function
+
+    Returns:
+        (float, float):
+            - p-value of KS test
+            - KS test statistic
+    """
     ks_result = ks_2samp(probabilities[0], probabilities[1])
     p = ks_result.pvalue
     ks_score = ks_result.statistic
@@ -173,12 +231,17 @@ def ks_statistic(probabilities, print_all=True):
     return p, ks_score
 
 
-def chi2_statistic(pred, print_all=True):
-    """missing doc"""
+def chi2_statistic(pred: [pd.Series, pd.Series], print_all=True):
+    """Does the Chi-squared test with two sets of prediction labels.
 
-    # get data values
+    Args:
+        pred ([Series, Series): Two sets of prediction labels
+        print_all (boolean): if flag is set results are printed in the function
+
+    Returns:
+        float: p-value of chi-squared test
+    """
     data = [[sum(pred[0]), len(pred[0]) - sum(pred[0])], [sum(pred[1]), len(pred[1]) - sum(pred[1])]]
-    #print(data)
     try:
         stat, p, dof, expected = chi2_contingency(data)
         # interpret p-value
@@ -195,14 +258,29 @@ def chi2_statistic(pred, print_all=True):
     return p
 
 
-def compare_two_algorithms(x, y, df, i, print_all=True):
-    """missing doc"""
+def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, i: int, print_all=True):
+    """Compares two prediction results and creates different metrics.
+    The metrics are the confusion matrix, the Kolmogorov–Smirnov test result, the Chi2 test result and also the
+    accuracy of the two prediction sets compared to the actual values
+
+    Args:
+        x: the results for one specific algorithm implementation on one dataset
+        y: the results for one specific algorithm implementation on one dataset
+        df: result overview dataframe with different metrics
+        i: iterator
+        print_all (boolean): if flag is set results are printed in the function
+
+    Returns:
+        DataFrame: result overview dataframe with different metrics
+    """
     if print_all:
         print('%d: Comparision between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
 
     df = df.append(pd.Series(), ignore_index=True)
     df.loc[df.index[-1], 'algorithm'] = x.name
-    df.loc[df.index[-1], 'parameters'] = ('%s_%s_%s' % (x.framework, y.framework, x.dataset_type))
+    df.loc[df.index[-1], 'framework_1'] = x.framework
+    df.loc[df.index[-1], 'framework_2'] = y.framework
+    df.loc[df.index[-1], 'dataset'] = x.dataset_type
 
     equal_pred, cm = create_confusion_matrix([x.predictions, y.predictions], print_all)
     df.loc[df.index[-1], 'equal_pred'] = equal_pred
@@ -224,8 +302,6 @@ def compare_two_algorithms(x, y, df, i, print_all=True):
         print("%s accuracy: %f\n" % (y.framework, accs_fw_j))
     df.loc[df.index[-1], 'accs_fw1'] = ("%0.3f" % accs_fw_i)
     df.loc[df.index[-1], 'accs_fw2'] = ("%0.3f" % accs_fw_j)
-
-
     return df
 
 
@@ -234,9 +310,16 @@ def compare_two_algorithms(x, y, df, i, print_all=True):
 ########################################
 
 
-def plot_probabilities(algorithms, archive=None, show_plot=False, print_all=True):
-    """missing doc"""
-    if algorithms == []:
+def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, show_plot=False, print_all=True):
+    """Plots the probability distributions of a list of implementations.
+
+    Args:
+        algorithms: list of implementation instances which probabilities are to plot
+        archive: archive instance which is used to save data
+        show_plot: if flag is set the plot is shown in program
+        print_all (boolean): if flag is set results are printed in the function
+    """
+    if not algorithms:
         print("Nothing to plot. The algorihm list is empty.\n")
     else:
         try:
@@ -256,16 +339,23 @@ def plot_probabilities(algorithms, archive=None, show_plot=False, print_all=True
 
             if archive is not None:
                 plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
-                plt.savefig(os.path.join(archive.path, plot_file_name))
+                plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
             plt.close()
         except:
-            print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n" % (algorithms[0].name, algorithms[0].dataset_type))
+            print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n"
+                  % (algorithms[0].name, algorithms[0].dataset_type))
 
 
 def evaluate_results(print_all=True):
-    """missing doc"""
-    # get list of files for all frameworks
-    # list all csv files. compare them
+    """Main function for the evaluation of the prediction csv files.
+
+    The function reads in all csv files from a specific folder. Gathers meta data from the csv file names
+    and evalutes the content of the files. For that it creates different metrics and histograms which can be saved
+    together with the current yaml folder for the csv file creation in an archive folder.
+
+    Args:
+        print_all (boolean): if flag is set results are printed in the function
+    """
     archive = Archive(print_all=print_all)
     algorithm_list = []
 
@@ -288,19 +378,23 @@ def evaluate_results(print_all=True):
     if print_all:
         print("\nList of unique algorithm identifier:\n", unique_algorithm_list, "\n")
 
+    overall_results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
+
     for ds in dataset_list:
         # create a dataframe for the results
-        results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
+        dataset_results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
         i = 0
 
         algorithm_subset_by_dataset_type = [x for x in algorithm_list if x.dataset_type == ds]
         for alg in unique_algorithm_list:
             algorithm_subset = [x for x in algorithm_subset_by_dataset_type if x.name == alg]
-            if algorithm_subset != []:
+            if algorithm_subset:
                 plot_probabilities(algorithm_subset, archive, print_all=print_all)
                 for a, b in itertools.combinations(algorithm_subset, 2):
-                    results_df = compare_two_algorithms(a, b, results_df, i, print_all=print_all)
+                    dataset_results_df = compare_two_algorithms(a, b, dataset_results_df, i, print_all=print_all)
                     i = i + 1
+
+        overall_results_df = overall_results_df.append(dataset_results_df)
 
         # set pandas options to print a full dataframe
         pd.set_option('display.max_rows', None)
@@ -308,11 +402,16 @@ def evaluate_results(print_all=True):
         pd.set_option('display.width', None)
         pd.set_option('display.max_colwidth', -1)
 
-        # show summary data frame
+        # show summary data frame for dataset
         print("\nSummary DataFrame for %s dataset:" % ds)
-        print(results_df)
+        print(dataset_results_df)
 
-        archive.archive_data_frame(results_df, filename=(ds + "_result_summary.csv"))
+        archive.archive_data_frame(dataset_results_df, filename=(ds + "_result_summary.csv"))
+
+    # show summary data frame for all evaluated data
+    print("\nSummary DataFrame")
+    print(overall_results_df)
+    archive.archive_data_frame(overall_results_df, filename="ALL_result_summary.csv")
 
 
 if __name__ == "__main__":
