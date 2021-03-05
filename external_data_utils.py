@@ -29,9 +29,11 @@ def rename_prediction_file(new, old):
     pred_path = "predictions"
     frameworks = ["sklearn", "caret", "spark", "weka"]
     for fw in frameworks:
-        for f in os.listdir(os.path.join(pred_path, fw)):
-            if old in f:
-                os.rename(os.path.join(pred_path, fw, f), os.path.join(pred_path, fw, f.replace(old, new)))
+        if Path(os.path.join(pred_path, fw)).is_dir():
+            for f in os.listdir(os.path.join(pred_path, fw)):
+                if old in f:
+                    if Path(os.path.join(pred_path, fw, f)).is_file():
+                        os.rename(os.path.join(pred_path, fw, f), os.path.join(pred_path, fw, f.replace(old, new)))
 
 
 def transform_dataset(data, target, same=False, norm=None):
