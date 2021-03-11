@@ -19,5 +19,5 @@ RUN ./gradlew build
 COPY run_atoml_testgeneration.sh .
 
 # run the bash script
-ENTRYPOINT ["./run_atoml_testgeneration.sh"]
+ENTRYPOINT ["bash", "run_atoml_testgeneration.sh"]
 CMD ["100"]
