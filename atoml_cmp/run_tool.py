@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 import subprocess
-
+from pathlib import Path
 
 def delete_folder(name: str):
     try:
@@ -25,7 +25,7 @@ def check_docker_state():
     Raises:
         RuntimeError
     """
-    check = subprocess.run("docker info", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    check = subprocess.run(["docker","info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if check.returncode != 0:
         error_msg = "No running instance of 'docker' is found. It is required to build or run container."
         raise RuntimeError(error_msg)
@@ -49,20 +49,31 @@ def run_docker_container(name: str, *bindings: list, option=None):
     Returns:
     """
     check_docker_state()
-    # build command string
-    cmdstr = 'cmd /c"docker run '
+    # created mounted folders if they don't exist
     for bind in bindings:
-        cmdstr += '--mount type=bind,source=%cd%/'
-        cmdstr += bind[0]
-        cmdstr += ',target='
-        cmdstr += bind[1]
-        cmdstr += ' '
-    cmdstr += name
+       Path(bind[0]).mkdir(parents=True, exist_ok=True) 
+	
+	# build command
+    cmdlist = []
+    cmdlist.append("docker")
+    cmdlist.append("run")
+    for bind in bindings:
+        cmdlist.append("--mount")
+        bindstr = ""
+        bindstr += 'type=bind,source='
+        bindstr += os.path.join(os.getcwd(),bind[0])
+        bindstr += ',target='
+        bindstr += bind[1]
+        cmdlist.append(bindstr)
+    cmdlist.append(name)
     if option is not None:
-        cmdstr += ' ' + str(option)
-    cmdstr += '"'
+        cmdlist.append(str(option))
+    
     # run command
-    os.system(cmdstr)
+    cmd_return = subprocess.run(cmdlist)
+    if cmd_return.returncode != 0:
+        error_msg = f"Running container: {name} failed."
+        raise RuntimeError(error_msg)
 
 
 def build_docker_collection(d_list: list):
@@ -75,8 +86,11 @@ def build_docker_collection(d_list: list):
     for docker in d_list:
         docker_folder = docker["folder"]
         docker_name = docker["name"]
-        cmd = f'cmd /c "docker build -t {docker_name} {docker_folder}"'
-        os.system(cmd)
+        cmdlist = ["docker", "build", "-t", docker_name, docker_folder]
+        cmd_return = subprocess.run(cmdlist)
+        if cmd_return.returncode != 0:
+            error_msg = f"Build of {docker_name} based on {docker_folder} failed."
+            raise RuntimeError(error_msg)
 
 
 def run_docker_collection(d_list: list):
