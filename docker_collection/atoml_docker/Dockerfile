@@ -1,4 +1,4 @@
-FROM gradle:jdk11
+FROM openjdk:11-jdk
 
 # get repo of atoml
 WORKDIR /
@@ -12,7 +12,8 @@ WORKDIR /container
 COPY TestCatalogSelection.java src/main/java/atoml/testgen/TestCatalog.java
 
 # build atoml
-RUN gradle build
+RUN chmod u+x gradlew
+RUN ./gradlew build
 
 # COPY the bash script to execute the test generation
 COPY run_atoml_testgeneration.sh .
