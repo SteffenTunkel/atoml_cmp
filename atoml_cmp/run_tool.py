@@ -1,7 +1,7 @@
 """This module runs the tool"""
 
-from external_data_utils import overwrite_dataset, rename_prediction_file
-from evaluation import evaluate_results
+from atoml_cmp.external_data_utils import overwrite_dataset, rename_prediction_file
+from atoml_cmp.evaluation import evaluate_results
 import json
 import os
 import shutil
