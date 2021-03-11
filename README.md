@@ -1,5 +1,7 @@
 # atoml_cmp
 
+![CI](https://github.com/steffentunkel/atoml_cmp/workflows/CI/badge.svg)
+
 ## Description
 A tool for the comparative testing of different machine learning frameworks.
 On one hand the tool offers functionalities to set up and run the test generation and also the test execution in a
