@@ -18,10 +18,6 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 from scipy.stats import chi2_contingency, ks_2samp
 from typing import List
 
-YAML_FOLDER = 'algorithm-descriptions'
-PREDICTION_FOLDER = 'predictions'
-ARCHIVE_FOLDER = 'archive'
-BASH_FILE = "run_atoml_testgeneration.sh"
 RESULT_DF_COLUMNS = ["equal_pred", "TP", "FP", "FN", "TN", "ks_pval", "chi2_pval",
                      "accs_fw1", "accs_fw2", "algorithm", "framework_1", "framework_2", "dataset"]
 ALPHA_THRESHOLD = 0.05
@@ -70,40 +66,37 @@ class Archive:
        print_all (boolean): if flag is set results are printed in the function
    """
 
-    def __init__(self, name: str = None, save_yaml=True, save_bash=False, print_all=True):
+    def __init__(self, name: str = None, archive_folder=None, yaml_folder=None, print_all=True):
         self.print_all = print_all
 
         # create the archive folder
-        if not os.path.exists(ARCHIVE_FOLDER):
-            os.makedirs(ARCHIVE_FOLDER)
+        if not os.path.exists(archive_folder):
+            os.makedirs(archive_folder)
 
         if name is None:
             # create timestamp for the naming of the archive folder
             date_time_obj = datetime.now()
             timestamp = ("%d-%02d-%02d" % (date_time_obj.year, date_time_obj.month, date_time_obj.day))
             timestamp += ("_%02d-%02d" % (date_time_obj.hour, date_time_obj.minute))
-            self.path = os.path.join(ARCHIVE_FOLDER, timestamp)
+            self.path = os.path.join(archive_folder, timestamp)
         else:
-            self.path = os.path.join(ARCHIVE_FOLDER, name)
+            self.path = os.path.join(archive_folder, name)
 
         if not os.path.exists(self.path):
             os.makedirs(self.path)
 
-        if save_yaml is True:
+        if yaml_folder is not None:
             if not os.path.exists(os.path.join(self.path, 'yaml_descriptions')):
                 os.makedirs(os.path.join(self.path, 'yaml_descriptions'))
             # save the current yml files
-            file_list = [f for f in os.listdir(YAML_FOLDER)]
+            file_list = [f for f in os.listdir(yaml_folder)]
             for file in file_list:
                 if file.endswith(".yml") or file.endswith(".yaml"):
-                    copyfile(os.path.join(YAML_FOLDER, file), os.path.join(self.path, 'yaml_descriptions', file))
+                    copyfile(os.path.join(yaml_folder, file), os.path.join(self.path, 'yaml_descriptions', file))
 
         if not os.path.exists(os.path.join(self.path, 'plots')):
             os.makedirs(os.path.join(self.path, 'plots'))
 
-        # save the call function for the atoml test generation, not needed if the whole yml folder is run automatically
-        if save_bash is True:
-            copyfile(os.path.join("atoml_docker", BASH_FILE), os.path.join(self.path, BASH_FILE))
         if self.print_all:
             print("New archive folder created: %s\n" % self.path)
 
@@ -346,7 +339,7 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
                   % (algorithms[0].name, algorithms[0].dataset_type))
 
 
-def evaluate_results(print_all=True):
+def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_folder: str = None, print_all=True):
     """Main function for the evaluation of the prediction csv files.
 
     The function reads in all csv files from a specific folder. Gathers meta data from the csv file names
@@ -354,18 +347,27 @@ def evaluate_results(print_all=True):
     together with the current yaml folder for the csv file creation in an archive folder.
 
     Args:
+        prediction_folder: relative path to the folder with the prediction files
+        yaml_folder: relative path to the folder with the yaml definitions of the ML algorithms. If no folder is given,
+            the yaml files will not be saved in the archive.
+        archive_folder: relative path to the folder where the archive should be saved. If no folder is given,
+            no archive will be created.
         print_all (boolean): if flag is set results are printed in the function
     """
-    archive = Archive(print_all=print_all)
+    if archive_folder is not None:
+        archive = Archive(archive_folder=archive_folder, yaml_folder=yaml_folder, print_all=print_all)
+    else:
+        archive = None
     algorithm_list = []
-
+    num_csv_files_read = 0
     # read prediction files and save data for every algorithm implementation in a Algorithm class
-    framework_list = [fw for fw in os.listdir(PREDICTION_FOLDER)]
+    framework_list = [fw for fw in os.listdir(prediction_folder)]
     for fw in framework_list:
-        csv_list = [f for f in os.listdir(os.path.join(PREDICTION_FOLDER, fw))]
+        csv_list = [f for f in os.listdir(os.path.join(prediction_folder, fw))]
         for file in csv_list:
             if file.endswith(".csv"):
-                algorithm_list.append(Algorithm(file, os.path.join(PREDICTION_FOLDER, fw)))
+                algorithm_list.append(Algorithm(file, os.path.join(prediction_folder, fw)))
+                num_csv_files_read += 1
 
     # get all types of algorithm (unique_algorithm_list) and all types of datasets
     dataset_list = []
@@ -406,13 +408,18 @@ def evaluate_results(print_all=True):
         print("\nSummary DataFrame for %s dataset:" % ds)
         print(dataset_results_df)
 
-        archive.archive_data_frame(dataset_results_df, filename=(ds + "_result_summary.csv"))
+        if archive_folder is not None:
+            archive.archive_data_frame(dataset_results_df, filename=(ds + "_result_summary.csv"))
 
     # show summary data frame for all evaluated data
-    print("\nSummary DataFrame")
-    print(overall_results_df)
-    archive.archive_data_frame(overall_results_df, filename="ALL_result_summary.csv")
+    # print("\nSummary DataFrame")
+    # print(overall_results_df)
+    if archive_folder is not None:
+        archive.archive_data_frame(overall_results_df, filename="ALL_result_summary.csv")
+
+    return num_csv_files_read
 
 
 if __name__ == "__main__":
-    evaluate_results(print_all=False)
+    evaluate_results(prediction_folder="predictions", yaml_folder="algorithm-descriptions",
+                     archive_folder="archive", print_all=False)

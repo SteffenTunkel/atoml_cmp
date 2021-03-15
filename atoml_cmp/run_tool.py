@@ -143,9 +143,10 @@ def split_docker_list(d_list: list):
     return generator_d_list, test_d_list
 
 
-def main(dockerlist_file: str):
-    delete_folder("generated-tests")
-    delete_folder("predictions")
+def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="predictions",
+         yaml_folder="algorithm-descriptions", archive_folder="archive"):
+    delete_folder(gen_tests_folder)
+    delete_folder(pred_folder)
 
     with open(dockerlist_file) as f:
         docker_list = json.load(f)
@@ -168,7 +169,9 @@ def main(dockerlist_file: str):
     for overwrite_pair in overwrite_datasets:
         rename_prediction_file(overwrite_pair[0], overwrite_pair[1])
 
-    evaluate_results(print_all=False)
+    num_csv_files = evaluate_results(prediction_folder=pred_folder, yaml_folder=yaml_folder,
+                                     archive_folder=archive_folder, print_all=False)
+    return num_csv_files
 
 
 if __name__ == "__main__":
