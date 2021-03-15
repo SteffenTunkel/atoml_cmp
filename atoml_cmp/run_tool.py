@@ -1,4 +1,4 @@
-"""This module runs the tool"""
+"""Runs the tool."""
 
 from atoml_cmp.external_data_utils import overwrite_dataset, rename_prediction_file
 from atoml_cmp.evaluation import evaluate_results
@@ -31,11 +31,6 @@ def check_docker_state():
         raise RuntimeError(error_msg)
 
 
-def create_directories():
-    # has to check if exist and if not create directories for the porject (archive, generated-tests, predictions...)
-    pass
-
-
 def run_docker_container(name: str, *bindings: list, option=None):
     """Starts a docker container.
 
@@ -46,14 +41,14 @@ def run_docker_container(name: str, *bindings: list, option=None):
             to the current dictionary as the first string and the absolute target path as the second
         option: Optional argument which is passed to the docker.
 
-    Returns:
+    Raises:
+        RuntimeError: if the docker run failed.
     """
     check_docker_state()
-    # created mounted folders if they don't exist
+    # created mounted folders on host if they don't exist
     for bind in bindings:
-       Path(bind[0]).mkdir(parents=True, exist_ok=True) 
-	
-	# build command
+       Path(bind[0]).mkdir(parents=True, exist_ok=True)
+	# build the command
     cmdlist = []
     cmdlist.append("docker")
     cmdlist.append("run")
@@ -68,7 +63,6 @@ def run_docker_container(name: str, *bindings: list, option=None):
     cmdlist.append(name)
     if option is not None:
         cmdlist.append(str(option))
-    
     # run command
     cmd_return = subprocess.run(cmdlist)
     if cmd_return.returncode != 0:
@@ -81,6 +75,9 @@ def build_docker_collection(d_list: list):
 
     Args:
         d_list: list of dictionaries with data to set up docker.
+
+    Raises:
+        RuntimeError: if a docker build failed.
     """
     check_docker_state()
     for docker in d_list:
@@ -113,7 +110,11 @@ def run_docker_collection(d_list: list):
 
 
 def split_docker_list(d_list: list):
-    """Splits the list of docker in docker marked as generator and docker without that mark (test environment docker)
+    """Splits the list of docker in test generation docker and test environment docker.
+
+    The split is done by checking for the 'generator' key in the dockers dict defined in the json file.
+    Only the docker for the test case / test data generation should contain that key. All others, which are used to set
+     the environment for running the tests, must not have it.
 
     Args:
         d_list: list of dictionaries with docker information
@@ -122,6 +123,9 @@ def split_docker_list(d_list: list):
         (list, list):
             - list of dictionaries with test generator docker information (can not contain more than one element)
             - list of dictionaries with test environment docker information
+
+    Raises:
+        RuntimeError: if there is more than one test generator docker defined.
     """
     test_d_list = []
     generator_d_list = []
