@@ -97,12 +97,25 @@ class Archive:
         if not os.path.exists(os.path.join(self.path, 'plots')):
             os.makedirs(os.path.join(self.path, 'plots'))
 
+        if not os.path.exists(os.path.join(self.path, 'views_by_dataset')):
+            os.makedirs(os.path.join(self.path, 'views_by_dataset'))
+
+        if not os.path.exists(os.path.join(self.path, 'views_by_algorithm')):
+            os.makedirs(os.path.join(self.path, 'views_by_algorithm'))
+
         if self.print_all:
             print("New archive folder created: %s\n" % self.path)
 
-    def archive_data_frame(self, df, filename="result_table.csv"):
+    def archive_data_frame(self, df, filename="result_table.csv", by_dataset=False, by_algorithm=False):
         # save the summary of the evaluation in a csv file
-        df.to_csv(os.path.join(self.path, filename), index=False)
+        if by_dataset:
+            csv_save_path = os.path.join(self.path, 'views_by_dataset', filename)
+
+        elif by_algorithm:
+            csv_save_path = os.path.join(self.path, 'views_by_algorithm', filename)
+        else:
+            csv_save_path = os.path.join(self.path, filename)
+        df.to_csv(csv_save_path, index=False)
         if self.print_all:
             print("\nResult DataFrame saved at: %s" % os.path.join(self.path, filename))
 
@@ -302,6 +315,13 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, i: int,
 # EVALUATE RESULTS
 ########################################
 
+def set_pandas_print_full_df():
+    """Sets the pandas options to print a full dataframe without cutting of parts."""
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', None)
+    pd.set_option('display.max_colwidth', -1)
+
 
 def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, show_plot=False, print_all=True):
     """Plots the probability distributions of a list of implementations.
@@ -339,6 +359,43 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
                   % (algorithms[0].name, algorithms[0].dataset_type))
 
 
+def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None, archive: Archive = None, print_all=True):
+    """Creates a views on dataframe based on the algorithms.
+
+    The function creates smaller dataframes only containing comparison results based on the same algorithm out of a
+    bigger dataframe. It works either direcly with a DataFrame as input or with the path of a csv file containing the
+    input dataframe. If both are given the DataFrame is used. The result can be shown and/or saved in an archive.
+
+    Args:
+        df: DataFrame from which to create views for the single algorithms
+        csv_file: path to the csv file with the Dataframe from which to create views for the single algorithms
+        archive: archive instance which is used to save data
+        print_all: (boolean): if flag is set results are printed in the function
+
+    Raises:
+        RuntimeError: if neither Dataframe nor csv file are given as input.
+    """
+    if df is not None:
+        print("a")
+    elif csv_file is not None:
+        print("b")
+        df = pd.read_csv(csv_file)
+    else:
+        msg = "Cannot create a view without an input Dataframe or csv file being specified."
+        raise(RuntimeError(msg))
+
+    if print_all:
+        set_pandas_print_full_df()
+
+    for alg in df.algorithm.unique():
+        df_view = df.loc[df.algorithm == alg]
+        if print_all:
+            print(f"\n{alg}")
+            print(df_view)
+        if archive is not None:
+            archive.archive_data_frame(df_view, filename=(alg + "_cmp_results.csv"), by_algorithm=True)
+
+
 def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_folder: str = None, print_all=True):
     """Main function for the evaluation of the prediction csv files.
 
@@ -354,6 +411,8 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
             no archive will be created.
         print_all (boolean): if flag is set results are printed in the function
     """
+    set_pandas_print_full_df()
+
     if archive_folder is not None:
         archive = Archive(archive_folder=archive_folder, yaml_folder=yaml_folder, print_all=print_all)
     else:
@@ -398,24 +457,20 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
 
         overall_results_df = overall_results_df.append(dataset_results_df)
 
-        # set pandas options to print a full dataframe
-        pd.set_option('display.max_rows', None)
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.width', None)
-        pd.set_option('display.max_colwidth', -1)
-
-        # show summary data frame for dataset
-        print("\nSummary DataFrame for %s dataset:" % ds)
-        print(dataset_results_df)
+        if print_all:
+            print("\nSummary DataFrame for %s dataset:" % ds)
+            print(dataset_results_df)
 
         if archive_folder is not None:
-            archive.archive_data_frame(dataset_results_df, filename=(ds + "_result_summary.csv"))
+            archive.archive_data_frame(dataset_results_df, filename=(ds + "_cmp_results.csv"), by_dataset=True)
 
     # show summary data frame for all evaluated data
     # print("\nSummary DataFrame")
     # print(overall_results_df)
     if archive_folder is not None:
-        archive.archive_data_frame(overall_results_df, filename="ALL_result_summary.csv")
+        archive.archive_data_frame(overall_results_df, filename="ALL_cmp_results.csv")
+
+    create_views_by_algorithm(df=overall_results_df, archive=archive, print_all=True)
 
     return num_csv_files_read
 
