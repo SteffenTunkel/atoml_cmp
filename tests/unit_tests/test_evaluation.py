@@ -54,6 +54,7 @@ class ConfusionMatrixPositiveTest(unittest.TestCase):
     def test_print(self):
         input1 = pd.Series([1, 0, 1, 1, 0, 0, 1, 1])
         input2 = pd.Series([1, 0, 1, 1, 0, 0, 1, 1])
+        print("\n### Test print output for 'create_confusion_matrix':")
         equal_flag, confusion_matrix = atoml_cmp.evaluation.create_confusion_matrix([input1, input2], True)
         self.assertEqual(equal_flag, True)
         np.testing.assert_equal(confusion_matrix, [[3, 0], [0, 5]])

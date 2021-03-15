@@ -1,0 +1,34 @@
+[
+  {
+    "name": "atoml_docker",
+    "folder": "docker_collection/atoml_docker",
+    "generator":  true,
+    "binding_1": ["generated-tests", "/container/generated-tests"],
+    "binding_2": ["tests/system_tests/resources/test_algorithm_descriptions", "/container/testdata"],
+    "option": 100
+  },
+  {
+    "name": "sklearn_docker",
+    "folder": "docker_collection/sklearn_docker",
+    "binding_1": ["generated-tests/sklearn", "/container/generated-tests/sklearn"],
+    "binding_2": ["predictions/sklearn", "/container/predictions"]
+  },
+  {
+    "name": "caret_docker",
+    "folder": "docker_collection/caret_docker",
+    "binding_1": ["generated-tests/caret", "/container/generated-tests/caret"],
+    "binding_2": ["predictions/caret", "/container/predictions"]
+  },
+  {
+    "name": "weka_docker",
+    "folder": "docker_collection/weka_docker",
+    "binding_1": ["generated-tests/weka/src", "/container/src"],
+    "binding_2": ["predictions/weka", "/container/predictions"]
+  },
+  {
+    "name": "spark_docker",
+    "folder": "docker_collection/spark_docker",
+    "binding_1": ["generated-tests/spark/src", "/container/src"],
+    "binding_2": ["predictions/spark", "/container/predictions"]
+  }
+]
