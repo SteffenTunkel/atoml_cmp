@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="evaluation" href="evaluation.html" />
-    <link rel="prev" title="Welcome to atoml_cmp’s documentation" href="index.html" /> 
+    <link rel="prev" title="Welcome to atoml_cmp’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -156,8 +156,95 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="run-tool">
-<h1>run_tool<a class="headerlink" href="#run-tool" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-atoml_cmp.run_tool">
+<span id="run-tool"></span><h1>run_tool<a class="headerlink" href="#module-atoml_cmp.run_tool" title="Permalink to this headline">¶</a></h1>
+<p>Runs the tool.</p>
+<dl class="py function">
+<dt id="atoml_cmp.run_tool.build_docker_collection">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">build_docker_collection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#build_docker_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.build_docker_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a set of docker images defined by a list of dictionaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d_list</strong> – list of dictionaries with data to set up docker.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – if a docker build failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="atoml_cmp.run_tool.check_docker_state">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">check_docker_state</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#check_docker_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.check_docker_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if there is a running instance of docker.</p>
+<p>Uses the ‘docker info’ command to check if docker is running. If it raises an error,
+docker is either not installed or just not running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="atoml_cmp.run_tool.run_docker_collection">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">run_docker_collection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#run_docker_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.run_docker_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a set of docker container defined by a list of dictionaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d_list</strong> – list of dictionaries with data to set up docker.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="atoml_cmp.run_tool.run_docker_container">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">run_docker_container</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">bindings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#run_docker_container"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.run_docker_container" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a docker container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the docker to start.</p></li>
+<li><p><strong>*bindings</strong> – List of string couples. Contains the mount bindings with the source relative
+to the current dictionary as the first string and the absolute target path as the second</p></li>
+<li><p><strong>option</strong> – Optional argument which is passed to the docker.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – if the docker run failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="atoml_cmp.run_tool.split_docker_list">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">split_docker_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#split_docker_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.split_docker_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits the list of docker in test generation docker and test environment docker.</p>
+<p>The split is done by checking for the ‘generator’ key in the dockers dict defined in the json file.
+Only the docker for the test case / test data generation should contain that key. All others, which are used to set</p>
+<blockquote>
+<div><p>the environment for running the tests, must not have it.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d_list</strong> – list of dictionaries with docker information</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>list of dictionaries with test generator docker information (can not contain more than one element)</p></li>
+<li><p>list of dictionaries with test environment docker information</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(list, list)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – if there is more than one test generator docker defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -167,7 +254,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="evaluation.html" class="btn btn-neutral float-right" title="evaluation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to atoml_cmp’s documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to atoml_cmp’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

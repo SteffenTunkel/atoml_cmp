@@ -1,0 +1,619 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>atoml_cmp.evaluation &mdash; atoml_cmp 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> atoml_cmp
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../run_tool.html">run_tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../evaluation.html">evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../external_data_utils.html">external_data_utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">atoml_cmp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>atoml_cmp.evaluation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for atoml_cmp.evaluation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Set of functions needed for the evaluation of the results.</span>
+
+<span class="sd">With a call of the evaluateResults() function the module takes the output of the atoml tests (predictions folder)</span>
+<span class="sd">and the algorithm-descriptions folder as input. From that it generates result metrics and plots.</span>
+<span class="sd">The results can be saved in an archive.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copyfile</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">accuracy_score</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">chi2_contingency</span><span class="p">,</span> <span class="n">ks_2samp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="n">YAML_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;algorithm-descriptions&#39;</span>
+<span class="n">PREDICTION_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;predictions&#39;</span>
+<span class="n">ARCHIVE_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;archive&#39;</span>
+<span class="n">BASH_FILE</span> <span class="o">=</span> <span class="s2">&quot;run_atoml_testgeneration.sh&quot;</span>
+<span class="n">RESULT_DF_COLUMNS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;equal_pred&quot;</span><span class="p">,</span> <span class="s2">&quot;TP&quot;</span><span class="p">,</span> <span class="s2">&quot;FP&quot;</span><span class="p">,</span> <span class="s2">&quot;FN&quot;</span><span class="p">,</span> <span class="s2">&quot;TN&quot;</span><span class="p">,</span> <span class="s2">&quot;ks_pval&quot;</span><span class="p">,</span> <span class="s2">&quot;chi2_pval&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;accs_fw1&quot;</span><span class="p">,</span> <span class="s2">&quot;accs_fw2&quot;</span><span class="p">,</span> <span class="s2">&quot;algorithm&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_1&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_2&quot;</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
+<span class="n">ALPHA_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.05</span>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># CLASSES</span>
+<span class="c1">########################################</span>
+
+
+<div class="viewcode-block" id="Algorithm"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.Algorithm">[docs]</a><span class="k">class</span> <span class="nc">Algorithm</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Holds all information about one specific implementation tested on one specific dataset.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        filename: csv file name of the data file</span>
+<span class="sd">        path: path to the csv file folder</span>
+<span class="sd">        framework: framework of the implementation</span>
+<span class="sd">        name: name of the implemented algorithm</span>
+<span class="sd">        dataset_type: name of the dataset the implementation was tested with</span>
+<span class="sd">        predictions: predicted labels of the implementation on the data set</span>
+<span class="sd">        probabilities: tuple of predicted probabilities for both classes of the implementation on the data set</span>
+<span class="sd">        actuals: actual labels of the data set</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">=</span> <span class="n">split_prediction_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actuals</span> <span class="o">=</span> <span class="n">get_data_from_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="Archive"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.Archive">[docs]</a><span class="k">class</span> <span class="nc">Archive</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Instance of an archive where all the generated metrics and plots can be saved.</span>
+
+<span class="sd">    The archive folder name is generated with a time stamp by default.</span>
+<span class="sd">    Alternativly, a name can be given to the constructor.</span>
+<span class="sd">    In addition to the evaluation results also the foundation can be saved, meaning the current yaml-folder.</span>
+<span class="sd">    Be aware that this can lead to inconsistencies.</span>
+
+<span class="sd">   Attributes:</span>
+<span class="sd">       path: path of the archive</span>
+<span class="sd">       print_all (boolean): if flag is set results are printed in the function</span>
+<span class="sd">   &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_yaml</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_bash</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_all</span> <span class="o">=</span> <span class="n">print_all</span>
+
+        <span class="c1"># create the archive folder</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># create timestamp for the naming of the archive folder</span>
+            <span class="n">date_time_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_time_obj</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">date_time_obj</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date_time_obj</span><span class="o">.</span><span class="n">day</span><span class="p">))</span>
+            <span class="n">timestamp</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;_</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_time_obj</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">date_time_obj</span><span class="o">.</span><span class="n">minute</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">save_yaml</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;yaml_descriptions&#39;</span><span class="p">)):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;yaml_descriptions&#39;</span><span class="p">))</span>
+            <span class="c1"># save the current yml files</span>
+            <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">YAML_FOLDER</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.yml&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
+                    <span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">YAML_FOLDER</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;yaml_descriptions&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;plots&#39;</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;plots&#39;</span><span class="p">))</span>
+
+        <span class="c1"># save the call function for the atoml test generation, not needed if the whole yml folder is run automatically</span>
+        <span class="k">if</span> <span class="n">save_bash</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;atoml_docker&quot;</span><span class="p">,</span> <span class="n">BASH_FILE</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">BASH_FILE</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_all</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New archive folder created: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">archive_data_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;result_table.csv&quot;</span><span class="p">):</span>
+        <span class="c1"># save the summary of the evaluation in a csv file</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_all</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Result DataFrame saved at: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span></div>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># CSV FILE TOOLS</span>
+<span class="c1">########################################</span>
+
+
+<div class="viewcode-block" id="split_prediction_file"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.split_prediction_file">[docs]</a><span class="k">def</span> <span class="nf">split_prediction_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Splits a prediction csv filename to get the information it contains.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename:</span>
+<span class="sd">            The filename should consist of the keyword &#39;pred&#39; and 3 identifier:</span>
+<span class="sd">            for the framework (in capital letters), the algorithm and the used data set type.</span>
+<span class="sd">            Example: &#39;pred_FRAMEWORK_Algorithm_TestDataType.csv&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (str, str, str):</span>
+<span class="sd">            - Name of the framework</span>
+<span class="sd">            - Name of the algorithm</span>
+<span class="sd">            - Name of the dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">substring</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">substring</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: The prediction filename: </span><span class="si">%s</span><span class="s2"> doesn&#39;t consist out the right amount of substrings.&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">framework</span> <span class="o">=</span> <span class="n">substring</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">algorithm</span> <span class="o">=</span> <span class="n">substring</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">dataset_type</span> <span class="o">=</span> <span class="n">substring</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">%s</span><span class="s2"> is not a csv file.&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">return</span> <span class="n">framework</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">dataset_type</span></div>
+
+
+<div class="viewcode-block" id="get_data_from_csv"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.get_data_from_csv">[docs]</a><span class="k">def</span> <span class="nf">get_data_from_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reads in a csv file with the specified format and extracts the different columns.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): relative or absolute filepath</span>
+
+<span class="sd">    Returns: a tuple with 4 variables</span>
+<span class="sd">        (Series, Series, Series, Series):</span>
+<span class="sd">            - predicted labels</span>
+<span class="sd">            - predicted probability for class 0</span>
+<span class="sd">            - predicted probability for class 1</span>
+<span class="sd">            - actual labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;read: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">csv_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span>
+    <span class="n">prediction</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prediction&quot;</span><span class="p">]</span>
+    <span class="n">prob_0</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prob_0&quot;</span><span class="p">]</span>
+    <span class="n">prob_1</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prob_1&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">prob_0</span><span class="p">,</span> <span class="n">prob_1</span><span class="p">,</span> <span class="n">actual</span></div>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># CALCULATE METRICS</span>
+<span class="c1">########################################</span>
+
+
+<div class="viewcode-block" id="create_confusion_matrix"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.create_confusion_matrix">[docs]</a><span class="k">def</span> <span class="nf">create_confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates the confusion matrix between 2 sets of labels.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        predictions ([Series, Series]): 2 sets of prediction labels</span>
+<span class="sd">        print_all (boolean): if flag is set results are printed in the function</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (boolean, 2x2 array):</span>
+<span class="sd">            - Equality flag: True, if predicted labels are identical</span>
+<span class="sd">            - Confusion matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># if all the values are the same, the confusion matrix has only one element this is checked and changed here</span>
+    <span class="k">if</span> <span class="n">cm</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">num_elements</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">num_elements</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_elements</span><span class="p">]])</span>
+    <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">cm</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">cm</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">equal</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">equal</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">equal</span><span class="p">,</span> <span class="n">cm</span></div>
+
+
+<div class="viewcode-block" id="ks_statistic"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.ks_statistic">[docs]</a><span class="k">def</span> <span class="nf">ks_statistic</span><span class="p">(</span><span class="n">probabilities</span><span class="p">:</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Does the Kolmogorov–Smirnov test with two probability distributions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        probabilities ([Series, Series): Two sets of propability distributions</span>
+<span class="sd">        print_all (boolean): if flag is set results are printed in the function</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float, float):</span>
+<span class="sd">            - p-value of KS test</span>
+<span class="sd">            - KS test statistic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_result</span> <span class="o">=</span> <span class="n">ks_2samp</span><span class="p">(</span><span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">probabilities</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">ks_result</span><span class="o">.</span><span class="n">pvalue</span>
+    <span class="n">ks_score</span> <span class="o">=</span> <span class="n">ks_result</span><span class="o">.</span><span class="n">statistic</span>
+
+    <span class="c1"># interpret p-value</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">ALPHA_THRESHOLD</span>
+    <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;KS p-value: </span><span class="si">%0.4f</span><span class="se">\t</span><span class="s2"> ks-statistic: </span><span class="si">%0.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ks_score</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">alpha</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Different (reject H0)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Equal (H0 holds true)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">,</span> <span class="n">ks_score</span></div>
+
+
+<div class="viewcode-block" id="chi2_statistic"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.chi2_statistic">[docs]</a><span class="k">def</span> <span class="nf">chi2_statistic</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Does the Chi-squared test with two sets of prediction labels.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pred ([Series, Series): Two sets of prediction labels</span>
+<span class="sd">        print_all (boolean): if flag is set results are printed in the function</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: p-value of chi-squared test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">sum</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="mi">1</span><span class="p">])]]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">stat</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">chi2_contingency</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># interpret p-value</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">ALPHA_THRESHOLD</span>
+        <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chi² p-value: </span><span class="si">%0.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">alpha</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dependent (reject H0)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Independent (H0 holds true)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chi-squared test failed, probably all elements are identical&quot;</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="compare_two_algorithms"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.compare_two_algorithms">[docs]</a><span class="k">def</span> <span class="nf">compare_two_algorithms</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Algorithm</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Algorithm</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compares two prediction results and creates different metrics.</span>
+<span class="sd">    The metrics are the confusion matrix, the Kolmogorov–Smirnov test result, the Chi2 test result and also the</span>
+<span class="sd">    accuracy of the two prediction sets compared to the actual values</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x: the results for one specific algorithm implementation on one dataset</span>
+<span class="sd">        y: the results for one specific algorithm implementation on one dataset</span>
+<span class="sd">        df: result overview dataframe with different metrics</span>
+<span class="sd">        i: iterator</span>
+<span class="sd">        print_all (boolean): if flag is set results are printed in the function</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: result overview dataframe with different metrics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">: Comparision between </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1"> for </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(),</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;framework_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">framework</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;framework_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">framework</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;dataset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dataset_type</span>
+
+    <span class="n">equal_pred</span><span class="p">,</span> <span class="n">cm</span> <span class="o">=</span> <span class="n">create_confusion_matrix</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">predictions</span><span class="p">],</span> <span class="n">print_all</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;equal_pred&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">equal_pred</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;FP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;FN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cm</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;TN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cm</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">ks_pval</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ks_statistic</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">probabilities</span><span class="p">],</span> <span class="n">print_all</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;ks_pval&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ks_pval</span><span class="p">)</span>
+
+    <span class="n">chi2_pval</span> <span class="o">=</span> <span class="n">chi2_statistic</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">predictions</span><span class="p">],</span> <span class="n">print_all</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;chi2_pval&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">chi2_pval</span><span class="p">)</span>
+
+    <span class="n">accs_fw_i</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">actuals</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">predictions</span><span class="p">)</span>
+    <span class="n">accs_fw_j</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">actuals</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">predictions</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> accuracy: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="n">accs_fw_i</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> accuracy: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="n">accs_fw_j</span><span class="p">))</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;accs_fw1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">accs_fw_i</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;accs_fw2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">accs_fw_j</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="c1">########################################</span>
+<span class="c1"># EVALUATE RESULTS</span>
+<span class="c1">########################################</span>
+
+
+<div class="viewcode-block" id="plot_probabilities"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.plot_probabilities">[docs]</a><span class="k">def</span> <span class="nf">plot_probabilities</span><span class="p">(</span><span class="n">algorithms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Algorithm</span><span class="p">],</span> <span class="n">archive</span><span class="p">:</span> <span class="n">Archive</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plots the probability distributions of a list of implementations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        algorithms: list of implementation instances which probabilities are to plot</span>
+<span class="sd">        archive: archive instance which is used to save data</span>
+<span class="sd">        show_plot: if flag is set the plot is shown in program</span>
+<span class="sd">        print_all (boolean): if flag is set results are printed in the function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">algorithms</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nothing to plot. The algorihm list is empty.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;plot probabilities for </span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2"> dataset</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span><span class="p">))</span>
+            <span class="n">num_bins</span> <span class="o">=</span> <span class="mi">20</span>
+            <span class="k">if</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">probabilities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">500</span><span class="p">:</span>
+                <span class="n">num_bins</span> <span class="o">=</span> <span class="mi">100</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithms</span><span class="p">:</span>
+                <span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="n">hist_kws</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">((</span><span class="s2">&quot;prediction probability of &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; on &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">archive</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">plot_file_name</span> <span class="o">=</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_probabilities.pdf&quot;</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;plots&quot;</span><span class="p">,</span> <span class="n">plot_file_name</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; while printing probability predictions of </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2"> data.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                  <span class="o">%</span> <span class="p">(</span><span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="evaluate_results"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.evaluate_results">[docs]</a><span class="k">def</span> <span class="nf">evaluate_results</span><span class="p">(</span><span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main function for the evaluation of the prediction csv files.</span>
+
+<span class="sd">    The function reads in all csv files from a specific folder. Gathers meta data from the csv file names</span>
+<span class="sd">    and evalutes the content of the files. For that it creates different metrics and histograms which can be saved</span>
+<span class="sd">    together with the current yaml folder for the csv file creation in an archive folder.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        print_all (boolean): if flag is set results are printed in the function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="n">Archive</span><span class="p">(</span><span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
+    <span class="n">algorithm_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># read prediction files and save data for every algorithm implementation in a Algorithm class</span>
+    <span class="n">framework_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">fw</span> <span class="k">for</span> <span class="n">fw</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">PREDICTION_FOLDER</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">fw</span> <span class="ow">in</span> <span class="n">framework_list</span><span class="p">:</span>
+        <span class="n">csv_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PREDICTION_FOLDER</span><span class="p">,</span> <span class="n">fw</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">csv_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
+                <span class="n">algorithm_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PREDICTION_FOLDER</span><span class="p">,</span> <span class="n">fw</span><span class="p">)))</span>
+
+    <span class="c1"># get all types of algorithm (unique_algorithm_list) and all types of datasets</span>
+    <span class="n">dataset_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">unique_algorithm_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="n">algorithm_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">dataset_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dataset_list</span><span class="p">:</span>
+            <span class="n">dataset_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">dataset_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_algorithm_list</span><span class="p">:</span>
+            <span class="n">unique_algorithm_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">List of unique algorithm identifier:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">unique_algorithm_list</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">overall_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">RESULT_DF_COLUMNS</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">dataset_list</span><span class="p">:</span>
+        <span class="c1"># create a dataframe for the results</span>
+        <span class="n">dataset_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">RESULT_DF_COLUMNS</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">algorithm_subset_by_dataset_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_list</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">==</span> <span class="n">ds</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">alg</span> <span class="ow">in</span> <span class="n">unique_algorithm_list</span><span class="p">:</span>
+            <span class="n">algorithm_subset</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_subset_by_dataset_type</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">alg</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">algorithm_subset</span><span class="p">:</span>
+                <span class="n">plot_probabilities</span><span class="p">(</span><span class="n">algorithm_subset</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">algorithm_subset</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="n">dataset_results_df</span> <span class="o">=</span> <span class="n">compare_two_algorithms</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dataset_results_df</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">overall_results_df</span> <span class="o">=</span> <span class="n">overall_results_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">)</span>
+
+        <span class="c1"># set pandas options to print a full dataframe</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.width&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_colwidth&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># show summary data frame for dataset</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Summary DataFrame for </span><span class="si">%s</span><span class="s2"> dataset:&quot;</span> <span class="o">%</span> <span class="n">ds</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">)</span>
+
+        <span class="n">archive</span><span class="o">.</span><span class="n">archive_data_frame</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="p">(</span><span class="n">ds</span> <span class="o">+</span> <span class="s2">&quot;_result_summary.csv&quot;</span><span class="p">))</span>
+
+    <span class="c1"># show summary data frame for all evaluated data</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Summary DataFrame&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">overall_results_df</span><span class="p">)</span>
+    <span class="n">archive</span><span class="o">.</span><span class="n">archive_data_frame</span><span class="p">(</span><span class="n">overall_results_df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;ALL_result_summary.csv&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">evaluate_results</span><span class="p">(</span><span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Steffen Tunkel.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
