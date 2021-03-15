@@ -4,7 +4,7 @@
 /external_data/*
 !external_data/raw_datasets/
 /archive/
-algorithm-descriptions/clear_folder/
+/algorithm-descriptions/clear_folder/
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
@@ -129,6 +129,9 @@ pythonenv*
 # Spyder project settings
 .spyderproject
 .spyproject
+
+# PyCharm project settings
+.idea
 
 # Rope project settings
 .ropeproject
