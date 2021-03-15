@@ -218,7 +218,7 @@ The results can be saved in an archive.</p>
 
 <dl class="py class">
 <dt id="atoml_cmp.evaluation.Archive">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></code><code class="sig-name descname"><span class="pre">Archive</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_yaml</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_bash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#Archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.Archive" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></code><code class="sig-name descname"><span class="pre">Archive</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#Archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.Archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instance of an archive where all the generated metrics and plots can be saved.</p>
 <blockquote>
 <div><p>The archive folder name is generated with a time stamp by default.
@@ -315,15 +315,44 @@ accuracy of the two prediction sets compared to the actual values</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="atoml_cmp.evaluation.create_views_by_algorithm">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></code><code class="sig-name descname"><span class="pre">create_views_by_algorithm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#atoml_cmp.evaluation.Archive" title="atoml_cmp.evaluation.Archive"><span class="pre">atoml_cmp.evaluation.Archive</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#create_views_by_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.create_views_by_algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a views on dataframe based on the algorithms.</p>
+<p>The function creates smaller dataframes only containing comparison results based on the same algorithm out of a
+bigger dataframe. It works either direcly with a DataFrame as input or with the path of a csv file containing the
+input dataframe. If both are given the DataFrame is used. The result can be shown and/or saved in an archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – DataFrame from which to create views for the single algorithms</p></li>
+<li><p><strong>csv_file</strong> – path to the csv file with the Dataframe from which to create views for the single algorithms</p></li>
+<li><p><strong>archive</strong> – archive instance which is used to save data</p></li>
+<li><p><strong>print_all</strong> – (boolean): if flag is set results are printed in the function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – if neither Dataframe nor csv file are given as input.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="atoml_cmp.evaluation.evaluate_results">
-<code class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></code><code class="sig-name descname"><span class="pre">evaluate_results</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#evaluate_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.evaluate_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></code><code class="sig-name descname"><span class="pre">evaluate_results</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#evaluate_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.evaluate_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main function for the evaluation of the prediction csv files.</p>
 <p>The function reads in all csv files from a specific folder. Gathers meta data from the csv file names
 and evalutes the content of the files. For that it creates different metrics and histograms which can be saved
 together with the current yaml folder for the csv file creation in an archive folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prediction_folder</strong> – relative path to the folder with the prediction files</p></li>
+<li><p><strong>yaml_folder</strong> – relative path to the folder with the yaml definitions of the ML algorithms. If no folder is given,
+the yaml files will not be saved in the archive.</p></li>
+<li><p><strong>archive_folder</strong> – relative path to the folder where the archive should be saved. If no folder is given,
+no archive will be created.</p></li>
+<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -389,6 +418,12 @@ together with the current yaml folder for the csv file creation in an archive fo
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="atoml_cmp.evaluation.set_pandas_print_full_df">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></code><code class="sig-name descname"><span class="pre">set_pandas_print_full_df</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#set_pandas_print_full_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.set_pandas_print_full_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the pandas options to print a full dataframe without cutting of parts.</p>
 </dd></dl>
 
 <dl class="py function">

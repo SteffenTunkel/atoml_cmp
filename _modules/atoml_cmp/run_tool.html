@@ -298,9 +298,10 @@
     <span class="k">return</span> <span class="n">generator_d_list</span><span class="p">,</span> <span class="n">test_d_list</span></div>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">dockerlist_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="n">delete_folder</span><span class="p">(</span><span class="s2">&quot;generated-tests&quot;</span><span class="p">)</span>
-    <span class="n">delete_folder</span><span class="p">(</span><span class="s2">&quot;predictions&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">dockerlist_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gen_tests_folder</span><span class="o">=</span><span class="s2">&quot;generated-tests&quot;</span><span class="p">,</span> <span class="n">pred_folder</span><span class="o">=</span><span class="s2">&quot;predictions&quot;</span><span class="p">,</span>
+         <span class="n">yaml_folder</span><span class="o">=</span><span class="s2">&quot;algorithm-descriptions&quot;</span><span class="p">,</span> <span class="n">archive_folder</span><span class="o">=</span><span class="s2">&quot;archive&quot;</span><span class="p">):</span>
+    <span class="n">delete_folder</span><span class="p">(</span><span class="n">gen_tests_folder</span><span class="p">)</span>
+    <span class="n">delete_folder</span><span class="p">(</span><span class="n">pred_folder</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dockerlist_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">docker_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -323,7 +324,9 @@
     <span class="k">for</span> <span class="n">overwrite_pair</span> <span class="ow">in</span> <span class="n">overwrite_datasets</span><span class="p">:</span>
         <span class="n">rename_prediction_file</span><span class="p">(</span><span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="n">evaluate_results</span><span class="p">(</span><span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">num_csv_files</span> <span class="o">=</span> <span class="n">evaluate_results</span><span class="p">(</span><span class="n">prediction_folder</span><span class="o">=</span><span class="n">pred_folder</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="o">=</span><span class="n">yaml_folder</span><span class="p">,</span>
+                                     <span class="n">archive_folder</span><span class="o">=</span><span class="n">archive_folder</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">num_csv_files</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

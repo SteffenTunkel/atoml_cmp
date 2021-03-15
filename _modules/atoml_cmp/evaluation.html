@@ -173,10 +173,6 @@
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">chi2_contingency</span><span class="p">,</span> <span class="n">ks_2samp</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="n">YAML_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;algorithm-descriptions&#39;</span>
-<span class="n">PREDICTION_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;predictions&#39;</span>
-<span class="n">ARCHIVE_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;archive&#39;</span>
-<span class="n">BASH_FILE</span> <span class="o">=</span> <span class="s2">&quot;run_atoml_testgeneration.sh&quot;</span>
 <span class="n">RESULT_DF_COLUMNS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;equal_pred&quot;</span><span class="p">,</span> <span class="s2">&quot;TP&quot;</span><span class="p">,</span> <span class="s2">&quot;FP&quot;</span><span class="p">,</span> <span class="s2">&quot;FN&quot;</span><span class="p">,</span> <span class="s2">&quot;TN&quot;</span><span class="p">,</span> <span class="s2">&quot;ks_pval&quot;</span><span class="p">,</span> <span class="s2">&quot;chi2_pval&quot;</span><span class="p">,</span>
                      <span class="s2">&quot;accs_fw1&quot;</span><span class="p">,</span> <span class="s2">&quot;accs_fw2&quot;</span><span class="p">,</span> <span class="s2">&quot;algorithm&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_1&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_2&quot;</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
 <span class="n">ALPHA_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.05</span>
@@ -225,46 +221,56 @@
 <span class="sd">       print_all (boolean): if flag is set results are printed in the function</span>
 <span class="sd">   &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_yaml</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_bash</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">archive_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print_all</span> <span class="o">=</span> <span class="n">print_all</span>
 
         <span class="c1"># create the archive folder</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">archive_folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">archive_folder</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># create timestamp for the naming of the archive folder</span>
             <span class="n">date_time_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
             <span class="n">timestamp</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_time_obj</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">date_time_obj</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date_time_obj</span><span class="o">.</span><span class="n">day</span><span class="p">))</span>
             <span class="n">timestamp</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;_</span><span class="si">%02d</span><span class="s2">-</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_time_obj</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">date_time_obj</span><span class="o">.</span><span class="n">minute</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive_folder</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ARCHIVE_FOLDER</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive_folder</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">save_yaml</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">yaml_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;yaml_descriptions&#39;</span><span class="p">)):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;yaml_descriptions&#39;</span><span class="p">))</span>
             <span class="c1"># save the current yml files</span>
-            <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">YAML_FOLDER</span><span class="p">)]</span>
+            <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">yaml_folder</span><span class="p">)]</span>
             <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.yml&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.yaml&quot;</span><span class="p">):</span>
-                    <span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">YAML_FOLDER</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;yaml_descriptions&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+                    <span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">yaml_folder</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;yaml_descriptions&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;plots&#39;</span><span class="p">)):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;plots&#39;</span><span class="p">))</span>
 
-        <span class="c1"># save the call function for the atoml test generation, not needed if the whole yml folder is run automatically</span>
-        <span class="k">if</span> <span class="n">save_bash</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;atoml_docker&quot;</span><span class="p">,</span> <span class="n">BASH_FILE</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">BASH_FILE</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;views_by_dataset&#39;</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;views_by_dataset&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;views_by_algorithm&#39;</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;views_by_algorithm&#39;</span><span class="p">))</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_all</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New archive folder created: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">archive_data_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;result_table.csv&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">archive_data_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;result_table.csv&quot;</span><span class="p">,</span> <span class="n">by_dataset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">by_algorithm</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># save the summary of the evaluation in a csv file</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">by_dataset</span><span class="p">:</span>
+            <span class="n">csv_save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;views_by_dataset&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">by_algorithm</span><span class="p">:</span>
+            <span class="n">csv_save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;views_by_algorithm&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">csv_save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_save_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_all</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Result DataFrame saved at: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span></div>
 
@@ -464,6 +470,13 @@
 <span class="c1"># EVALUATE RESULTS</span>
 <span class="c1">########################################</span>
 
+<div class="viewcode-block" id="set_pandas_print_full_df"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.set_pandas_print_full_df">[docs]</a><span class="k">def</span> <span class="nf">set_pandas_print_full_df</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Sets the pandas options to print a full dataframe without cutting of parts.&quot;&quot;&quot;</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.width&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_colwidth&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="plot_probabilities"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.plot_probabilities">[docs]</a><span class="k">def</span> <span class="nf">plot_probabilities</span><span class="p">(</span><span class="n">algorithms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Algorithm</span><span class="p">],</span> <span class="n">archive</span><span class="p">:</span> <span class="n">Archive</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots the probability distributions of a list of implementations.</span>
@@ -501,7 +514,44 @@
                   <span class="o">%</span> <span class="p">(</span><span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="evaluate_results"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.evaluate_results">[docs]</a><span class="k">def</span> <span class="nf">evaluate_results</span><span class="p">(</span><span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="create_views_by_algorithm"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.create_views_by_algorithm">[docs]</a><span class="k">def</span> <span class="nf">create_views_by_algorithm</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">archive</span><span class="p">:</span> <span class="n">Archive</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a views on dataframe based on the algorithms.</span>
+
+<span class="sd">    The function creates smaller dataframes only containing comparison results based on the same algorithm out of a</span>
+<span class="sd">    bigger dataframe. It works either direcly with a DataFrame as input or with the path of a csv file containing the</span>
+<span class="sd">    input dataframe. If both are given the DataFrame is used. The result can be shown and/or saved in an archive.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df: DataFrame from which to create views for the single algorithms</span>
+<span class="sd">        csv_file: path to the csv file with the Dataframe from which to create views for the single algorithms</span>
+<span class="sd">        archive: archive instance which is used to save data</span>
+<span class="sd">        print_all: (boolean): if flag is set results are printed in the function</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: if neither Dataframe nor csv file are given as input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">csv_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot create a view without an input Dataframe or csv file being specified.&quot;</span>
+        <span class="k">raise</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+        <span class="n">set_pandas_print_full_df</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">alg</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="n">df_view</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="n">alg</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">alg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">df_view</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">archive</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">archive</span><span class="o">.</span><span class="n">archive_data_frame</span><span class="p">(</span><span class="n">df_view</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="p">(</span><span class="n">alg</span> <span class="o">+</span> <span class="s2">&quot;_cmp_results.csv&quot;</span><span class="p">),</span> <span class="n">by_algorithm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="evaluate_results"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.evaluate_results">[docs]</a><span class="k">def</span> <span class="nf">evaluate_results</span><span class="p">(</span><span class="n">prediction_folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">archive_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Main function for the evaluation of the prediction csv files.</span>
 
 <span class="sd">    The function reads in all csv files from a specific folder. Gathers meta data from the csv file names</span>
@@ -509,18 +559,29 @@
 <span class="sd">    together with the current yaml folder for the csv file creation in an archive folder.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">        prediction_folder: relative path to the folder with the prediction files</span>
+<span class="sd">        yaml_folder: relative path to the folder with the yaml definitions of the ML algorithms. If no folder is given,</span>
+<span class="sd">            the yaml files will not be saved in the archive.</span>
+<span class="sd">        archive_folder: relative path to the folder where the archive should be saved. If no folder is given,</span>
+<span class="sd">            no archive will be created.</span>
 <span class="sd">        print_all (boolean): if flag is set results are printed in the function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">archive</span> <span class="o">=</span> <span class="n">Archive</span><span class="p">(</span><span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
-    <span class="n">algorithm_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">set_pandas_print_full_df</span><span class="p">()</span>
 
+    <span class="k">if</span> <span class="n">archive_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">archive</span> <span class="o">=</span> <span class="n">Archive</span><span class="p">(</span><span class="n">archive_folder</span><span class="o">=</span><span class="n">archive_folder</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="o">=</span><span class="n">yaml_folder</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">archive</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">algorithm_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">num_csv_files_read</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1"># read prediction files and save data for every algorithm implementation in a Algorithm class</span>
-    <span class="n">framework_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">fw</span> <span class="k">for</span> <span class="n">fw</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">PREDICTION_FOLDER</span><span class="p">)]</span>
+    <span class="n">framework_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">fw</span> <span class="k">for</span> <span class="n">fw</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">prediction_folder</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">fw</span> <span class="ow">in</span> <span class="n">framework_list</span><span class="p">:</span>
-        <span class="n">csv_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PREDICTION_FOLDER</span><span class="p">,</span> <span class="n">fw</span><span class="p">))]</span>
+        <span class="n">csv_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prediction_folder</span><span class="p">,</span> <span class="n">fw</span><span class="p">))]</span>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">csv_list</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
-                <span class="n">algorithm_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PREDICTION_FOLDER</span><span class="p">,</span> <span class="n">fw</span><span class="p">)))</span>
+                <span class="n">algorithm_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prediction_folder</span><span class="p">,</span> <span class="n">fw</span><span class="p">)))</span>
+                <span class="n">num_csv_files_read</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="c1"># get all types of algorithm (unique_algorithm_list) and all types of datasets</span>
     <span class="n">dataset_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -551,26 +612,27 @@
 
         <span class="n">overall_results_df</span> <span class="o">=</span> <span class="n">overall_results_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">)</span>
 
-        <span class="c1"># set pandas options to print a full dataframe</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.width&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_colwidth&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Summary DataFrame for </span><span class="si">%s</span><span class="s2"> dataset:&quot;</span> <span class="o">%</span> <span class="n">ds</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">)</span>
 
-        <span class="c1"># show summary data frame for dataset</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Summary DataFrame for </span><span class="si">%s</span><span class="s2"> dataset:&quot;</span> <span class="o">%</span> <span class="n">ds</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">)</span>
-
-        <span class="n">archive</span><span class="o">.</span><span class="n">archive_data_frame</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="p">(</span><span class="n">ds</span> <span class="o">+</span> <span class="s2">&quot;_result_summary.csv&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">archive_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">archive</span><span class="o">.</span><span class="n">archive_data_frame</span><span class="p">(</span><span class="n">dataset_results_df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="p">(</span><span class="n">ds</span> <span class="o">+</span> <span class="s2">&quot;_cmp_results.csv&quot;</span><span class="p">),</span> <span class="n">by_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># show summary data frame for all evaluated data</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Summary DataFrame&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">overall_results_df</span><span class="p">)</span>
-    <span class="n">archive</span><span class="o">.</span><span class="n">archive_data_frame</span><span class="p">(</span><span class="n">overall_results_df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;ALL_result_summary.csv&quot;</span><span class="p">)</span></div>
+    <span class="c1"># print(&quot;\nSummary DataFrame&quot;)</span>
+    <span class="c1"># print(overall_results_df)</span>
+    <span class="k">if</span> <span class="n">archive_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">archive</span><span class="o">.</span><span class="n">archive_data_frame</span><span class="p">(</span><span class="n">overall_results_df</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;ALL_cmp_results.csv&quot;</span><span class="p">)</span>
+
+    <span class="n">create_views_by_algorithm</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">overall_results_df</span><span class="p">,</span> <span class="n">archive</span><span class="o">=</span><span class="n">archive</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">num_csv_files_read</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">evaluate_results</span><span class="p">(</span><span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">evaluate_results</span><span class="p">(</span><span class="n">prediction_folder</span><span class="o">=</span><span class="s2">&quot;predictions&quot;</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="o">=</span><span class="s2">&quot;algorithm-descriptions&quot;</span><span class="p">,</span>
+                     <span class="n">archive_folder</span><span class="o">=</span><span class="s2">&quot;archive&quot;</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
            </div>
