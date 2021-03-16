@@ -9,12 +9,12 @@ import subprocess
 from pathlib import Path
 
 def delete_folder(name: str):
-    try:
-        shutil.rmtree(name)
-        print("successfully deleted: %s" % name)
-    except OSError as e:
-        print("deleting failed: %s - %s." % (e.filename, e.strerror))
-
+    if os.path.isdir(name):
+        try:
+            shutil.rmtree(name)
+            print("successfully deleted: %s" % name)
+        except OSError as e:
+            print("deleting failed: %s - %s." % (e.filename, e.strerror))
 
 def check_docker_state():
     """checks if there is a running instance of docker.
@@ -65,9 +65,7 @@ def run_docker_container(name: str, *bindings: list, option=None):
     cmd_return = subprocess.run(cmdlist)
     if cmd_return.returncode != 0:
         msg = f"Running container: {name} failed (returns {cmd_return.returncode})."
-        # raise RuntimeWarning(msg)
-        print(msg)
-
+        raise RuntimeError(msg)
 
 def build_docker_collection(d_list: list):
     """Builds a set of docker images defined by a list of dictionaries.
@@ -83,6 +81,7 @@ def build_docker_collection(d_list: list):
         docker_folder = docker["folder"]
         docker_name = docker["name"]
         cmdlist = ["docker", "build", "-t", docker_name, docker_folder]
+        print(f"build {docker_name}")
         cmd_return = subprocess.run(cmdlist)
         if cmd_return.returncode != 0:
             error_msg = f"Build of {docker_name} based on {docker_folder} failed."
