@@ -351,7 +351,7 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
                 plt.show()
 
             if archive is not None:
-                plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.pdf"
+                plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.svg"
                 plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
             plt.close()
         except:
@@ -478,3 +478,4 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
 if __name__ == "__main__":
     evaluate_results(prediction_folder="predictions", yaml_folder="algorithm-descriptions",
                      archive_folder="archive", print_all=False)
+    #create_views_by_algorithm(csv_file="../archive/2021-03-15_17-22/ALL_result_summary.csv")

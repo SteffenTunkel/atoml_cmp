@@ -42,16 +42,14 @@ def run_docker_container(name: str, *bindings: list, option=None):
         option: Optional argument which is passed to the docker.
 
     Raises:
-        RuntimeError: if the docker run failed.
+        RuntimeWarning: if the docker run failed.
     """
     check_docker_state()
     # created mounted folders on host if they don't exist
     for bind in bindings:
-       Path(bind[0]).mkdir(parents=True, exist_ok=True)
-	# build the command
-    cmdlist = []
-    cmdlist.append("docker")
-    cmdlist.append("run")
+        Path(bind[0]).mkdir(parents=True, exist_ok=True)
+    # build the command
+    cmdlist = ["docker", "run"]
     for bind in bindings:
         cmdlist.append("--mount")
         bindstr = ""
@@ -66,8 +64,9 @@ def run_docker_container(name: str, *bindings: list, option=None):
     # run command
     cmd_return = subprocess.run(cmdlist)
     if cmd_return.returncode != 0:
-        error_msg = f"Running container: {name} failed."
-        raise RuntimeError(error_msg)
+        msg = f"Running container: {name} failed (returns {cmd_return.returncode})."
+        # raise RuntimeWarning(msg)
+        print(msg)
 
 
 def build_docker_collection(d_list: list):
@@ -157,9 +156,9 @@ def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="
 
     run_docker_collection(generator_docker_list)
 
-    overwrite_datasets = [["BreastCancer", "Zeroes"], ["BreastCancerMinMaxNorm", "VerySmall"],
-                          ["BreastCancerMeanNorm", "Bias"], ["Wine", "LeftSkew"], ["WineMinMaxNorm", "RightSkew"],
-                          ["WineMeanNorm", "Outlier"]]
+    overwrite_datasets = [["BreastCancer", "Zeroes"], ["BreastCancer-MinMaxNorm", "VerySmall"],
+                          ["BreastCancer-ZNorm", "Bias"], ["Wine", "LeftSkew"], ["Wine-MinMaxNorm", "RightSkew"],
+                          ["Wine-ZNorm", "Outlier"]]
     for overwrite_pair in overwrite_datasets:
         overwrite_dataset(overwrite_pair[0]+"_1_training.arff", overwrite_pair[1]+"_1_training.arff")
         overwrite_dataset(overwrite_pair[0]+"_1_test.arff", overwrite_pair[1]+"_1_test.arff")
