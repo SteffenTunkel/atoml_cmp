@@ -6,10 +6,11 @@ WORKDIR /container
 RUN apt-get update
 RUN apt-get install -y maven
 
-# Prepare by downloading dependencies
-ADD pom.xml .
+# Pre-build with maven
+COPY pom.xml .
 RUN ["mvn", "dependency:resolve"]
 RUN ["mvn", "verify"]
 
-
-CMD ["mvn", "test"]
+# Run tests
+COPY run_tests.sh .
+ENTRYPOINT ["bash", "run_tests.sh"]
