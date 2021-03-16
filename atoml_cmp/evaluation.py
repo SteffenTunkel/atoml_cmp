@@ -42,12 +42,12 @@ class Algorithm:
         actuals: actual labels of the data set
     """
 
-    def __init__(self, filename: str, path: str = None):
+    def __init__(self, filename: str, path: str = None, print_all=True):
         self.filename = filename
         self.path = path
         self.framework, self.name, self.dataset_type = split_prediction_file(filename)
         self.predictions, self.probabilities, _, self.actuals = get_data_from_csv(
-            os.path.join(self.path, self.filename))
+            os.path.join(self.path, self.filename), print_all=print_all)
 
     def __str__(self):
         return self.framework + ' ' + self.name
@@ -154,7 +154,7 @@ def split_prediction_file(filename: str):
     return framework, algorithm, dataset_type
 
 
-def get_data_from_csv(filename: str):
+def get_data_from_csv(filename: str, print_all=True):
     """Reads in a csv file with the specified format and extracts the different columns.
 
     Args:
@@ -167,7 +167,8 @@ def get_data_from_csv(filename: str):
             - predicted probability for class 1
             - actual labels
     """
-    print("read: %s" % filename)
+    if print_all:
+        print("read: %s" % filename)
     csv_df = pd.read_csv(filename)
     actual = csv_df["actual"]
     prediction = csv_df["prediction"]
@@ -425,7 +426,7 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
         csv_list = [f for f in os.listdir(os.path.join(prediction_folder, fw))]
         for file in csv_list:
             if file.endswith(".csv"):
-                algorithm_list.append(Algorithm(file, os.path.join(prediction_folder, fw)))
+                algorithm_list.append(Algorithm(file, os.path.join(prediction_folder, fw), print_all=print_all))
                 num_csv_files_read += 1
 
     # get all types of algorithm (unique_algorithm_list) and all types of datasets
@@ -442,6 +443,7 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
     overall_results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
 
     for ds in dataset_list:
+        print(f"processing predictions on {ds}.")
         # create a dataframe for the results
         dataset_results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
         i = 0
