@@ -283,7 +283,7 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, i: int,
     if print_all:
         print('%d: Comparision between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
 
-    df = df.append(pd.Series(), ignore_index=True)
+    df = df.append(pd.Series(dtype="object"), ignore_index=True)
     df.loc[df.index[-1], 'algorithm'] = x.name
     df.loc[df.index[-1], 'framework_1'] = x.framework
     df.loc[df.index[-1], 'framework_2'] = y.framework
