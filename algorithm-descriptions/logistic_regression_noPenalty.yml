@@ -65,7 +65,7 @@ parameters:
     values: [lbfgs]
     default: lbfgs
   max_iter:
-    default: 100
+    default: 10000
   multi_class:
     default: multinomial
   verbose:
@@ -105,7 +105,7 @@ parameters:
   #  type: fixedflag
   #  default: disabled
   M: # maximum number of iterations (default -1: until convergence)
-    default: 100
+    default: 10000
 ---
 
 name: SPARK_LogisticRegression
@@ -128,7 +128,7 @@ parameters:
     type: double
     default: 0.0
   setMaxIter:
-    default: 100
+    default: 10000
   setTol:
     type: values
     values: [0.000001]

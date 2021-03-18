@@ -43,8 +43,8 @@ parameters:
     default: uniform
   algorithm:
     type: values
-    values: [auto] #[ball_tree, kd_tree, auto] # (brute) execution shows that brute is incompatible with most metrics, even though this is not documented.
-    default: auto
+    values: [ball_tree] #[ball_tree, kd_tree, auto] # (brute) execution shows that brute is incompatible with most metrics, even though this is not documented.
+    default: ball_tree
   leaf_size:
     type: integer
     default: 30
