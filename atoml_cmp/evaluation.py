@@ -159,6 +159,7 @@ def get_data_from_csv(filename: str, print_all=True):
 
     Args:
         filename (str): relative or absolute filepath
+        print_all (boolean): if flag is set results are printed in the function
 
     Returns: a tuple with 4 variables
         (Series, Series, Series, Series):
@@ -377,9 +378,8 @@ def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None, arc
         RuntimeError: if neither Dataframe nor csv file are given as input.
     """
     if df is not None:
-        print("a")
+        pass
     elif csv_file is not None:
-        print("b")
         df = pd.read_csv(csv_file)
     else:
         msg = "Cannot create a view without an input Dataframe or csv file being specified."
@@ -466,9 +466,6 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
         if archive_folder is not None:
             archive.archive_data_frame(dataset_results_df, filename=(ds + "_cmp_results.csv"), by_dataset=True)
 
-    # show summary data frame for all evaluated data
-    # print("\nSummary DataFrame")
-    # print(overall_results_df)
     if archive_folder is not None:
         archive.archive_data_frame(overall_results_df, filename="ALL_cmp_results.csv")
 
@@ -478,6 +475,6 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
 
 
 if __name__ == "__main__":
+    print(sys.argv)
     evaluate_results(prediction_folder="predictions", yaml_folder="algorithm-descriptions",
                      archive_folder="archive", print_all=False)
-    #create_views_by_algorithm(csv_file="../archive/2021-03-15_17-22/ALL_result_summary.csv")

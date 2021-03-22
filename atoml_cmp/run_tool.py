@@ -1,15 +1,22 @@
-"""Runs the tool."""
+"""Runs the tool.
 
-# from atoml_cmp.external_data_utils import overwrite_dataset, rename_prediction_file
+A set of functions needed to run the build and run the test generation and the tests themselves. Includes the main"""
+
 from atoml_cmp.evaluation import evaluate_results
 import json
 import os
+import sys
 import shutil
 import subprocess
 from pathlib import Path
 
 
 def delete_folder(name: str):
+    """deletes a directory if existent.
+
+    Args:
+        name: directory name that should be deleted
+    """
     if os.path.isdir(name):
         try:
             shutil.rmtree(name)
@@ -27,7 +34,7 @@ def check_docker_state():
     Raises:
         RuntimeError
     """
-    check = subprocess.run(["docker","info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    check = subprocess.run(["docker", "info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if check.returncode != 0:
         error_msg = "No running instance of 'docker' is found. It is required to build or run container."
         raise RuntimeError(error_msg)
@@ -56,7 +63,7 @@ def run_docker_container(name: str, *bindings: list, option=None):
         cmdlist.append("--mount")
         bindstr = ""
         bindstr += 'type=bind,source='
-        bindstr += os.path.join(os.getcwd(),bind[0])
+        bindstr += os.path.join(os.getcwd(), bind[0])
         bindstr += ',target='
         bindstr += bind[1]
         cmdlist.append(bindstr)
@@ -68,6 +75,7 @@ def run_docker_container(name: str, *bindings: list, option=None):
     if cmd_return.returncode != 0:
         msg = f"Running container: {name} failed (returns {cmd_return.returncode})."
         raise RuntimeError(msg)
+
 
 def build_docker_collection(d_list: list):
     """Builds a set of docker images defined by a list of dictionaries.
@@ -145,6 +153,23 @@ def split_docker_list(d_list: list):
 
 def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="predictions",
          yaml_folder="algorithm-descriptions", archive_folder="archive"):
+    """entrypoint for the overall pipeline.
+
+    Runs the whole pipeline of the tool. This includes clearing old data from output folder,
+    building test / testgeneration docker, test generation, executing tests, compare results of the tests
+    and finally saving the information in an archive.
+
+    Args:
+        dockerlist_file (str): json file with the specification for the docker container.
+        gen_tests_folder (str): directory for the generated test cases.
+        pred_folder (str): directory for the prediction csv files.
+        yaml_folder (str): directory for the yaml files with the algorithm definitions.
+        archive_folder (str): directory, where to save the archive.
+
+    Returns:
+        int: Number of evaluated csv files.
+
+    """
     delete_folder(gen_tests_folder)
     delete_folder(pred_folder)
 
@@ -157,22 +182,14 @@ def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="
 
     run_docker_collection(generator_docker_list)
 
-    #overwrite_datasets = [["BreastCancer", "Zeroes"], ["BreastCancer-MinMaxNorm", "VerySmall"],
-    #                      ["BreastCancer-ZNorm", "Bias"], ["Wine", "LeftSkew"], ["Wine-MinMaxNorm", "RightSkew"],
-    #                      ["Wine-ZNorm", "Outlier"]]
-    #for overwrite_pair in overwrite_datasets:
-    #    overwrite_dataset(overwrite_pair[0]+"_1_training.arff", overwrite_pair[1]+"_1_training.arff")
-    #    overwrite_dataset(overwrite_pair[0]+"_1_test.arff", overwrite_pair[1]+"_1_test.arff")
-
     run_docker_collection(test_docker_list)
-
-    #for overwrite_pair in overwrite_datasets:
-    #    rename_prediction_file(overwrite_pair[0], overwrite_pair[1])
 
     num_csv_files = evaluate_results(prediction_folder=pred_folder, yaml_folder=yaml_folder,
                                      archive_folder=archive_folder, print_all=False)
+
     return num_csv_files
 
 
 if __name__ == "__main__":
+    print(sys.argv)
     main("dockerlist.json")
