@@ -1,8 +1,9 @@
 from setuptools import setup
+import atoml_cmp
 
 setup(
     name='atoml_cmp',
-    version='0.0.1',
+    version=atoml_cmp.__version__,
     packages=['atoml_cmp'],
     description='Comparative testing of machine learning frameworks based on atoml',
     install_requires=[
