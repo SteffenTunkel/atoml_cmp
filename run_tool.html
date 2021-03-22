@@ -159,6 +159,7 @@
   <div class="section" id="module-atoml_cmp.run_tool">
 <span id="run-tool"></span><h1>run_tool<a class="headerlink" href="#module-atoml_cmp.run_tool" title="Permalink to this headline">¶</a></h1>
 <p>Runs the tool.</p>
+<p>A set of functions needed to run the build and run the test generation and the tests themselves. Includes the main</p>
 <dl class="py function">
 <dt id="atoml_cmp.run_tool.build_docker_collection">
 <code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">build_docker_collection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#build_docker_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.build_docker_collection" title="Permalink to this definition">¶</a></dt>
@@ -182,6 +183,43 @@ docker is either not installed or just not running.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="atoml_cmp.run_tool.delete_folder">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">delete_folder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#delete_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.delete_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>deletes a directory if existent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – directory name that should be deleted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="atoml_cmp.run_tool.main">
+<code class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></code><code class="sig-name descname"><span class="pre">main</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dockerlist_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_tests_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generated-tests'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'predictions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'algorithm-descriptions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'archive'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>entrypoint for the overall pipeline.</p>
+<p>Runs the whole pipeline of the tool. This includes clearing old data from output folder,
+building test / testgeneration docker, test generation, executing tests, compare results of the tests
+and finally saving the information in an archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dockerlist_file</strong> (<em>str</em>) – json file with the specification for the docker container.</p></li>
+<li><p><strong>gen_tests_folder</strong> (<em>str</em>) – directory for the generated test cases.</p></li>
+<li><p><strong>pred_folder</strong> (<em>str</em>) – directory for the prediction csv files.</p></li>
+<li><p><strong>yaml_folder</strong> (<em>str</em>) – directory for the yaml files with the algorithm definitions.</p></li>
+<li><p><strong>archive_folder</strong> (<em>str</em>) – directory, where to save the archive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Number of evaluated csv files.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
