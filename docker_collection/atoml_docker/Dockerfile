@@ -8,8 +8,11 @@ RUN git clone -b master https://github.com/SteffenTunkel/atoml.git container
 # set actual working directory
 WORKDIR /container
 
-# switch TestCatalog.java in atoml code (to choose the test data)
+# change TestCatalog.java in atoml code (to choose the test data)
 COPY TestCatalogSelection.java src/main/java/atoml/testgen/TestCatalog.java
+
+# add external datasets to atoml resources
+COPY resources/ src/main/resources/
 
 # build atoml
 RUN chmod u+x gradlew

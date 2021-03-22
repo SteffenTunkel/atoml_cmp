@@ -87,18 +87,18 @@ def create_wine_arff(path="external_data", use_uci_repo=True):
     wine_features = df.drop(['quality', 'target'], axis=1).columns
 
     X_train, X_test, y_train, y_test = transform_dataset(wine_data, wine_target)
-    _ = create_arff(wine_features, X_train, y_train, filename="Wine_1_training.arff", path=path, relation="wine")
-    _ = create_arff(wine_features, X_test, y_test, filename="Wine_1_test.arff", path=path, relation="wine")
+    _ = create_arff(wine_features, X_train, y_train, filename="Wine_training.arff", path=path, relation="wine")
+    _ = create_arff(wine_features, X_test, y_test, filename="Wine_test.arff", path=path, relation="wine")
 
     X_train, X_test, y_train, y_test = transform_dataset(wine_data, wine_target, norm="minmax")
-    _ = create_arff(wine_features, X_train, y_train, filename="Wine-MinMaxNorm_1_training.arff", path=path,
+    _ = create_arff(wine_features, X_train, y_train, filename="WineMinMaxNorm_training.arff", path=path,
                     relation="wine")
-    _ = create_arff(wine_features, X_test, y_test, filename="Wine-MinMaxNorm_1_test.arff", path=path, relation="wine")
+    _ = create_arff(wine_features, X_test, y_test, filename="WineMinMaxNorm_test.arff", path=path, relation="wine")
 
     X_train, X_test, y_train, y_test = transform_dataset(wine_data, wine_target, norm="z-score")
-    _ = create_arff(wine_features, X_train, y_train, filename="Wine-ZNorm_1_training.arff", path=path,
+    _ = create_arff(wine_features, X_train, y_train, filename="WineZNorm_training.arff", path=path,
                     relation="wine")
-    _ = create_arff(wine_features, X_test, y_test, filename="Wine-ZNorm_1_test.arff", path=path, relation="wine")
+    _ = create_arff(wine_features, X_test, y_test, filename="WineZNorm_test.arff", path=path, relation="wine")
 
 
 def create_breast_cancer_arff(path="external_data", use_sklearn_repo=True):
@@ -115,21 +115,21 @@ def create_breast_cancer_arff(path="external_data", use_sklearn_repo=True):
     bc_features = df.drop(['target'], axis=1).columns
 
     X_train, X_test, y_train, y_test = transform_dataset(bc_data, bc_target)
-    _ = create_arff(bc_features, X_train, y_train, filename="BreastCancer_1_training.arff", path=path,
+    _ = create_arff(bc_features, X_train, y_train, filename="BreastCancer_training.arff", path=path,
                     relation="breast cancer")
-    _ = create_arff(bc_features, X_test, y_test, filename="BreastCancer_1_test.arff", path=path,
+    _ = create_arff(bc_features, X_test, y_test, filename="BreastCancer_test.arff", path=path,
                     relation="breast cancer")
 
     X_train, X_test, y_train, y_test = transform_dataset(bc_data, bc_target, norm="minmax")
-    _ = create_arff(bc_features, X_train, y_train, filename="BreastCancer-MinMaxNorm_1_training.arff", path=path,
+    _ = create_arff(bc_features, X_train, y_train, filename="BreastCancerMinMaxNorm_training.arff", path=path,
                     relation="breast cancer")
-    _ = create_arff(bc_features, X_test, y_test, filename="BreastCancer-MinMaxNorm_1_test.arff", path=path,
+    _ = create_arff(bc_features, X_test, y_test, filename="BreastCancerMinMaxNorm_test.arff", path=path,
                     relation="breast cancer")
 
     X_train, X_test, y_train, y_test = transform_dataset(bc_data, bc_target, norm="z-score")
-    _ = create_arff(bc_features, X_train, y_train, filename="BreastCancer-ZNorm_1_training.arff", path=path,
+    _ = create_arff(bc_features, X_train, y_train, filename="BreastCancerZNorm_training.arff", path=path,
                     relation="breast cancer")
-    _ = create_arff(bc_features, X_test, y_test, filename="BreastCancer-ZNorm_1_test.arff", path=path,
+    _ = create_arff(bc_features, X_test, y_test, filename="BreastCancerZNorm_test.arff", path=path,
                     relation="breast cancer")
 
 

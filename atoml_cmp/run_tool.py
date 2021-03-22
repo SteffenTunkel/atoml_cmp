@@ -1,12 +1,13 @@
 """Runs the tool."""
 
-from atoml_cmp.external_data_utils import overwrite_dataset, rename_prediction_file
+# from atoml_cmp.external_data_utils import overwrite_dataset, rename_prediction_file
 from atoml_cmp.evaluation import evaluate_results
 import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
+
 
 def delete_folder(name: str):
     if os.path.isdir(name):
@@ -15,6 +16,7 @@ def delete_folder(name: str):
             print("successfully deleted: %s" % name)
         except OSError as e:
             print("deleting failed: %s - %s." % (e.filename, e.strerror))
+
 
 def check_docker_state():
     """checks if there is a running instance of docker.
@@ -155,17 +157,17 @@ def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="
 
     run_docker_collection(generator_docker_list)
 
-    overwrite_datasets = [["BreastCancer", "Zeroes"], ["BreastCancer-MinMaxNorm", "VerySmall"],
-                          ["BreastCancer-ZNorm", "Bias"], ["Wine", "LeftSkew"], ["Wine-MinMaxNorm", "RightSkew"],
-                          ["Wine-ZNorm", "Outlier"]]
-    for overwrite_pair in overwrite_datasets:
-        overwrite_dataset(overwrite_pair[0]+"_1_training.arff", overwrite_pair[1]+"_1_training.arff")
-        overwrite_dataset(overwrite_pair[0]+"_1_test.arff", overwrite_pair[1]+"_1_test.arff")
+    #overwrite_datasets = [["BreastCancer", "Zeroes"], ["BreastCancer-MinMaxNorm", "VerySmall"],
+    #                      ["BreastCancer-ZNorm", "Bias"], ["Wine", "LeftSkew"], ["Wine-MinMaxNorm", "RightSkew"],
+    #                      ["Wine-ZNorm", "Outlier"]]
+    #for overwrite_pair in overwrite_datasets:
+    #    overwrite_dataset(overwrite_pair[0]+"_1_training.arff", overwrite_pair[1]+"_1_training.arff")
+    #    overwrite_dataset(overwrite_pair[0]+"_1_test.arff", overwrite_pair[1]+"_1_test.arff")
 
     run_docker_collection(test_docker_list)
 
-    for overwrite_pair in overwrite_datasets:
-        rename_prediction_file(overwrite_pair[0], overwrite_pair[1])
+    #for overwrite_pair in overwrite_datasets:
+    #    rename_prediction_file(overwrite_pair[0], overwrite_pair[1])
 
     num_csv_files = evaluate_results(prediction_folder=pred_folder, yaml_folder=yaml_folder,
                                      archive_folder=archive_folder, print_all=False)
