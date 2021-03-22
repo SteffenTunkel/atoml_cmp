@@ -155,13 +155,14 @@
   <h1>Source code for atoml_cmp.run_tool</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Runs the tool.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">atoml_cmp.external_data_utils</span> <span class="kn">import</span> <span class="n">overwrite_dataset</span><span class="p">,</span> <span class="n">rename_prediction_file</span>
+<span class="c1"># from atoml_cmp.external_data_utils import overwrite_dataset, rename_prediction_file</span>
 <span class="kn">from</span> <span class="nn">atoml_cmp.evaluation</span> <span class="kn">import</span> <span class="n">evaluate_results</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
 
 <span class="k">def</span> <span class="nf">delete_folder</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
@@ -170,6 +171,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;successfully deleted: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;deleting failed: </span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">))</span>
+
 
 <div class="viewcode-block" id="check_docker_state"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.check_docker_state">[docs]</a><span class="k">def</span> <span class="nf">check_docker_state</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;checks if there is a running instance of docker.</span>
@@ -310,17 +312,17 @@
 
     <span class="n">run_docker_collection</span><span class="p">(</span><span class="n">generator_docker_list</span><span class="p">)</span>
 
-    <span class="n">overwrite_datasets</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;BreastCancer&quot;</span><span class="p">,</span> <span class="s2">&quot;Zeroes&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;BreastCancer-MinMaxNorm&quot;</span><span class="p">,</span> <span class="s2">&quot;VerySmall&quot;</span><span class="p">],</span>
-                          <span class="p">[</span><span class="s2">&quot;BreastCancer-ZNorm&quot;</span><span class="p">,</span> <span class="s2">&quot;Bias&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Wine&quot;</span><span class="p">,</span> <span class="s2">&quot;LeftSkew&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Wine-MinMaxNorm&quot;</span><span class="p">,</span> <span class="s2">&quot;RightSkew&quot;</span><span class="p">],</span>
-                          <span class="p">[</span><span class="s2">&quot;Wine-ZNorm&quot;</span><span class="p">,</span> <span class="s2">&quot;Outlier&quot;</span><span class="p">]]</span>
-    <span class="k">for</span> <span class="n">overwrite_pair</span> <span class="ow">in</span> <span class="n">overwrite_datasets</span><span class="p">:</span>
-        <span class="n">overwrite_dataset</span><span class="p">(</span><span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;_1_training.arff&quot;</span><span class="p">,</span> <span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;_1_training.arff&quot;</span><span class="p">)</span>
-        <span class="n">overwrite_dataset</span><span class="p">(</span><span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;_1_test.arff&quot;</span><span class="p">,</span> <span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;_1_test.arff&quot;</span><span class="p">)</span>
+    <span class="c1">#overwrite_datasets = [[&quot;BreastCancer&quot;, &quot;Zeroes&quot;], [&quot;BreastCancer-MinMaxNorm&quot;, &quot;VerySmall&quot;],</span>
+    <span class="c1">#                      [&quot;BreastCancer-ZNorm&quot;, &quot;Bias&quot;], [&quot;Wine&quot;, &quot;LeftSkew&quot;], [&quot;Wine-MinMaxNorm&quot;, &quot;RightSkew&quot;],</span>
+    <span class="c1">#                      [&quot;Wine-ZNorm&quot;, &quot;Outlier&quot;]]</span>
+    <span class="c1">#for overwrite_pair in overwrite_datasets:</span>
+    <span class="c1">#    overwrite_dataset(overwrite_pair[0]+&quot;_1_training.arff&quot;, overwrite_pair[1]+&quot;_1_training.arff&quot;)</span>
+    <span class="c1">#    overwrite_dataset(overwrite_pair[0]+&quot;_1_test.arff&quot;, overwrite_pair[1]+&quot;_1_test.arff&quot;)</span>
 
     <span class="n">run_docker_collection</span><span class="p">(</span><span class="n">test_docker_list</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">overwrite_pair</span> <span class="ow">in</span> <span class="n">overwrite_datasets</span><span class="p">:</span>
-        <span class="n">rename_prediction_file</span><span class="p">(</span><span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overwrite_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1">#for overwrite_pair in overwrite_datasets:</span>
+    <span class="c1">#    rename_prediction_file(overwrite_pair[0], overwrite_pair[1])</span>
 
     <span class="n">num_csv_files</span> <span class="o">=</span> <span class="n">evaluate_results</span><span class="p">(</span><span class="n">prediction_folder</span><span class="o">=</span><span class="n">pred_folder</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="o">=</span><span class="n">yaml_folder</span><span class="p">,</span>
                                      <span class="n">archive_folder</span><span class="o">=</span><span class="n">archive_folder</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
