@@ -16,7 +16,7 @@ frameworks are just a docker installation and python.
 Currently, the tool is supporting Scikit-Learn (Python), Weka (Java), Apache Spark MLLib (Scala) and Caret (R).
 
 ## Instructions
-This instructions assume the use of the folder structure given by this repository.
+These instructions assume the use of the folder structure given by this repository.
 
 1. Define the algorithms in a YAML file in the `algorithm-descriptions` folder fitting to the 
    [atoml test definition scheme](https://github.com/sherbold/atoml#definition-of-tests).
@@ -24,19 +24,26 @@ This instructions assume the use of the folder structure given by this repositor
    Mind that atoml_cmp is not supporting the use of parameterized test cases. Therefore, this atoml feature
    should not been used since just the last parameter constellation is further evaluated.
    
-2. Run the tool with:
+2. Define datasets that are used for the test. This can be done in the directory of the atoml docker:
+   `docker_collection/atoml_docker/`. In the `TestCatalogSelection.java` you have to add instances of the desired test
+   classes to the `Smoketests` lists. For the comparative testing you can use smoke tests implemented in atoml,
+   and use own `.arff` files to generate test cases. For that you can create a `SmoketestFromArff` instance. 
+   The according files should be in `resources/` to be bound in the docker build.
+2. Run the tool with by the command line: `python -m atoml_cmp`.
    
-        python -m atoml_cmp.run_tool
-   
-   All docker defined by `dockerlist.json` are build and executed. 
-   By default, a `generated-tests` and a `predictions` directories are created to save test cases and test results (predictions).
-   The comparison evaluation results are then saved in the `archive` directory.
+         optional arguments:
+         -h, --help           show this help message and exit
+         -d , --dockerlist    json file with docker descriptions ["dockerlist.json"]
+         -y , --yaml_desc     directory of the yaml files with the algorithm definitions ["algorithm-descriptions"]
+         -t , --testcases     directory for the generated test cases ["generated-tests"]
+         -p , --predictions   directory for the prediction csv files ["predictions"]
+         -a , --archive       directory, where to save the archive ["archive"]
+   Alternatively the function `atoml_cmp.run_tool.main()` can be called.  
 
-
-## ToDo
-- restructure the external data bind in
-- fix linux issues with external data set use.
-- better structure for function calls 
+   The default procedure looks as follows: All docker defined by `dockerlist.json` are build and executed. 
+   A `generated-tests` and a `predictions` directories are created to save test cases and test results (predictions),
+   in case the directories exist before they get cleared. 
+   The results of the comparison are then saved in the `archive` directory.
 
 ## Documentation
 
