@@ -16,7 +16,7 @@ COPY resources/ src/main/resources/
 
 # build atoml
 RUN chmod u+x gradlew
-RUN ./gradlew build
+RUN ./gradlew build -x test
 
 # COPY the bash script to execute the test generation
 COPY run_atoml_testgeneration.sh .

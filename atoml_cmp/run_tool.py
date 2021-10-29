@@ -77,11 +77,12 @@ def run_docker_container(name: str, *bindings: list, option=None):
         raise RuntimeError(msg)
 
 
-def build_docker_collection(d_list: list):
+def build_docker_collection(d_list: list, no_cache: bool = False):
     """Builds a set of docker images defined by a list of dictionaries.
 
     Args:
         d_list: list of dictionaries with data to set up docker.
+        no_cache: flag if the docker should be build without caching.
 
     Raises:
         RuntimeError: if a docker build failed.
@@ -91,6 +92,8 @@ def build_docker_collection(d_list: list):
         docker_folder = docker["folder"]
         docker_name = docker["name"]
         cmdlist = ["docker", "build", "-t", docker_name, docker_folder]
+        if no_cache:
+            cmdlist.append("--no-cache")
         print(f"build {docker_name}")
         cmd_return = subprocess.run(cmdlist)
         if cmd_return.returncode != 0:

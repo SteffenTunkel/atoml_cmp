@@ -19,7 +19,7 @@ from scipy.stats import chi2_contingency, ks_2samp
 from typing import List
 
 RESULT_DF_COLUMNS = ["equal_pred", "TP", "FP", "FN", "TN", "ks_pval", "chi2_pval",
-                     "accs_fw1", "accs_fw2", "algorithm", "framework_1", "framework_2", "dataset"]
+                     "accs_fw1", "accs_fw2", "algorithm", "framework_1", "framework_2", "dataset", "training_as_test"]
 ALPHA_THRESHOLD = 0.05
 
 
@@ -37,6 +37,7 @@ class Algorithm:
         framework: framework of the implementation
         name: name of the implemented algorithm
         dataset_type: name of the dataset the implementation was tested with
+        test_as_training: flag for the use of training data as test data
         predictions: predicted labels of the implementation on the data set
         probabilities: tuple of predicted probabilities for both classes of the implementation on the data set
         actuals: actual labels of the data set
@@ -45,7 +46,7 @@ class Algorithm:
     def __init__(self, filename: str, path: str = None, print_all=True):
         self.filename = filename
         self.path = path
-        self.framework, self.name, self.dataset_type = split_prediction_file(filename)
+        self.framework, self.name, self.dataset_type, self.training_as_test = get_pred_file_metadata(filename)
         self.predictions, self.probabilities, _, self.actuals = get_data_from_csv(
             os.path.join(self.path, self.filename), print_all=print_all)
 
@@ -125,7 +126,7 @@ class Archive:
 ########################################
 
 
-def split_prediction_file(filename: str):
+def get_pred_file_metadata(filename: str):
     """Splits a prediction csv filename to get the information it contains.
 
     Args:
@@ -139,11 +140,15 @@ def split_prediction_file(filename: str):
             - Name of the framework
             - Name of the algorithm
             - Name of the dataset
+            - Training data as test data flag
     """
     if filename.endswith(".csv"):
         string = filename[:-4]
         substring = string.split("_")
-        if len(substring) != 5:
+        training_as_test = False
+        if substring[-2] == "TrainingAsTest":
+            training_as_test = True
+        if len(substring) != (training_as_test + 5):
             print("Warning: The prediction filename: %s doesn't consist out the right amount of substrings." % filename)
         framework = substring[1]
         algorithm = substring[2]
@@ -151,7 +156,7 @@ def split_prediction_file(filename: str):
     else:
         print("Error: %s is not a csv file." % filename)
         return
-    return framework, algorithm, dataset_type
+    return framework, algorithm, dataset_type, training_as_test
 
 
 def get_data_from_csv(filename: str, print_all=True):
@@ -282,13 +287,14 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, i: int,
         DataFrame: result overview dataframe with different metrics
     """
     if print_all:
-        print('%d: Comparision between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
+        print('%d: Comparison between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
 
     df = df.append(pd.Series(dtype="object"), ignore_index=True)
     df.loc[df.index[-1], 'algorithm'] = x.name
     df.loc[df.index[-1], 'framework_1'] = x.framework
     df.loc[df.index[-1], 'framework_2'] = y.framework
     df.loc[df.index[-1], 'dataset'] = x.dataset_type
+    df.loc[df.index[-1], 'training_as_test'] = x.training_as_test
 
     equal_pred, cm = create_confusion_matrix([x.predictions, y.predictions], print_all)
     df.loc[df.index[-1], 'equal_pred'] = equal_pred
@@ -322,7 +328,7 @@ def set_pandas_print_full_df():
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
-    pd.set_option('display.max_colwidth', -1)
+    pd.set_option('display.max_colwidth', None)
 
 
 def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, show_plot=False, print_all=True):
@@ -345,16 +351,25 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
             if algorithms[0].probabilities.shape[0] > 500:
                 num_bins = 100
             for x in algorithms:
-                sns.distplot(x.probabilities, kde=False, label=x.framework, hist_kws=dict(alpha=0.4), bins=num_bins)
-            plt.title(("prediction probability of " + algorithms[0].name + " on " + algorithms[0].dataset_type))
+                sns.distplot(x.probabilities, kde=False, label=x.framework, hist_kws=dict(alpha=0.3), bins=num_bins)
+            if algorithms[0].training_as_test:
+                plt.title(("prediction probability of " + algorithms[0].name +
+                           "\non " + algorithms[0].dataset_type + " dataset with training data as test data"))
+            else:
+                plt.title(("prediction probability of " + algorithms[0].name +
+                           "\non " + algorithms[0].dataset_type + " dataset"))
             plt.legend()
 
             if show_plot:
                 plt.show()
 
             if archive is not None:
-                plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.svg"
-                plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
+                if algorithms[0].training_as_test:
+                    plot_file_name = "TaT_" + algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.svg"
+                    plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
+                else:
+                    plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.svg"
+                    plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
             plt.close()
         except:
             print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n"
@@ -383,7 +398,7 @@ def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None, arc
         df = pd.read_csv(csv_file)
     else:
         msg = "Cannot create a view without an input Dataframe or csv file being specified."
-        raise(RuntimeError(msg))
+        raise (RuntimeError(msg))
 
     if print_all:
         set_pandas_print_full_df()
@@ -401,7 +416,7 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
     """Main function for the evaluation of the prediction csv files.
 
     The function reads in all csv files from a specific folder. Gathers meta data from the csv file names
-    and evalutes the content of the files. For that it creates different metrics and histograms which can be saved
+    and evaluates the content of the files. For that it creates different metrics and histograms which can be saved
     together with the current yaml folder for the csv file creation in an archive folder.
 
     Args:
@@ -448,12 +463,23 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
         dataset_results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
         i = 0
 
-        algorithm_subset_by_dataset_type = [x for x in algorithm_list if x.dataset_type == ds]
+        algorithm_subset_by_dataset_without_TAT = [x for x in algorithm_list
+                                                   if (x.dataset_type == ds) & (x.training_as_test is False)]
+        algorithm_subset_by_dataset_with_TAT = [x for x in algorithm_list
+                                                if (x.dataset_type == ds) & (x.training_as_test is True)]
         for alg in unique_algorithm_list:
-            algorithm_subset = [x for x in algorithm_subset_by_dataset_type if x.name == alg]
+            algorithm_subset = [x for x in algorithm_subset_by_dataset_without_TAT if x.name == alg]
+            algorithm_subset_TAT = [x for x in algorithm_subset_by_dataset_with_TAT if x.name == alg]
+
             if algorithm_subset:
                 plot_probabilities(algorithm_subset, archive, print_all=print_all)
                 for a, b in itertools.combinations(algorithm_subset, 2):
+                    dataset_results_df = compare_two_algorithms(a, b, dataset_results_df, i, print_all=print_all)
+                    i = i + 1
+
+            if algorithm_subset_TAT:
+                plot_probabilities(algorithm_subset_TAT, archive, print_all=print_all)
+                for a, b in itertools.combinations(algorithm_subset_TAT, 2):
                     dataset_results_df = compare_two_algorithms(a, b, dataset_results_df, i, print_all=print_all)
                     i = i + 1
 
