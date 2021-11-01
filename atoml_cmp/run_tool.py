@@ -188,7 +188,7 @@ def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="
     run_docker_collection(test_docker_list)
 
     num_csv_files = evaluate_results(prediction_folder=pred_folder, yaml_folder=yaml_folder,
-                                     archive_folder=archive_folder, print_all=False)
+                                     archive_folder=archive_folder, gen_tests_folder=gen_tests_folder, print_all=False)
 
     return num_csv_files
 

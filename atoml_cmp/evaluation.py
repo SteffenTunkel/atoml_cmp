@@ -60,14 +60,16 @@ class Archive:
     The archive folder name is generated with a time stamp by default.
     Alternativly, a name can be given to the constructor.
     In addition to the evaluation results also the foundation can be saved, meaning the current yaml-folder.
-    Be aware that this can lead to inconsistencies.
+    Be aware that this can lead to inconsistencies, when changing the folder's content during runtime.
+    Moreover, the predictions can be saved for reproducing the evaluations.
 
    Attributes:
        path: path of the archive
        print_all (boolean): if flag is set results are printed in the function
    """
 
-    def __init__(self, name: str = None, archive_folder=None, yaml_folder=None, print_all=True):
+    def __init__(self, name: str = None, archive_folder=None, yaml_folder=None,
+                 pred_folder=None, test_folder=None, print_all=True):
         self.print_all = print_all
 
         # create the archive folder
@@ -94,6 +96,24 @@ class Archive:
             for file in file_list:
                 if file.endswith(".yml") or file.endswith(".yaml"):
                     copyfile(os.path.join(yaml_folder, file), os.path.join(self.path, 'yaml_descriptions', file))
+
+        if test_folder is not None:
+            if not os.path.exists(os.path.join(self.path, 'tests')):
+                os.makedirs(os.path.join(self.path, 'tests'))
+            # save the current generated test files
+            for root, dirs, files in os.walk(test_folder):
+                for file in files:
+                    if file.endswith('.py') or file.endswith('.java') or file.endswith('.R'):
+                        copyfile(os.path.join(root, file), os.path.join(self.path, 'tests', file))
+
+        if pred_folder is not None:
+            if not os.path.exists(os.path.join(self.path, 'predictions')):
+                os.makedirs(os.path.join(self.path, 'predictions'))
+            # save the current prediction files
+            for root, dirs, files in os.walk(pred_folder):
+                for file in files:
+                    if file.endswith('.csv'):
+                        copyfile(os.path.join(root, file), os.path.join(self.path, 'predictions', file))
 
         if not os.path.exists(os.path.join(self.path, 'plots')):
             os.makedirs(os.path.join(self.path, 'plots'))
@@ -412,7 +432,8 @@ def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None, arc
             archive.archive_data_frame(df_view, filename=(alg + "_cmp_results.csv"), by_algorithm=True)
 
 
-def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_folder: str = None, print_all=True):
+def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_folder: str = None,
+                     gen_tests_folder: str = None, print_all=True):
     """Main function for the evaluation of the prediction csv files.
 
     The function reads in all csv files from a specific folder. Gathers meta data from the csv file names
@@ -425,12 +446,15 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
             the yaml files will not be saved in the archive.
         archive_folder: relative path to the folder where the archive should be saved. If no folder is given,
             no archive will be created.
+        gen_tests_folder: relative path to the folder where the test cases are located. This is only for the archiving.
+            If no folder is given, the tests will not be stored in archive.
         print_all (boolean): if flag is set results are printed in the function
     """
     set_pandas_print_full_df()
 
     if archive_folder is not None:
-        archive = Archive(archive_folder=archive_folder, yaml_folder=yaml_folder, print_all=print_all)
+        archive = Archive(archive_folder=archive_folder, yaml_folder=yaml_folder, pred_folder=prediction_folder,
+                          test_folder=gen_tests_folder, print_all=print_all)
     else:
         archive = None
     algorithm_list = []
@@ -503,4 +527,4 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
 if __name__ == "__main__":
     print(sys.argv)
     evaluate_results(prediction_folder="predictions", yaml_folder="algorithm-descriptions",
-                     archive_folder="archive", print_all=False)
+                     archive_folder="archive", gen_tests_folder="generated-tests", print_all=False)
