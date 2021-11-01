@@ -1,68 +1,31 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>atoml_cmp.evaluation &mdash; atoml_cmp 0.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> atoml_cmp
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -70,88 +33,38 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Modules:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../run_tool.html">run_tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../evaluation.html">evaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../external_data_utils.html">external_data_utils</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">atoml_cmp</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-        
       <li>atoml_cmp.evaluation</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for atoml_cmp.evaluation</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Set of functions needed for the evaluation of the results.</span>
 
@@ -174,7 +87,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="n">RESULT_DF_COLUMNS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;equal_pred&quot;</span><span class="p">,</span> <span class="s2">&quot;TP&quot;</span><span class="p">,</span> <span class="s2">&quot;FP&quot;</span><span class="p">,</span> <span class="s2">&quot;FN&quot;</span><span class="p">,</span> <span class="s2">&quot;TN&quot;</span><span class="p">,</span> <span class="s2">&quot;ks_pval&quot;</span><span class="p">,</span> <span class="s2">&quot;chi2_pval&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;accs_fw1&quot;</span><span class="p">,</span> <span class="s2">&quot;accs_fw2&quot;</span><span class="p">,</span> <span class="s2">&quot;algorithm&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_1&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_2&quot;</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
+                     <span class="s2">&quot;accs_fw1&quot;</span><span class="p">,</span> <span class="s2">&quot;accs_fw2&quot;</span><span class="p">,</span> <span class="s2">&quot;algorithm&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_1&quot;</span><span class="p">,</span> <span class="s2">&quot;framework_2&quot;</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;training_as_test&quot;</span><span class="p">]</span>
 <span class="n">ALPHA_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.05</span>
 
 
@@ -192,6 +105,7 @@
 <span class="sd">        framework: framework of the implementation</span>
 <span class="sd">        name: name of the implemented algorithm</span>
 <span class="sd">        dataset_type: name of the dataset the implementation was tested with</span>
+<span class="sd">        test_as_training: flag for the use of training data as test data</span>
 <span class="sd">        predictions: predicted labels of the implementation on the data set</span>
 <span class="sd">        probabilities: tuple of predicted probabilities for both classes of the implementation on the data set</span>
 <span class="sd">        actuals: actual labels of the data set</span>
@@ -200,7 +114,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">=</span> <span class="n">split_prediction_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_as_test</span> <span class="o">=</span> <span class="n">get_pred_file_metadata</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actuals</span> <span class="o">=</span> <span class="n">get_data_from_csv</span><span class="p">(</span>
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
 
@@ -280,7 +194,7 @@
 <span class="c1">########################################</span>
 
 
-<div class="viewcode-block" id="split_prediction_file"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.split_prediction_file">[docs]</a><span class="k">def</span> <span class="nf">split_prediction_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="get_pred_file_metadata"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.get_pred_file_metadata">[docs]</a><span class="k">def</span> <span class="nf">get_pred_file_metadata</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Splits a prediction csv filename to get the information it contains.</span>
 
 <span class="sd">    Args:</span>
@@ -294,11 +208,15 @@
 <span class="sd">            - Name of the framework</span>
 <span class="sd">            - Name of the algorithm</span>
 <span class="sd">            - Name of the dataset</span>
+<span class="sd">            - Training data as test data flag</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
         <span class="n">string</span> <span class="o">=</span> <span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
         <span class="n">substring</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">substring</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">training_as_test</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">substring</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;TrainingAsTest&quot;</span><span class="p">:</span>
+            <span class="n">training_as_test</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">substring</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">training_as_test</span> <span class="o">+</span> <span class="mi">5</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: The prediction filename: </span><span class="si">%s</span><span class="s2"> doesn&#39;t consist out the right amount of substrings.&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
         <span class="n">framework</span> <span class="o">=</span> <span class="n">substring</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">algorithm</span> <span class="o">=</span> <span class="n">substring</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -306,7 +224,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">%s</span><span class="s2"> is not a csv file.&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
         <span class="k">return</span>
-    <span class="k">return</span> <span class="n">framework</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">dataset_type</span></div>
+    <span class="k">return</span> <span class="n">framework</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">dataset_type</span><span class="p">,</span> <span class="n">training_as_test</span></div>
 
 
 <div class="viewcode-block" id="get_data_from_csv"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.get_data_from_csv">[docs]</a><span class="k">def</span> <span class="nf">get_data_from_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -437,13 +355,14 @@
 <span class="sd">        DataFrame: result overview dataframe with different metrics</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">: Comparision between </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1"> for </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">: Comparison between </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1"> for </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">framework</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">),</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;framework_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">framework</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;framework_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">framework</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;dataset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dataset_type</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;training_as_test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">training_as_test</span>
 
     <span class="n">equal_pred</span><span class="p">,</span> <span class="n">cm</span> <span class="o">=</span> <span class="n">create_confusion_matrix</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">predictions</span><span class="p">],</span> <span class="n">print_all</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;equal_pred&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">equal_pred</span>
@@ -477,7 +396,7 @@
     <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.width&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_colwidth&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_colwidth&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="plot_probabilities"><a class="viewcode-back" href="../../evaluation.html#atoml_cmp.evaluation.plot_probabilities">[docs]</a><span class="k">def</span> <span class="nf">plot_probabilities</span><span class="p">(</span><span class="n">algorithms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Algorithm</span><span class="p">],</span> <span class="n">archive</span><span class="p">:</span> <span class="n">Archive</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -500,16 +419,25 @@
             <span class="k">if</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">probabilities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">500</span><span class="p">:</span>
                 <span class="n">num_bins</span> <span class="o">=</span> <span class="mi">100</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithms</span><span class="p">:</span>
-                <span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="n">hist_kws</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">((</span><span class="s2">&quot;prediction probability of &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; on &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span><span class="p">))</span>
+                <span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="n">hist_kws</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">training_as_test</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">((</span><span class="s2">&quot;prediction probability of &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span>
+                           <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">on &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">+</span> <span class="s2">&quot; dataset with training data as test data&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">((</span><span class="s2">&quot;prediction probability of &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span>
+                           <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">on &quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">+</span> <span class="s2">&quot; dataset&quot;</span><span class="p">))</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">archive</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">plot_file_name</span> <span class="o">=</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_probabilities.svg&quot;</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;plots&quot;</span><span class="p">,</span> <span class="n">plot_file_name</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">training_as_test</span><span class="p">:</span>
+                    <span class="n">plot_file_name</span> <span class="o">=</span> <span class="s2">&quot;TaT_&quot;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_probabilities.svg&quot;</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;plots&quot;</span><span class="p">,</span> <span class="n">plot_file_name</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">plot_file_name</span> <span class="o">=</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">algorithms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_probabilities.svg&quot;</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;plots&quot;</span><span class="p">,</span> <span class="n">plot_file_name</span><span class="p">))</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; while printing probability predictions of </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2"> data.</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -538,7 +466,7 @@
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot create a view without an input Dataframe or csv file being specified.&quot;</span>
-        <span class="k">raise</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
         <span class="n">set_pandas_print_full_df</span><span class="p">()</span>
@@ -556,7 +484,7 @@
     <span class="sd">&quot;&quot;&quot;Main function for the evaluation of the prediction csv files.</span>
 
 <span class="sd">    The function reads in all csv files from a specific folder. Gathers meta data from the csv file names</span>
-<span class="sd">    and evalutes the content of the files. For that it creates different metrics and histograms which can be saved</span>
+<span class="sd">    and evaluates the content of the files. For that it creates different metrics and histograms which can be saved</span>
 <span class="sd">    together with the current yaml folder for the csv file creation in an archive folder.</span>
 
 <span class="sd">    Args:</span>
@@ -603,12 +531,23 @@
         <span class="n">dataset_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">RESULT_DF_COLUMNS</span><span class="p">)</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="n">algorithm_subset_by_dataset_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_list</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">==</span> <span class="n">ds</span><span class="p">]</span>
+        <span class="n">algorithm_subset_by_dataset_without_TAT</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_list</span>
+                                                   <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">==</span> <span class="n">ds</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">training_as_test</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">)]</span>
+        <span class="n">algorithm_subset_by_dataset_with_TAT</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_list</span>
+                                                <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dataset_type</span> <span class="o">==</span> <span class="n">ds</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">training_as_test</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">alg</span> <span class="ow">in</span> <span class="n">unique_algorithm_list</span><span class="p">:</span>
-            <span class="n">algorithm_subset</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_subset_by_dataset_type</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">alg</span><span class="p">]</span>
+            <span class="n">algorithm_subset</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_subset_by_dataset_without_TAT</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">alg</span><span class="p">]</span>
+            <span class="n">algorithm_subset_TAT</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">algorithm_subset_by_dataset_with_TAT</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">alg</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="n">algorithm_subset</span><span class="p">:</span>
                 <span class="n">plot_probabilities</span><span class="p">(</span><span class="n">algorithm_subset</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">algorithm_subset</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="n">dataset_results_df</span> <span class="o">=</span> <span class="n">compare_two_algorithms</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dataset_results_df</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">algorithm_subset_TAT</span><span class="p">:</span>
+                <span class="n">plot_probabilities</span><span class="p">(</span><span class="n">algorithm_subset_TAT</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">algorithm_subset_TAT</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
                     <span class="n">dataset_results_df</span> <span class="o">=</span> <span class="n">compare_two_algorithms</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dataset_results_df</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="n">print_all</span><span class="p">)</span>
                     <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -636,46 +575,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Steffen Tunkel.
-
-    </p>
+    <p>&#169; Copyright 2021, Steffen Tunkel.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
