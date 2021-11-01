@@ -1,4 +1,4 @@
-name: CARET1_GaussianNB
+name: CARET_GaussianNB
 type: classification
 framework: caret
 package: naivebayes
@@ -19,26 +19,26 @@ parameters:
     default: 0
 ---
 
-name: CARET2_GaussianNB
-type: classification
-framework: caret
-package: klaR
-class: nb
-features: [double,categorical]
-properties:
-  same: score_exact
-  scramble: score_exact
-  reorder: score_exact
-  const: score_exact
-  opposite: score_exact
-parameters:
-  fL:
-    default: 0.0
-  usekernel:
-    default: False
-  adjust:
-    default: 0
----
+#name: CARET2_GaussianNB
+#type: classification
+#framework: caret
+#package: klaR
+#class: nb
+#features: [double,categorical]
+#properties:
+#  same: score_exact
+#  scramble: score_exact
+#  reorder: score_exact
+#  const: score_exact
+#  opposite: score_exact
+#parameters:
+#  fL:
+#    default: 0.0
+#  usekernel:
+#    default: False
+#  adjust:
+#    default: 0
+#---
 
 
 name: SKLEARN_GaussianNB
