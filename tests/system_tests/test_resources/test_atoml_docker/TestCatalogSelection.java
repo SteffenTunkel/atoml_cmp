@@ -27,6 +27,8 @@ import atoml.smoke.Uniform;
 import atoml.smoke.VeryLarge;
 import atoml.smoke.VerySmall;
 import atoml.smoke.Zeroes;
+import atoml.smoke.RandomNumericSplit;
+import atoml.smoke.UniformSplit;
 import atoml.smoke.SmoketestFromArff;
 
 public class TestCatalog {
@@ -41,8 +43,8 @@ public class TestCatalog {
 	 *      new SmoketestFromArff("TestName", "/ArffFileTraining.arff", "/ArffFileTest.arff")
 	 */
 	public static final List<SmokeTest> SMOKETESTS = List.of(
-			new Uniform(),
-			new RandomNumeric(),
+			new UniformSplit(),
+			new RandomNumericSplit(),
 	        new SmoketestFromArff("BreastCancer", "/BreastCancer_training.arff", "/BreastCancer_test.arff"));
 	/**
 	 * Immutable list of all metamorphic tests, needed by atoml but not used by atoml_cmp.

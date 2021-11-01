@@ -11,7 +11,8 @@ class TestRunThrough(unittest.TestCase):
         num_datasets = 3
         num_algorithms = 1
         num_frameworks = 4
-        expected_num_csv_files = num_frameworks * num_algorithms * num_datasets
+        training_as_test_factor = 2
+        expected_num_csv_files = num_frameworks * num_algorithms * num_datasets * training_as_test_factor
 
         csv_files_evaluated = main("tests/system_tests/test_resources/test_dockerlist.json",
                                    yaml_folder="tests/system_tests/test_resources/test_algorithm_descriptions")
