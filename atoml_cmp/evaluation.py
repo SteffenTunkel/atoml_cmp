@@ -18,10 +18,10 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 from scipy.stats import chi2_contingency, ks_2samp
 from typing import List
 
-RESULT_DF_COLUMNS = ["equal_pred", "TP", "FP", "FN", "TN", "ks_pval", "chi2_pval",
+RESULT_DF_COLUMNS = ["delta", "delta_score", "TP", "FP", "FN", "TN", "ks_pval", "chi2_pval",
                      "accs_fw1", "accs_fw2", "algorithm", "framework_1", "framework_2", "dataset", "training_as_test"]
 ALPHA_THRESHOLD = 0.05
-
+EPSILON_EQUAL_SCORE = 1e-3
 
 ########################################
 # CLASSES
@@ -291,7 +291,24 @@ def chi2_statistic(pred: [pd.Series, pd.Series], print_all=True):
     return p
 
 
-def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, i: int, print_all=True):
+def get_delta_of_scores(pred_prob1: pd.Series, pred_prob2:pd.Series) -> int:
+    """Compares the scores (pred_prob) of two algorithms and calculates a delta value.
+
+    Args:
+        pred_prob1: prediction probabilities (scores) of the first algorithm
+        pred_prob2: prediction probabilities (scores) of the second algorithm
+
+    Returns:
+        number of results where the difference between the scores is greater than a defined epsilon
+    """
+    delta_score = 0
+    for score1, score2 in zip(pred_prob1, pred_prob2):
+        if abs(score1 - score2) > EPSILON_EQUAL_SCORE:
+            delta_score += 1
+    return delta_score
+
+
+def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_all=True):
     """Compares two prediction results and creates different metrics.
     The metrics are the confusion matrix, the Kolmogorov–Smirnov test result, the Chi2 test result and also the
     accuracy of the two prediction sets compared to the actual values
@@ -300,14 +317,13 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, i: int,
         x: the results for one specific algorithm implementation on one dataset
         y: the results for one specific algorithm implementation on one dataset
         df: result overview dataframe with different metrics
-        i: iterator
         print_all (boolean): if flag is set results are printed in the function
 
     Returns:
         DataFrame: result overview dataframe with different metrics
     """
     if print_all:
-        print('%d: Comparison between %s and %s for %s' % (i, x.framework.upper(), y.framework.upper(), x.name))
+        print(f'Comparison between {x.framework.upper()} and {y.framework.upper()} for {x.name}')
 
     df = df.append(pd.Series(dtype="object"), ignore_index=True)
     df.loc[df.index[-1], 'algorithm'] = x.name
@@ -316,12 +332,13 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, i: int,
     df.loc[df.index[-1], 'dataset'] = x.dataset_type
     df.loc[df.index[-1], 'training_as_test'] = x.training_as_test
 
-    equal_pred, cm = create_confusion_matrix([x.predictions, y.predictions], print_all)
-    df.loc[df.index[-1], 'equal_pred'] = equal_pred
+    _, cm = create_confusion_matrix([x.predictions, y.predictions], print_all)
     df.loc[df.index[-1], 'TP'] = cm[0, 0]
     df.loc[df.index[-1], 'FP'] = cm[0, 1]
     df.loc[df.index[-1], 'FN'] = cm[1, 0]
     df.loc[df.index[-1], 'TN'] = cm[1, 1]
+    df.loc[df.index[-1], 'delta'] = cm[0, 1] + cm[1, 0]
+    df.loc[df.index[-1], 'delta_score'] = get_delta_of_scores(x.probabilities, y.probabilities)
 
     ks_pval, _ = ks_statistic([x.probabilities, y.probabilities], print_all)
     df.loc[df.index[-1], 'ks_pval'] = ("%0.3f" % ks_pval)
@@ -485,7 +502,6 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
         print(f"processing predictions on {ds}.")
         # create a dataframe for the results
         dataset_results_df = pd.DataFrame(columns=RESULT_DF_COLUMNS)
-        i = 0
 
         algorithm_subset_by_dataset_without_TAT = [x for x in algorithm_list
                                                    if (x.dataset_type == ds) & (x.training_as_test is False)]
@@ -498,14 +514,12 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
             if algorithm_subset:
                 plot_probabilities(algorithm_subset, archive, print_all=print_all)
                 for a, b in itertools.combinations(algorithm_subset, 2):
-                    dataset_results_df = compare_two_algorithms(a, b, dataset_results_df, i, print_all=print_all)
-                    i = i + 1
+                    dataset_results_df = compare_two_algorithms(a, b, dataset_results_df, print_all=print_all)
 
             if algorithm_subset_TAT:
                 plot_probabilities(algorithm_subset_TAT, archive, print_all=print_all)
                 for a, b in itertools.combinations(algorithm_subset_TAT, 2):
-                    dataset_results_df = compare_two_algorithms(a, b, dataset_results_df, i, print_all=print_all)
-                    i = i + 1
+                    dataset_results_df = compare_two_algorithms(a, b, dataset_results_df, print_all=print_all)
 
         overall_results_df = overall_results_df.append(dataset_results_df)
 
