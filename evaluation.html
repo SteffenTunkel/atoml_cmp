@@ -76,71 +76,116 @@ and the algorithm-descriptions folder as input. From that it generates result me
 The results can be saved in an archive.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">Algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#Algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">Algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#Algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm" title="Permalink to this definition"></a></dt>
 <dd><p>Holds all information about one specific implementation tested on one specific dataset.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.filename">
 <span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.filename" title="Permalink to this definition"></a></dt>
 <dd><p>csv file name of the data file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.path">
 <span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.path" title="Permalink to this definition"></a></dt>
 <dd><p>path to the csv file folder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.framework">
 <span class="sig-name descname"><span class="pre">framework</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.framework" title="Permalink to this definition"></a></dt>
 <dd><p>framework of the implementation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.name">
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.name" title="Permalink to this definition"></a></dt>
 <dd><p>name of the implemented algorithm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.dataset_type">
 <span class="sig-name descname"><span class="pre">dataset_type</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.dataset_type" title="Permalink to this definition"></a></dt>
 <dd><p>name of the dataset the implementation was tested with</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.test_as_training">
-<span class="sig-name descname"><span class="pre">test_as_training</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.test_as_training" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.training_as_test">
+<span class="sig-name descname"><span class="pre">training_as_test</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.training_as_test" title="Permalink to this definition"></a></dt>
 <dd><p>flag for the use of training data as test data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.predictions">
 <span class="sig-name descname"><span class="pre">predictions</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.predictions" title="Permalink to this definition"></a></dt>
 <dd><p>predicted labels of the implementation on the data set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.probabilities">
 <span class="sig-name descname"><span class="pre">probabilities</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.probabilities" title="Permalink to this definition"></a></dt>
 <dd><p>tuple of predicted probabilities for both classes of the implementation on the data set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Algorithm.actuals">
 <span class="sig-name descname"><span class="pre">actuals</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Algorithm.actuals" title="Permalink to this definition"></a></dt>
 <dd><p>actual labels of the data set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Archive">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">Archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#Archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.Archive" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">Archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#Archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.Archive" title="Permalink to this definition"></a></dt>
 <dd><p>Instance of an archive where all the generated metrics and plots can be saved.</p>
 <blockquote>
 <div><p>The archive folder name is generated with a time stamp by default.
-Alternativly, a name can be given to the constructor.
+Alternatively, a name can be given to the constructor.
 In addition to the evaluation results also the foundation can be saved, meaning the current yaml-folder.
 Be aware that this can lead to inconsistencies, when changing the folder’s content during runtime.
 Moreover, the predictions can be saved for reproducing the evaluations.</p>
@@ -149,6 +194,11 @@ Moreover, the predictions can be saved for reproducing the evaluations.</p>
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.Archive.path">
 <span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#atoml_cmp.evaluation.Archive.path" title="Permalink to this definition"></a></dt>
 <dd><p>path of the archive</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -157,7 +207,24 @@ Moreover, the predictions can be saved for reproducing the evaluations.</p>
 <dd><p>if flag is set results are printed in the function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>boolean</p>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="atoml_cmp.evaluation.Archive.archive_data_frame">
+<span class="sig-name descname"><span class="pre">archive_data_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'result_table.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#Archive.archive_data_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.Archive.archive_data_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Archives a dataframe in a csv file in the archive path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – dataframe to be archived</p></li>
+<li><p><strong>filename</strong> – filename of the generated csv file</p></li>
+<li><p><strong>by_dataset</strong> – True if the dataframe is a view for a specific dataset and should be saved in a separate folder.</p></li>
+<li><p><strong>by_algorithm</strong> – True if the dataframe is a view for a specific algorithm type and should be saved in a separate folder.
+Only done if by_dataset is False</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -166,27 +233,23 @@ Moreover, the predictions can be saved for reproducing the evaluations.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.chi2_statistic">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">chi2_statistic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#chi2_statistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.chi2_statistic" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">chi2_statistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#chi2_statistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.chi2_statistic" title="Permalink to this definition"></a></dt>
 <dd><p>Does the Chi-squared test with two sets of prediction labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pred</strong> (<em>[</em><em>Series</em><em>, </em><em>Series</em>) – Two sets of prediction labels</p></li>
-<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+<li><p><strong>pred1</strong> – Series of predicted labels</p></li>
+<li><p><strong>pred2</strong> – Series of predicted labels</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>p-value of chi-squared test</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
 </dl>
+<p>Returns: p-value of chi-squared test</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.compare_two_algorithms">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">compare_two_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#atoml_cmp.evaluation.Algorithm" title="atoml_cmp.evaluation.Algorithm"><span class="pre">atoml_cmp.evaluation.Algorithm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#atoml_cmp.evaluation.Algorithm" title="atoml_cmp.evaluation.Algorithm"><span class="pre">atoml_cmp.evaluation.Algorithm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#compare_two_algorithms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.compare_two_algorithms" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">compare_two_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#atoml_cmp.evaluation.Algorithm" title="atoml_cmp.evaluation.Algorithm"><span class="pre">atoml_cmp.evaluation.Algorithm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#atoml_cmp.evaluation.Algorithm" title="atoml_cmp.evaluation.Algorithm"><span class="pre">atoml_cmp.evaluation.Algorithm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#compare_two_algorithms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.compare_two_algorithms" title="Permalink to this definition"></a></dt>
 <dd><p>Compares two prediction results and creates different metrics.
 The metrics are the confusion matrix, the Kolmogorov–Smirnov test result, the Chi2 test result and also the
 accuracy of the two prediction sets compared to the actual values</p>
@@ -196,48 +259,41 @@ accuracy of the two prediction sets compared to the actual values</p>
 <li><p><strong>x</strong> – the results for one specific algorithm implementation on one dataset</p></li>
 <li><p><strong>y</strong> – the results for one specific algorithm implementation on one dataset</p></li>
 <li><p><strong>df</strong> – result overview dataframe with different metrics</p></li>
-<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>result overview dataframe with different metrics</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>DataFrame</p>
-</dd>
 </dl>
+<p>Returns: result overview dataframe with different metrics</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.create_confusion_matrix">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">create_confusion_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#create_confusion_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.create_confusion_matrix" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">create_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_prob1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_prob2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#create_confusion_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.create_confusion_matrix" title="Permalink to this definition"></a></dt>
 <dd><p>Creates the confusion matrix between 2 sets of labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>predictions</strong> (<em>[</em><em>Series</em><em>, </em><em>Series</em><em>]</em>) – 2 sets of prediction labels</p></li>
-<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+<li><p><strong>pred_prob1</strong> – Series of predicted probabilities (scores)</p></li>
+<li><p><strong>pred_prob2</strong> – Series of predicted probabilities (scores)</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p>Equality flag: True, if predicted labels are identical</p></li>
+<li><p>Equality flag - True, if predicted labels are identical</p></li>
 <li><p>Confusion matrix</p></li>
 </ul>
 </p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(boolean, 2x2 array)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.create_views_by_algorithm">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">create_views_by_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#atoml_cmp.evaluation.Archive" title="atoml_cmp.evaluation.Archive"><span class="pre">atoml_cmp.evaluation.Archive</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#create_views_by_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.create_views_by_algorithm" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">create_views_by_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#atoml_cmp.evaluation.Archive" title="atoml_cmp.evaluation.Archive"><span class="pre">atoml_cmp.evaluation.Archive</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#create_views_by_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.create_views_by_algorithm" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a views on dataframe based on the algorithms.</p>
 <p>The function creates smaller dataframes only containing comparison results based on the same algorithm out of a
-bigger dataframe. It works either direcly with a DataFrame as input or with the path of a csv file containing the
+bigger dataframe. It works either directly with a DataFrame as input or with the path of a csv file containing the
 input dataframe. If both are given the DataFrame is used. The result can be shown and/or saved in an archive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -245,7 +301,7 @@ input dataframe. If both are given the DataFrame is used. The result can be show
 <li><p><strong>df</strong> – DataFrame from which to create views for the single algorithms</p></li>
 <li><p><strong>csv_file</strong> – path to the csv file with the Dataframe from which to create views for the single algorithms</p></li>
 <li><p><strong>archive</strong> – archive instance which is used to save data</p></li>
-<li><p><strong>print_all</strong> – (boolean): if flag is set results are printed in the function</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -256,7 +312,7 @@ input dataframe. If both are given the DataFrame is used. The result can be show
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.evaluate_results">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">evaluate_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_tests_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#evaluate_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.evaluate_results" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">evaluate_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_tests_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#evaluate_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.evaluate_results" title="Permalink to this definition"></a></dt>
 <dd><p>Main function for the evaluation of the prediction csv files.</p>
 <p>The function reads in all csv files from a specific folder. Gathers meta data from the csv file names
 and evaluates the content of the files. For that it creates different metrics and histograms which can be saved
@@ -271,34 +327,32 @@ the yaml files will not be saved in the archive.</p></li>
 no archive will be created.</p></li>
 <li><p><strong>gen_tests_folder</strong> – relative path to the folder where the test cases are located. This is only for the archiving.
 If no folder is given, the tests will not be stored in archive.</p></li>
-<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
 </dl>
+<p>Return: number of read csv files</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.get_data_from_csv">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">get_data_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#get_data_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.get_data_from_csv" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">get_data_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#get_data_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.get_data_from_csv" title="Permalink to this definition"></a></dt>
 <dd><p>Reads in a csv file with the specified format and extracts the different columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – relative or absolute filepath</p></li>
-<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+<li><p><strong>filename</strong> – relative or absolute filepath</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="simple">
-<dt>Returns: a tuple with 4 variables</dt><dd><dl class="simple">
-<dt>(Series, Series, Series, Series):</dt><dd><ul class="simple">
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
 <li><p>predicted labels</p></li>
 <li><p>predicted probability for class 0</p></li>
 <li><p>predicted probability for class 1</p></li>
 <li><p>actual labels</p></li>
 </ul>
-</dd>
-</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -314,15 +368,13 @@ If no folder is given, the tests will not be stored in archive.</p></li>
 <li><p><strong>pred_prob2</strong> – prediction probabilities (scores) of the second algorithm</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>number of results where the difference between the scores is greater than a defined epsilon</p>
-</dd>
 </dl>
+<p>Returns: number of results where the difference between the scores is greater than a defined epsilon</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.get_pred_file_metadata">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">get_pred_file_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#get_pred_file_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.get_pred_file_metadata" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">get_pred_file_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#get_pred_file_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.get_pred_file_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Splits a prediction csv filename to get the information it contains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -339,21 +391,25 @@ Example: ‘pred_FRAMEWORK_Algorithm_TestDataType.csv’</p>
 </ul>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(str, str, str)</p>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – if the filename is not a csv filename</p></li>
+<li><p><strong>RuntimeWarning</strong> – if the filename does not contain the right amount of parameters</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.ks_statistic">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">ks_statistic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#ks_statistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.ks_statistic" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">ks_statistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_prob1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_prob2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#ks_statistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.ks_statistic" title="Permalink to this definition"></a></dt>
 <dd><p>Does the Kolmogorov–Smirnov test with two probability distributions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>probabilities</strong> (<em>[</em><em>Series</em><em>, </em><em>Series</em>) – Two sets of propability distributions</p></li>
-<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+<li><p><strong>pred_prob1</strong> – Series of predicted probabilities (scores)</p></li>
+<li><p><strong>pred_prob2</strong> – Series of predicted probabilities (scores)</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -363,15 +419,12 @@ Example: ‘pred_FRAMEWORK_Algorithm_TestDataType.csv’</p>
 </ul>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(float, float)</p>
-</dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.evaluation.plot_probabilities">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">plot_probabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#atoml_cmp.evaluation.Algorithm" title="atoml_cmp.evaluation.Algorithm"><span class="pre">atoml_cmp.evaluation.Algorithm</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#atoml_cmp.evaluation.Archive" title="atoml_cmp.evaluation.Archive"><span class="pre">atoml_cmp.evaluation.Archive</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#plot_probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.plot_probabilities" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.evaluation.</span></span><span class="sig-name descname"><span class="pre">plot_probabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#atoml_cmp.evaluation.Algorithm" title="atoml_cmp.evaluation.Algorithm"><span class="pre">atoml_cmp.evaluation.Algorithm</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#atoml_cmp.evaluation.Archive" title="atoml_cmp.evaluation.Archive"><span class="pre">atoml_cmp.evaluation.Archive</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/atoml_cmp/evaluation.html#plot_probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.evaluation.plot_probabilities" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the probability distributions of a list of implementations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -379,7 +432,7 @@ Example: ‘pred_FRAMEWORK_Algorithm_TestDataType.csv’</p>
 <li><p><strong>algorithms</strong> – list of implementation instances which probabilities are to plot</p></li>
 <li><p><strong>archive</strong> – archive instance which is used to save data</p></li>
 <li><p><strong>show_plot</strong> – if flag is set the plot is shown in program</p></li>
-<li><p><strong>print_all</strong> (<em>boolean</em>) – if flag is set results are printed in the function</p></li>
+<li><p><strong>print_all</strong> – if flag is set results are printed in the function</p></li>
 </ul>
 </dd>
 </dl>

@@ -69,6 +69,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Runs the tool.</span>
 
 <span class="sd">A set of functions needed to run the build and run the test generation and the tests themselves. Includes the main&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">atoml_cmp.evaluation</span> <span class="kn">import</span> <span class="n">evaluate_results</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -100,7 +101,7 @@
 <span class="sd">    docker is either not installed or just not running.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        RuntimeError</span>
+<span class="sd">        RuntimeError: if there is no running instances of docker</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">check</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;info&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">check</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -108,7 +109,7 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="run_docker_container"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.run_docker_container">[docs]</a><span class="k">def</span> <span class="nf">run_docker_container</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">bindings</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="run_docker_container"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.run_docker_container">[docs]</a><span class="k">def</span> <span class="nf">run_docker_container</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">bindings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Starts a docker container.</span>
 
 <span class="sd">    Args:</span>
@@ -145,7 +146,7 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="build_docker_collection"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.build_docker_collection">[docs]</a><span class="k">def</span> <span class="nf">build_docker_collection</span><span class="p">(</span><span class="n">d_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">no_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="build_docker_collection"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.build_docker_collection">[docs]</a><span class="k">def</span> <span class="nf">build_docker_collection</span><span class="p">(</span><span class="n">d_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">no_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Builds a set of docker images defined by a list of dictionaries.</span>
 
 <span class="sd">    Args:</span>
@@ -169,7 +170,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="run_docker_collection"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.run_docker_collection">[docs]</a><span class="k">def</span> <span class="nf">run_docker_collection</span><span class="p">(</span><span class="n">d_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="run_docker_collection"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.run_docker_collection">[docs]</a><span class="k">def</span> <span class="nf">run_docker_collection</span><span class="p">(</span><span class="n">d_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>
     <span class="sd">&quot;&quot;&quot;Runs a set of docker container defined by a list of dictionaries.</span>
 
 <span class="sd">    Args:</span>
@@ -188,7 +189,7 @@
         <span class="n">run_docker_container</span><span class="p">(</span><span class="n">docker_name</span><span class="p">,</span> <span class="o">*</span><span class="n">bindings</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="n">option</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="split_docker_list"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.split_docker_list">[docs]</a><span class="k">def</span> <span class="nf">split_docker_list</span><span class="p">(</span><span class="n">d_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="split_docker_list"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.split_docker_list">[docs]</a><span class="k">def</span> <span class="nf">split_docker_list</span><span class="p">(</span><span class="n">d_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>
     <span class="sd">&quot;&quot;&quot;Splits the list of docker in test generation docker and test environment docker.</span>
 
 <span class="sd">    The split is done by checking for the &#39;generator&#39; key in the dockers dict defined in the json file.</span>
@@ -222,12 +223,12 @@
     <span class="k">return</span> <span class="n">generator_d_list</span><span class="p">,</span> <span class="n">test_d_list</span></div>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">dockerlist_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gen_tests_folder</span><span class="o">=</span><span class="s2">&quot;generated-tests&quot;</span><span class="p">,</span> <span class="n">pred_folder</span><span class="o">=</span><span class="s2">&quot;predictions&quot;</span><span class="p">,</span>
-         <span class="n">yaml_folder</span><span class="o">=</span><span class="s2">&quot;algorithm-descriptions&quot;</span><span class="p">,</span> <span class="n">archive_folder</span><span class="o">=</span><span class="s2">&quot;archive&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">dockerlist_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gen_tests_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;generated-tests&quot;</span><span class="p">,</span> <span class="n">pred_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;predictions&quot;</span><span class="p">,</span>
+         <span class="n">yaml_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;algorithm-descriptions&quot;</span><span class="p">,</span> <span class="n">archive_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;archive&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;entrypoint for the overall pipeline.</span>
 
 <span class="sd">    Runs the whole pipeline of the tool. This includes clearing old data from output folder,</span>
-<span class="sd">    building test / testgeneration docker, test generation, executing tests, compare results of the tests</span>
+<span class="sd">    building test / test generation docker, test generation, executing tests, compare results of the tests</span>
 <span class="sd">    and finally saving the information in an archive.</span>
 
 <span class="sd">    Args:</span>
@@ -238,7 +239,7 @@
 <span class="sd">        archive_folder (str): directory, where to save the archive.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        int: Number of evaluated csv files.</span>
+<span class="sd">        - Number of evaluated csv files.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">delete_folder</span><span class="p">(</span><span class="n">gen_tests_folder</span><span class="p">)</span>
