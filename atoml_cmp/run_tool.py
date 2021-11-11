@@ -1,6 +1,7 @@
 """Runs the tool.
 
 A set of functions needed to run the build and run the test generation and the tests themselves. Includes the main"""
+from typing import List, Dict, Any
 
 from atoml_cmp.evaluation import evaluate_results
 import json
@@ -32,7 +33,7 @@ def check_docker_state():
     docker is either not installed or just not running.
 
     Raises:
-        RuntimeError
+        RuntimeError: if there is no running instances of docker
     """
     check = subprocess.run(["docker", "info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if check.returncode != 0:
@@ -40,7 +41,7 @@ def check_docker_state():
         raise RuntimeError(error_msg)
 
 
-def run_docker_container(name: str, *bindings: list, option=None):
+def run_docker_container(name: str, *bindings: List[str], option: str = None):
     """Starts a docker container.
 
     Args:
@@ -77,7 +78,7 @@ def run_docker_container(name: str, *bindings: list, option=None):
         raise RuntimeError(msg)
 
 
-def build_docker_collection(d_list: list, no_cache: bool = False):
+def build_docker_collection(d_list: List[Dict[str, Any]], no_cache: bool = False):
     """Builds a set of docker images defined by a list of dictionaries.
 
     Args:
@@ -101,7 +102,7 @@ def build_docker_collection(d_list: list, no_cache: bool = False):
             raise RuntimeError(error_msg)
 
 
-def run_docker_collection(d_list: list):
+def run_docker_collection(d_list: List[Dict[str, Any]]):
     """Runs a set of docker container defined by a list of dictionaries.
 
     Args:
@@ -120,7 +121,7 @@ def run_docker_collection(d_list: list):
         run_docker_container(docker_name, *bindings, option=option)
 
 
-def split_docker_list(d_list: list):
+def split_docker_list(d_list: List[Dict[str, Any]]):
     """Splits the list of docker in test generation docker and test environment docker.
 
     The split is done by checking for the 'generator' key in the dockers dict defined in the json file.
@@ -154,12 +155,12 @@ def split_docker_list(d_list: list):
     return generator_d_list, test_d_list
 
 
-def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="predictions",
-         yaml_folder="algorithm-descriptions", archive_folder="archive"):
+def main(dockerlist_file: str, gen_tests_folder: str = "generated-tests", pred_folder: str = "predictions",
+         yaml_folder: str = "algorithm-descriptions", archive_folder: str = "archive") -> int:
     """entrypoint for the overall pipeline.
 
     Runs the whole pipeline of the tool. This includes clearing old data from output folder,
-    building test / testgeneration docker, test generation, executing tests, compare results of the tests
+    building test / test generation docker, test generation, executing tests, compare results of the tests
     and finally saving the information in an archive.
 
     Args:
@@ -170,7 +171,7 @@ def main(dockerlist_file: str, gen_tests_folder="generated-tests", pred_folder="
         archive_folder (str): directory, where to save the archive.
 
     Returns:
-        int: Number of evaluated csv files.
+        - Number of evaluated csv files.
 
     """
     delete_folder(gen_tests_folder)

@@ -16,12 +16,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score
 from scipy.stats import chi2_contingency, ks_2samp
-from typing import List
+from typing import List, Tuple
 
 RESULT_DF_COLUMNS = ["delta", "delta_score", "TP", "FP", "FN", "TN", "ks_pval", "chi2_pval",
                      "accs_fw1", "accs_fw2", "algorithm", "framework_1", "framework_2", "dataset", "training_as_test"]
 ALPHA_THRESHOLD = 0.05
 EPSILON_EQUAL_SCORE = 1e-3
+
 
 ########################################
 # CLASSES
@@ -32,18 +33,19 @@ class Algorithm:
     """Holds all information about one specific implementation tested on one specific dataset.
 
     Attributes:
-        filename: csv file name of the data file
-        path: path to the csv file folder
-        framework: framework of the implementation
-        name: name of the implemented algorithm
-        dataset_type: name of the dataset the implementation was tested with
-        test_as_training: flag for the use of training data as test data
-        predictions: predicted labels of the implementation on the data set
-        probabilities: tuple of predicted probabilities for both classes of the implementation on the data set
-        actuals: actual labels of the data set
+        filename (str): csv file name of the data file
+        path (str): path to the csv file folder
+        framework (str): framework of the implementation
+        name (str): name of the implemented algorithm
+        dataset_type (str): name of the dataset the implementation was tested with
+        training_as_test (bool): flag for the use of training data as test data
+        predictions (pd.Series): predicted labels of the implementation on the data set
+        probabilities (pd.Series):
+            tuple of predicted probabilities for both classes of the implementation on the data set
+        actuals (pd.Series): actual labels of the data set
     """
 
-    def __init__(self, filename: str, path: str = None, print_all=True):
+    def __init__(self, filename: str, path: str = None, print_all: bool = True):
         self.filename = filename
         self.path = path
         self.framework, self.name, self.dataset_type, self.training_as_test = get_pred_file_metadata(filename)
@@ -58,18 +60,18 @@ class Archive:
     """Instance of an archive where all the generated metrics and plots can be saved.
 
     The archive folder name is generated with a time stamp by default.
-    Alternativly, a name can be given to the constructor.
+    Alternatively, a name can be given to the constructor.
     In addition to the evaluation results also the foundation can be saved, meaning the current yaml-folder.
     Be aware that this can lead to inconsistencies, when changing the folder's content during runtime.
     Moreover, the predictions can be saved for reproducing the evaluations.
 
    Attributes:
-       path: path of the archive
-       print_all (boolean): if flag is set results are printed in the function
+       path (str): path of the archive
+       print_all (bool): if flag is set results are printed in the function
    """
 
     def __init__(self, name: str = None, archive_folder=None, yaml_folder=None,
-                 pred_folder=None, test_folder=None, print_all=True):
+                 pred_folder=None, test_folder=None, print_all: bool = True):
         self.print_all = print_all
 
         # create the archive folder
@@ -127,8 +129,19 @@ class Archive:
         if self.print_all:
             print("New archive folder created: %s\n" % self.path)
 
-    def archive_data_frame(self, df, filename="result_table.csv", by_dataset=False, by_algorithm=False):
-        # save the summary of the evaluation in a csv file
+    def archive_data_frame(self, df: pd.DataFrame, filename: str = "result_table.csv",
+                           by_dataset: bool = False, by_algorithm: bool = False):
+        """Archives a dataframe in a csv file in the archive path.
+
+        Args:
+            df: dataframe to be archived
+            filename: filename of the generated csv file
+            by_dataset:
+                True if the dataframe is a view for a specific dataset and should be saved in a separate folder.
+            by_algorithm:
+                True if the dataframe is a view for a specific algorithm type and should be saved in a separate folder.
+                Only done if by_dataset is False
+        """
         if by_dataset:
             csv_save_path = os.path.join(self.path, 'views_by_dataset', filename)
 
@@ -146,7 +159,7 @@ class Archive:
 ########################################
 
 
-def get_pred_file_metadata(filename: str):
+def get_pred_file_metadata(filename: str) -> Tuple[str, str, str, bool]:
     """Splits a prediction csv filename to get the information it contains.
 
     Args:
@@ -156,11 +169,14 @@ def get_pred_file_metadata(filename: str):
             Example: 'pred_FRAMEWORK_Algorithm_TestDataType.csv'
 
     Returns:
-        (str, str, str):
-            - Name of the framework
-            - Name of the algorithm
-            - Name of the dataset
-            - Training data as test data flag
+        - Name of the framework
+        - Name of the algorithm
+        - Name of the dataset
+        - Training data as test data flag
+
+    Raises:
+        RuntimeError: if the filename is not a csv filename
+        RuntimeWarning: if the filename does not contain the right amount of parameters
     """
     if filename.endswith(".csv"):
         string = filename[:-4]
@@ -169,29 +185,27 @@ def get_pred_file_metadata(filename: str):
         if substring[-2] == "TrainingAsTest":
             training_as_test = True
         if len(substring) != (training_as_test + 5):
-            print("Warning: The prediction filename: %s doesn't consist out the right amount of substrings." % filename)
+            RuntimeWarning("The prediction filename: %s doesn't consist out the right amount of substrings." % filename)
         framework = substring[1]
         algorithm = substring[2]
         dataset_type = substring[3]
+        return framework, algorithm, dataset_type, training_as_test
     else:
-        print("Error: %s is not a csv file." % filename)
-        return
-    return framework, algorithm, dataset_type, training_as_test
+        RuntimeError("%s is not a csv file." % filename)
 
 
-def get_data_from_csv(filename: str, print_all=True):
+def get_data_from_csv(filename: str, print_all: bool = True) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
     """Reads in a csv file with the specified format and extracts the different columns.
 
     Args:
-        filename (str): relative or absolute filepath
-        print_all (boolean): if flag is set results are printed in the function
+        filename: relative or absolute filepath
+        print_all: if flag is set results are printed in the function
 
-    Returns: a tuple with 4 variables
-        (Series, Series, Series, Series):
-            - predicted labels
-            - predicted probability for class 0
-            - predicted probability for class 1
-            - actual labels
+    Returns:
+        - predicted labels
+        - predicted probability for class 0
+        - predicted probability for class 1
+        - actual labels
     """
     if print_all:
         print("read: %s" % filename)
@@ -208,23 +222,24 @@ def get_data_from_csv(filename: str, print_all=True):
 ########################################
 
 
-def create_confusion_matrix(predictions: [pd.Series, pd.Series], print_all=True):
+def create_confusion_matrix(pred_prob1: pd.Series, pred_prob2: pd.Series,
+                            print_all: bool = True) -> Tuple[bool, np.ndarray]:
     """Creates the confusion matrix between 2 sets of labels.
 
     Args:
-        predictions ([Series, Series]): 2 sets of prediction labels
-        print_all (boolean): if flag is set results are printed in the function
+        pred_prob1: Series of predicted probabilities (scores)
+        pred_prob2: Series of predicted probabilities (scores)
+        print_all: if flag is set results are printed in the function
 
     Returns:
-        (boolean, 2x2 array):
-            - Equality flag: True, if predicted labels are identical
-            - Confusion matrix
+        - Equality flag - True, if predicted labels are identical
+        - Confusion matrix
     """
-    cm = confusion_matrix(predictions[0], predictions[1])
+    cm = confusion_matrix(pred_prob1, pred_prob2)
     # if all the values are the same, the confusion matrix has only one element this is checked and changed here
     if cm.shape == (1, 1):
-        num_elements = predictions[0].shape[0]
-        if predictions[0][0] == 0:
+        num_elements = pred_prob1.shape[0]
+        if pred_prob1[0] == 0:
             cm = np.array([[num_elements, 0], [0, 0]])
         else:
             cm = np.array([[0, 0], [0, num_elements]])
@@ -237,19 +252,19 @@ def create_confusion_matrix(predictions: [pd.Series, pd.Series], print_all=True)
     return equal, cm
 
 
-def ks_statistic(probabilities: [pd.Series, pd.Series], print_all=True):
+def ks_statistic(pred_prob1: pd.Series, pred_prob2: pd.Series, print_all: bool = True) -> Tuple[float, float]:
     """Does the Kolmogorov–Smirnov test with two probability distributions.
 
     Args:
-        probabilities ([Series, Series): Two sets of propability distributions
-        print_all (boolean): if flag is set results are printed in the function
+        pred_prob1: Series of predicted probabilities (scores)
+        pred_prob2: Series of predicted probabilities (scores)
+        print_all: if flag is set results are printed in the function
 
     Returns:
-        (float, float):
-            - p-value of KS test
-            - KS test statistic
+        - p-value of KS test
+        - KS test statistic
     """
-    ks_result = ks_2samp(probabilities[0], probabilities[1])
+    ks_result = ks_2samp(pred_prob1, pred_prob2)
     p = ks_result.pvalue
     ks_score = ks_result.statistic
 
@@ -264,17 +279,17 @@ def ks_statistic(probabilities: [pd.Series, pd.Series], print_all=True):
     return p, ks_score
 
 
-def chi2_statistic(pred: [pd.Series, pd.Series], print_all=True):
+def chi2_statistic(pred1: pd.Series, pred2: pd.Series, print_all: bool = True):
     """Does the Chi-squared test with two sets of prediction labels.
 
     Args:
-        pred ([Series, Series): Two sets of prediction labels
-        print_all (boolean): if flag is set results are printed in the function
+        pred1: Series of predicted labels
+        pred2: Series of predicted labels
+        print_all: if flag is set results are printed in the function
 
-    Returns:
-        float: p-value of chi-squared test
+    Returns: p-value of chi-squared test
     """
-    data = [[sum(pred[0]), len(pred[0]) - sum(pred[0])], [sum(pred[1]), len(pred[1]) - sum(pred[1])]]
+    data = [[sum(pred1), len(pred1) - sum(pred1)], [sum(pred2), len(pred2) - sum(pred2)]]
     try:
         stat, p, dof, expected = chi2_contingency(data)
         # interpret p-value
@@ -291,15 +306,14 @@ def chi2_statistic(pred: [pd.Series, pd.Series], print_all=True):
     return p
 
 
-def get_delta_of_scores(pred_prob1: pd.Series, pred_prob2:pd.Series) -> int:
+def get_delta_of_scores(pred_prob1: pd.Series, pred_prob2: pd.Series) -> int:
     """Compares the scores (pred_prob) of two algorithms and calculates a delta value.
 
     Args:
         pred_prob1: prediction probabilities (scores) of the first algorithm
         pred_prob2: prediction probabilities (scores) of the second algorithm
 
-    Returns:
-        number of results where the difference between the scores is greater than a defined epsilon
+    Returns: number of results where the difference between the scores is greater than a defined epsilon
     """
     delta_score = 0
     for score1, score2 in zip(pred_prob1, pred_prob2):
@@ -308,7 +322,7 @@ def get_delta_of_scores(pred_prob1: pd.Series, pred_prob2:pd.Series) -> int:
     return delta_score
 
 
-def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_all=True):
+def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_all: bool = True) -> pd.DataFrame:
     """Compares two prediction results and creates different metrics.
     The metrics are the confusion matrix, the Kolmogorov–Smirnov test result, the Chi2 test result and also the
     accuracy of the two prediction sets compared to the actual values
@@ -317,10 +331,9 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_a
         x: the results for one specific algorithm implementation on one dataset
         y: the results for one specific algorithm implementation on one dataset
         df: result overview dataframe with different metrics
-        print_all (boolean): if flag is set results are printed in the function
+        print_all: if flag is set results are printed in the function
 
-    Returns:
-        DataFrame: result overview dataframe with different metrics
+    Returns: result overview dataframe with different metrics
     """
     if print_all:
         print(f'Comparison between {x.framework.upper()} and {y.framework.upper()} for {x.name}')
@@ -332,7 +345,7 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_a
     df.loc[df.index[-1], 'dataset'] = x.dataset_type
     df.loc[df.index[-1], 'training_as_test'] = x.training_as_test
 
-    _, cm = create_confusion_matrix([x.predictions, y.predictions], print_all)
+    _, cm = create_confusion_matrix(x.predictions, y.predictions, print_all)
     df.loc[df.index[-1], 'TP'] = cm[0, 0]
     df.loc[df.index[-1], 'FP'] = cm[0, 1]
     df.loc[df.index[-1], 'FN'] = cm[1, 0]
@@ -340,10 +353,10 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_a
     df.loc[df.index[-1], 'delta'] = cm[0, 1] + cm[1, 0]
     df.loc[df.index[-1], 'delta_score'] = get_delta_of_scores(x.probabilities, y.probabilities)
 
-    ks_pval, _ = ks_statistic([x.probabilities, y.probabilities], print_all)
+    ks_pval, _ = ks_statistic(x.probabilities, y.probabilities, print_all)
     df.loc[df.index[-1], 'ks_pval'] = ("%0.3f" % ks_pval)
 
-    chi2_pval = chi2_statistic([x.predictions, y.predictions], print_all)
+    chi2_pval = chi2_statistic(x.predictions, y.predictions, print_all)
     df.loc[df.index[-1], 'chi2_pval'] = ("%0.3f" % chi2_pval)
 
     accs_fw_i = accuracy_score(x.actuals, x.predictions)
@@ -368,17 +381,17 @@ def set_pandas_print_full_df():
     pd.set_option('display.max_colwidth', None)
 
 
-def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, show_plot=False, print_all=True):
+def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, show_plot=False, print_all: bool = True):
     """Plots the probability distributions of a list of implementations.
 
     Args:
         algorithms: list of implementation instances which probabilities are to plot
         archive: archive instance which is used to save data
         show_plot: if flag is set the plot is shown in program
-        print_all (boolean): if flag is set results are printed in the function
+        print_all: if flag is set results are printed in the function
     """
     if not algorithms:
-        print("Nothing to plot. The algorihm list is empty.\n")
+        print("Nothing to plot. The algorithm list is empty.\n")
     else:
         try:
             plt.figure()
@@ -402,7 +415,8 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
 
             if archive is not None:
                 if algorithms[0].training_as_test:
-                    plot_file_name = "TaT_" + algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.svg"
+                    plot_file_name = "TaT_" + algorithms[0].dataset_type + \
+                                     '_' + algorithms[0].name + "_probabilities.svg"
                     plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
                 else:
                     plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.svg"
@@ -413,18 +427,19 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
                   % (algorithms[0].name, algorithms[0].dataset_type))
 
 
-def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None, archive: Archive = None, print_all=True):
+def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None,
+                              archive: Archive = None, print_all: bool = True):
     """Creates a views on dataframe based on the algorithms.
 
     The function creates smaller dataframes only containing comparison results based on the same algorithm out of a
-    bigger dataframe. It works either direcly with a DataFrame as input or with the path of a csv file containing the
+    bigger dataframe. It works either directly with a DataFrame as input or with the path of a csv file containing the
     input dataframe. If both are given the DataFrame is used. The result can be shown and/or saved in an archive.
 
     Args:
         df: DataFrame from which to create views for the single algorithms
         csv_file: path to the csv file with the Dataframe from which to create views for the single algorithms
         archive: archive instance which is used to save data
-        print_all: (boolean): if flag is set results are printed in the function
+        print_all: if flag is set results are printed in the function
 
     Raises:
         RuntimeError: if neither Dataframe nor csv file are given as input.
@@ -450,7 +465,7 @@ def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None, arc
 
 
 def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_folder: str = None,
-                     gen_tests_folder: str = None, print_all=True):
+                     gen_tests_folder: str = None, print_all: bool = True) -> int:
     """Main function for the evaluation of the prediction csv files.
 
     The function reads in all csv files from a specific folder. Gathers meta data from the csv file names
@@ -465,7 +480,9 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
             no archive will be created.
         gen_tests_folder: relative path to the folder where the test cases are located. This is only for the archiving.
             If no folder is given, the tests will not be stored in archive.
-        print_all (boolean): if flag is set results are printed in the function
+        print_all: if flag is set results are printed in the function
+
+    Return: number of read csv files
     """
     set_pandas_print_full_df()
 
@@ -533,7 +550,7 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
     if archive_folder is not None:
         archive.archive_data_frame(overall_results_df, filename="ALL_cmp_results.csv")
 
-    create_views_by_algorithm(df=overall_results_df, archive=archive, print_all=True)
+    create_views_by_algorithm(df=overall_results_df, archive=archive, print_all=print_all)
 
     return num_csv_files_read
 
