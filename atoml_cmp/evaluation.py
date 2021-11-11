@@ -13,7 +13,6 @@ import pandas as pd
 import numpy as np
 from shutil import copyfile
 import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score
 from scipy.stats import chi2_contingency, ks_2samp
 from typing import List, Tuple
@@ -401,7 +400,7 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
             if algorithms[0].probabilities.shape[0] > 500:
                 num_bins = 100
             for x in algorithms:
-                sns.distplot(x.probabilities, kde=False, label=x.framework, hist_kws=dict(alpha=0.3), bins=num_bins)
+                plt.hist(x=x.probabilities, label=x.framework, range=[0, 1], bins=num_bins, alpha=0.3)
             if algorithms[0].training_as_test:
                 plt.title(("prediction probability of " + algorithms[0].name +
                            "\non " + algorithms[0].dataset_type + " dataset with training data as test data"))
