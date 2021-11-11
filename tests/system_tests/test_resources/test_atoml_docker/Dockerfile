@@ -3,7 +3,7 @@ FROM openjdk:11-jdk
 # get repo of atoml
 WORKDIR /
 RUN apt-get update && apt-get install -y git
-RUN git clone -b master https://github.com/SteffenTunkel/atoml.git container
+RUN git clone -b master https://github.com/sherbold/atoml.git container
 
 # set actual working directory
 WORKDIR /container
