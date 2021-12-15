@@ -1,2 +1,2 @@
 # run all testscripts in "tests" folder
-testthat::test_dir("generated-tests/caret")
+testthat::test_dir("generated-tests/caret", reporter = "check")
