@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04, windows-latest]
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9]
 
     steps:
     - name: Checkout repository
@@ -25,6 +25,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install pyparsing==2.4.7 flake8 setuptools
+        python -m pip install -r requirements.txt
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -45,14 +46,15 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Set up Python 3.7
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.8
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install pyparsing==2.4.7 setuptools
+        python -m pip install -r requirements.txt
     - name: Install package
       run: |
         python setup.py install
@@ -67,14 +69,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.7
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.8
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install pyparsing==2.4.7 setuptools sphinx sphinx-rtd-theme m2r2
+        python -m pip install -r requirements.txt
     - name: Install package
       run: |
         python setup.py install

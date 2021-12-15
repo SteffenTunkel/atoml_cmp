@@ -8,10 +8,9 @@ setup(
     description='Comparative testing of machine learning frameworks based on atoml',
     install_requires=[
 	   'pandas',
-	   'sklearn',
+	   'scikit-learn',
 	   'scipy',
 	   'matplotlib',
-	   'seaborn',
 	   'numpy'
 	]
 )
