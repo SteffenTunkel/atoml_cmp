@@ -1,0 +1,103 @@
+
+name: SKLEARN_LR
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: LogisticRegression
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  penalty:
+    default: "none"
+  max_iter:
+    default: 10000
+---
+
+name: WEKA_LR
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: Logistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  S: # Do not standardize the attributes in the input data.
+    type: fixedflag
+    default: enabled
+  R: # ridge value of the log likelihood
+    default: 0
+  M: # maximum number of iterations (default -1: until convergence)
+    default: 10000
+---
+
+
+name: SPARK_LR
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: LogisticRegression
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+parameters:
+  setRegParam:
+    default: 0
+  setMaxIter:
+    default: 10000
+---
+
+
+name: CARETreglogistic_LR
+type: classification
+framework: caret
+package: LiblineaR
+class: regLogistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  loss:
+    default: 'L2_primal'
+  cost: # alpha
+    default: 0.0
+  epsilon:
+    default: 0.0001
+---
+
+
+name: CARETplr_LR
+type: classification
+framework: caret
+package: stepPlr
+class: plr
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  lambda: # alpha
+    default: 0.0
+  cp:
+    default: 'bic'
+---

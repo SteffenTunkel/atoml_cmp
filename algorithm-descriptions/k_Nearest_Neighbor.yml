@@ -1,0 +1,62 @@
+# VARIABLES
+# k = 3
+
+name: SKLEARN_KNN
+framework: sklearn
+type: classification
+package:  sklearn.neighbors
+class: KNeighborsClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  n_neighbors:
+    default: 3
+---
+
+name: WEKA_KNN
+type: classification
+framework: weka
+package: weka.classifiers.lazy
+class: IBk
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  K: # number of neighbors
+    default: 3
+---
+
+name: CARET_KNN
+type: classification
+framework: caret
+package: caret
+class: knn
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  k: # number of neighbors
+    default: 3
+---

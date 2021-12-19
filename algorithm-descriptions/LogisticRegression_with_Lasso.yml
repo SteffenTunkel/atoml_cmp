@@ -1,0 +1,67 @@
+# VARIABLES
+# alpha: 0.1
+
+name: SKLEARN_LRlasso
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: LogisticRegression
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  solver:
+    default: "liblinear"
+  penalty:
+    default: "l1"
+  max_iter:
+    default: 10000
+  C: # 1/2*alpha
+    default: 5.0
+---
+
+name: SPARK_LRlasso
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: LogisticRegression
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+parameters:
+  setRegParam: # alpha
+    default: 0.1
+  setElasticNetParam:
+    default: 1
+  setMaxIter:
+    default: 10000
+---
+
+name: CARET_LRlasso
+type: classification
+framework: caret
+package: LiblineaR
+class: regLogistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  loss:
+    default: 'L1'
+  cost: # alpha
+    default: 0.1
+  epsilon:
+    default: 0.0001
+---

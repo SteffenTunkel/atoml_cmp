@@ -1,0 +1,70 @@
+# VARIABLES
+# regularization parameter (c / cost): 1.0
+# gamma: 0.01
+
+name: SKLEARN_SVMrbf
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: SVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  kernel:
+    default: 'rbf'
+  C:
+    default: 1.0
+  gamma:
+    default: 0.01
+---
+
+name: WEKA_SVMrbf
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SMO
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  K:
+    default: 'weka.classifiers.functions.supportVector.RBFKernel -G 0.01' # gamma
+  C:
+    default: 1.0
+---
+
+name: CARET_SVMrbf
+type: classification
+framework: caret
+package: kernlab
+class: svmRadial
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C:
+    default: 1.0
+  sigma: # gamma
+    default: 0.01
+  rparam.tol:
+    default: 0.001
+---

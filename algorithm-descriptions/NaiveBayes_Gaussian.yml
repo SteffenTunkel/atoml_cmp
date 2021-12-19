@@ -1,0 +1,99 @@
+name: SKLEARN_GaussianNB
+framework: sklearn
+type: classification
+package:  sklearn.naive_bayes
+class: GaussianNB
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  var_smoothing:
+    default: 0.000000001
+---
+
+name: WEKA_GaussianNB
+type: classification
+framework: weka
+package: weka.classifiers.bayes
+class: NaiveBayes
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+---
+
+name: SPARK_GaussianNB
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: NaiveBayes
+features: [positivedouble,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  setModelType:
+    default: gaussian
+---
+
+name: CARETnaivebayes_GaussianNB
+type: classification
+framework: caret
+package: naivebayes
+class: naive_bayes
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  laplace:
+    default: 0.0
+  usekernel:
+    default: False
+  adjust:
+    default: 1
+---
+
+name: CARETnb_GaussianNB
+type: classification
+framework: caret
+package: klaR
+class: nb
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  fL:
+    default: 0.0
+  usekernel:
+    default: False
+  adjust:
+    default: 1
+---

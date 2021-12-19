@@ -1,0 +1,107 @@
+# VARIABLES
+# num_trees: 10
+# num_features_for_split: 5
+# max_depth: 5
+
+name: SKLEARN_RFwithDepth
+framework: sklearn
+type: classification
+package:  sklearn.ensemble
+class: RandomForestClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  n_estimators:
+    default: 10
+  max_features:
+    default: 5
+  max_depth:
+    default: 5
+---
+
+name: WEKA_RFwithDepth
+type: classification
+framework: weka
+package: weka.classifiers.trees
+class: RandomForest
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  I: # num trees
+    default: 10
+  K: # num features
+    default: 5
+  depth:
+    type: fixedflag
+    default: 5
+---
+
+name: CARETranger_RFwithDepth
+type: classification
+framework: caret
+package: ranger
+class: ranger
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  mtry: # mandatory
+    default: 5
+  splitrule: # mandatory
+    default: 'gini'
+  min.node.size: # mandatory
+    default: 1
+  rparam.num.trees:
+    default: 10
+  rparam.max.depth:
+    default: 5
+---
+
+name: CARETrboist_RFwithDepth
+type: classification
+framework: caret
+package: Rborist
+class: Rborist
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  predFixed: # mandatory
+    default: 5
+  minNode: # mandatory
+    default: 1
+  rparam.nTree:
+    default: 10
+  rparam.nLevel:
+    default: 5
+---

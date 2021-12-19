@@ -1,0 +1,127 @@
+# VARIABLES
+# alpha: 0.1
+
+name: SKLEARNlogistic_LRridge
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: LogisticRegression
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  penalty:
+    default: "l2"
+  max_iter:
+    default: 10000
+  C: # 1/2*alpha
+    default: 5.0
+---
+
+name: SKLEARNridge_LRridge
+framework: sklearn
+type: classification
+package:  sklearn.linear_model
+class: RidgeClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  max_iter:
+    default: 10000
+  alpha:
+    default: 0.1
+---
+
+
+name: WEKA_LRridge
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: Logistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  S: # Do not standardize the attributes in the input data.
+    type: fixedflag
+    default: enabled
+  R: # ridge value of the log likelihood
+    default: 0.1 # alpha
+  M: # maximum number of iterations (default -1: until convergence)
+    default: 10000
+---
+
+
+name: SPARK_LRridge
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: LogisticRegression
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+parameters:
+  setRegParam: # alpha
+    default: 0.1
+  setMaxIter:
+    default: 10000
+---
+
+
+name: CARETreglogistic_LRridge
+type: classification
+framework: caret
+package: LiblineaR
+class: regLogistic
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  loss:
+    default: 'L2_primal'
+  cost: # alpha
+    default: 0.1
+  epsilon:
+    default: 0.0001
+---
+
+
+name: CARETplr_LRridge
+type: classification
+framework: caret
+package: stepPlr
+class: plr
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  lambda: # alpha
+    default: 0.1
+  cp:
+    default: 'bic'
+---

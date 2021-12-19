@@ -1,0 +1,74 @@
+# VARIABLES
+# regularization parameter (c / cost): 1.0
+# degree of poly kernel: 3
+
+name: SKLEARN_SVMpoly
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: SVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  kernel:
+    default: 'poly'
+  C:
+    default: 1.0
+  degree:
+    default: 3
+  gamma:
+    default: 1
+---
+
+name: WEKA_SVMpoly
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SMO
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  K:
+    default: 'weka.classifiers.functions.supportVector.PolyKernel -E 3' # degree
+  C:
+    default: 1.0
+---
+
+name: CARET_SVMpoly
+type: classification
+framework: caret
+package: kernlab
+class: svmPoly
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C:
+    default: 1.0
+  degree:
+    default: 3
+  scale:
+    default: 1
+  rparam.tol:
+    default: 0.001
+---

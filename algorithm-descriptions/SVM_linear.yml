@@ -1,0 +1,123 @@
+# VARIABLES
+# regularization parameter (c / cost): 1.0
+
+name: SKLEARN_SVMlinear
+framework: sklearn
+type: classification
+package:  sklearn.svm
+class: SVC
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  kernel:
+    default: 'linear'
+  C:
+    default: 1.0
+---
+
+name: WEKA_SVMlinear
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: SMO
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  K:
+    default: 'weka.classifiers.functions.supportVector.PolyKernel'
+  C:
+    default: 1.0
+---
+
+name: SPARK_SVMlinear
+framework: spark
+type: classification
+package:  org.apache.spark.ml.classification
+class: LinearSVC
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_stat
+  reorder: class_exact
+  const: class_stat
+  opposite: score_stat
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  setRegParam:
+    default: 1.0
+---
+
+# ISSUE: this function does not work
+#name: CARETsvmlinear_SVMlinear
+#type: classification
+#framework: caret
+#package: kernlab
+#class: svmLinear
+#features: [double,categorical]
+#properties:
+#  same: score_exact
+#  scramble: score_exact
+#  reorder: score_exact
+#  const: score_exact
+#  opposite: score_exact
+#parameters:
+#  C:
+#    default: 1.0
+#---
+
+name: CARETsvmlinear2_SVMlinear
+type: classification
+framework: caret
+package: e1071
+class: svmLinear2
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  cost:
+    default: 1.0
+---
+
+name: CARETsvmlinear3_SVMlinear
+type: classification
+framework: caret
+package: LiblineaR
+class: svmLinear3
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  Loss:
+    default: 'L2'
+  cost:
+    default: 1.0
+  rparam.epsilon:
+    default: 0.001
+---
+
