@@ -75,15 +75,14 @@ def run_docker_container(name: str, *bindings: List[str], option: str = None):
     cmd_return = subprocess.run(cmdlist)
     if cmd_return.returncode != 0:
         msg = f"Running container: {name} failed (returns {cmd_return.returncode})."
-        raise RuntimeError(msg)
+        #raise RuntimeError(msg)
 
 
-def build_docker_collection(d_list: List[Dict[str, Any]], no_cache: bool = False):
+def build_docker_collection(d_list: List[Dict[str, Any]]):
     """Builds a set of docker images defined by a list of dictionaries.
 
     Args:
         d_list: list of dictionaries with data to set up docker.
-        no_cache: flag if the docker should be build without caching.
 
     Raises:
         RuntimeError: if a docker build failed.
@@ -93,7 +92,7 @@ def build_docker_collection(d_list: List[Dict[str, Any]], no_cache: bool = False
         docker_folder = docker["folder"]
         docker_name = docker["name"]
         cmdlist = ["docker", "build", "-t", docker_name, docker_folder]
-        if no_cache:
+        if "no_cache" in docker:
             cmdlist.append("--no-cache")
         print(f"build {docker_name}")
         cmd_return = subprocess.run(cmdlist)

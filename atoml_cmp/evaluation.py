@@ -116,8 +116,11 @@ class Archive:
                     if file.endswith('.csv'):
                         copyfile(os.path.join(root, file), os.path.join(self.path, 'predictions', file))
 
-        if not os.path.exists(os.path.join(self.path, 'plots')):
-            os.makedirs(os.path.join(self.path, 'plots'))
+        if not os.path.exists(os.path.join(self.path, 'plots/pdf')):
+            os.makedirs(os.path.join(self.path, 'plots/pdf'))
+
+        if not os.path.exists(os.path.join(self.path, 'plots/png')):
+            os.makedirs(os.path.join(self.path, 'plots/png'))
 
         if not os.path.exists(os.path.join(self.path, 'views_by_dataset')):
             os.makedirs(os.path.join(self.path, 'views_by_dataset'))
@@ -221,24 +224,24 @@ def get_data_from_csv(filename: str, print_all: bool = True) -> Tuple[pd.Series,
 ########################################
 
 
-def create_confusion_matrix(pred_prob1: pd.Series, pred_prob2: pd.Series,
+def create_confusion_matrix(predictions1: pd.Series, predictions2: pd.Series,
                             print_all: bool = True) -> Tuple[bool, np.ndarray]:
     """Creates the confusion matrix between 2 sets of labels.
 
     Args:
-        pred_prob1: Series of predicted probabilities (scores)
-        pred_prob2: Series of predicted probabilities (scores)
+        predictions1: Series of predicted labels
+        predictions2: Series of predicted labels
         print_all: if flag is set results are printed in the function
 
     Returns:
         - Equality flag - True, if predicted labels are identical
         - Confusion matrix
     """
-    cm = confusion_matrix(pred_prob1, pred_prob2)
+    cm = confusion_matrix(predictions1, predictions2)
     # if all the values are the same, the confusion matrix has only one element this is checked and changed here
     if cm.shape == (1, 1):
-        num_elements = pred_prob1.shape[0]
-        if pred_prob1[0] == 0:
+        num_elements = predictions1.shape[0]
+        if predictions1[0] == 0:
             cm = np.array([[num_elements, 0], [0, 0]])
         else:
             cm = np.array([[0, 0], [0, num_elements]])
@@ -263,19 +266,22 @@ def ks_statistic(pred_prob1: pd.Series, pred_prob2: pd.Series, print_all: bool =
         - p-value of KS test
         - KS test statistic
     """
-    ks_result = ks_2samp(pred_prob1, pred_prob2)
-    p = ks_result.pvalue
-    ks_score = ks_result.statistic
+    if pred_prob1[0] == -1 or pred_prob2[0] == -1:
+        return -1, -1
+    else:
+        ks_result = ks_2samp(pred_prob1, pred_prob2)
+        p = ks_result.pvalue
+        ks_score = ks_result.statistic
 
-    # interpret p-value
-    alpha = ALPHA_THRESHOLD
-    if print_all:
-        print("KS p-value: %0.4f\t ks-statistic: %0.4f" % (p, ks_score))
-        if p <= alpha:
-            print('Different (reject H0)\n')
-        else:
-            print('Equal (H0 holds true)\n')
-    return p, ks_score
+        # interpret p-value
+        alpha = ALPHA_THRESHOLD
+        if print_all:
+            print("KS p-value: %0.4f\t ks-statistic: %0.4f" % (p, ks_score))
+            if p <= alpha:
+                print('Different (reject H0)\n')
+            else:
+                print('Equal (H0 holds true)\n')
+        return p, ks_score
 
 
 def chi2_statistic(pred1: pd.Series, pred2: pd.Series, print_all: bool = True):
@@ -288,20 +294,22 @@ def chi2_statistic(pred1: pd.Series, pred2: pd.Series, print_all: bool = True):
 
     Returns: p-value of chi-squared test
     """
-    data = [[sum(pred1), len(pred1) - sum(pred1)], [sum(pred2), len(pred2) - sum(pred2)]]
-    try:
-        stat, p, dof, expected = chi2_contingency(data)
-        # interpret p-value
-        alpha = ALPHA_THRESHOLD
+    # all 0 or all 1 would lead to computational problems in the test. Therefore, we exclude the case of both identical.
+    if pred1.equals(pred2):
         if print_all:
-            print("Chi² p-value: %0.4f" % p)
-            if p <= alpha:
-                print('Dependent (reject H0)\n')
-            else:
-                print('Independent (H0 holds true)\n')
-    except ValueError:
-        print("Chi-squared test failed, probably all elements are identical")
-        p = 0.0
+            print("Identical frequency distribution: Consistency is given (H0 holds true)\n")
+        return 1.0
+
+    data = [[sum(pred1), len(pred1) - sum(pred1)], [sum(pred2), len(pred2) - sum(pred2)]]
+    stat, p, dof, expected = chi2_contingency(data)
+    # interpret p-value
+    alpha = ALPHA_THRESHOLD
+    if print_all:
+        print("Chi² p-value: %0.4f" % p)
+        if p <= alpha:
+            print('Consistency is not given (reject H0)\n')
+        else:
+            print('Consistency is given (H0 holds true)\n')
     return p
 
 
@@ -314,11 +322,14 @@ def get_delta_of_scores(pred_prob1: pd.Series, pred_prob2: pd.Series) -> int:
 
     Returns: number of results where the difference between the scores is greater than a defined epsilon
     """
-    delta_score = 0
-    for score1, score2 in zip(pred_prob1, pred_prob2):
-        if abs(score1 - score2) > EPSILON_EQUAL_SCORE:
-            delta_score += 1
-    return delta_score
+    if pred_prob1[0] == -1 or pred_prob2[0] == -1:
+        return -1
+    else:
+        delta_score = 0
+        for score1, score2 in zip(pred_prob1, pred_prob2):
+            if abs(score1 - score2) > EPSILON_EQUAL_SCORE:
+                delta_score += 1
+        return delta_score
 
 
 def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_all: bool = True) -> pd.DataFrame:
@@ -336,6 +347,11 @@ def compare_two_algorithms(x: Algorithm, y: Algorithm, df: pd.DataFrame, print_a
     """
     if print_all:
         print(f'Comparison between {x.framework.upper()} and {y.framework.upper()} for {x.name}')
+
+    if x.predictions.shape[0] != y.predictions.shape[0]:
+        raise RuntimeError(f"Algorithm '{x.name}' on dataset '{x.dataset_type}' has an unequal number of predictions "
+                           f"for the implementations {x.framework} ({x.predictions.shape[0]}) "
+                           f"and {y.framework} ({y.predictions.shape[0]}).")
 
     df = df.append(pd.Series(dtype="object"), ignore_index=True)
     df.loc[df.index[-1], 'algorithm'] = x.name
@@ -392,38 +408,38 @@ def plot_probabilities(algorithms: List[Algorithm], archive: Archive = None, sho
     if not algorithms:
         print("Nothing to plot. The algorithm list is empty.\n")
     else:
-        try:
-            plt.figure()
-            if print_all:
-                print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
-            num_bins = 20
-            if algorithms[0].probabilities.shape[0] > 500:
-                num_bins = 100
-            for x in algorithms:
+        # try:
+        plt.figure()
+        if print_all:
+            print("plot probabilities for %s with %s dataset\n" % (algorithms[0].name, algorithms[0].dataset_type))
+        num_bins = 20
+        if algorithms[0].probabilities.shape[0] > 500:
+            num_bins = 100
+        for x in algorithms:
+            if x.probabilities[0] != -1:
                 plt.hist(x=x.probabilities, label=x.framework, range=[0, 1], bins=num_bins, alpha=0.3)
+        if algorithms[0].training_as_test:
+            plt.title(("prediction probability of " + algorithms[0].name +
+                       "\non " + algorithms[0].dataset_type + " dataset with training data as test data"))
+        else:
+            plt.title(("prediction probability of " + algorithms[0].name +
+                       "\non " + algorithms[0].dataset_type + " dataset"))
+        plt.legend()
+
+        if show_plot:
+            plt.show()
+
+        if archive is not None:
+            plot_file_name = ""
             if algorithms[0].training_as_test:
-                plt.title(("prediction probability of " + algorithms[0].name +
-                           "\non " + algorithms[0].dataset_type + " dataset with training data as test data"))
-            else:
-                plt.title(("prediction probability of " + algorithms[0].name +
-                           "\non " + algorithms[0].dataset_type + " dataset"))
-            plt.legend()
-
-            if show_plot:
-                plt.show()
-
-            if archive is not None:
-                if algorithms[0].training_as_test:
-                    plot_file_name = "TaT_" + algorithms[0].dataset_type + \
-                                     '_' + algorithms[0].name + "_probabilities.svg"
-                    plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
-                else:
-                    plot_file_name = algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities.svg"
-                    plt.savefig(os.path.join(archive.path, "plots", plot_file_name))
-            plt.close()
-        except:
-            print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n"
-                  % (algorithms[0].name, algorithms[0].dataset_type))
+                plot_file_name += "TaT_"
+            plot_file_name += algorithms[0].dataset_type + '_' + algorithms[0].name + "_probabilities"
+            plt.savefig(os.path.join(archive.path, "plots", 'pdf', (plot_file_name + '.pdf')))
+            plt.savefig(os.path.join(archive.path, "plots", 'png', (plot_file_name + '.png')))
+        plt.close()
+        # except:
+        #    print(sys.exc_info()[0], " while printing probability predictions of %s on %s data.\n"
+        #          % (algorithms[0].name, algorithms[0].dataset_type))
 
 
 def create_views_by_algorithm(df: pd.DataFrame = None, csv_file: str = None,
@@ -539,9 +555,8 @@ def evaluate_results(prediction_folder: str, yaml_folder: str = None, archive_fo
 
         overall_results_df = overall_results_df.append(dataset_results_df)
 
-        if print_all:
-            print("\nSummary DataFrame for %s dataset:" % ds)
-            print(dataset_results_df)
+        print("\nSummary DataFrame for %s dataset:" % ds)
+        print(dataset_results_df)
 
         if archive_folder is not None:
             archive.archive_data_frame(dataset_results_df, filename=(ds + "_cmp_results.csv"), by_dataset=True)
