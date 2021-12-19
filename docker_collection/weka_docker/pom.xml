@@ -33,7 +33,7 @@
     <dependency>
         <groupId>nz.ac.waikato.cms.weka</groupId>
         <artifactId>weka-stable</artifactId>
-        <version>3.8.0</version>
+        <version>3.8.5</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.github.haifengl/smile-core -->
