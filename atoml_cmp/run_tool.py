@@ -9,6 +9,7 @@ import os
 import sys
 import shutil
 import subprocess
+import time
 from pathlib import Path
 
 
@@ -173,6 +174,8 @@ def main(dockerlist_file: str, gen_tests_folder: str = "generated-tests", pred_f
         - Number of evaluated csv files.
 
     """
+    start_time = time.time()
+
     delete_folder(gen_tests_folder)
     delete_folder(pred_folder)
 
@@ -190,6 +193,7 @@ def main(dockerlist_file: str, gen_tests_folder: str = "generated-tests", pred_f
     num_csv_files = evaluate_results(prediction_folder=pred_folder, yaml_folder=yaml_folder,
                                      archive_folder=archive_folder, gen_tests_folder=gen_tests_folder, print_all=False)
 
+    print(f"atoml_cmp finished. time: {time.time()-start_time}")
     return num_csv_files
 
 
