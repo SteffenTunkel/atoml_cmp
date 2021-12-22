@@ -9,6 +9,8 @@ import atoml.smoke.SmoketestFromArff;
 import atoml.smoke.RandomNumericSplit;
 import atoml.smoke.UniformSplit;
 
+import atoml.classifiers.FeatureType;
+
 public class TestCatalog {
 
 	/**
@@ -23,12 +25,12 @@ public class TestCatalog {
 	public static final List<SmokeTest> SMOKETESTS = List.of(
 			new UniformSplit(),
 			new RandomNumericSplit(),
-	        new SmoketestFromArff("BreastCancer", "/BreastCancer_training.arff", "/BreastCancer_test.arff"),
+	        new SmoketestFromArff("BreastCancer", "/BreastCancer_training.arff", "/BreastCancer_test.arff", FeatureType.POSITIVEDOUBLE),
 	        new SmoketestFromArff("BreastCancerZNorm", "/BreastCancerZNorm_training.arff", "/BreastCancerZNorm_test.arff"),
-	        new SmoketestFromArff("BreastCancerMinMaxNorm", "/BreastCancerMinMaxNorm_training.arff", "/BreastCancerMinMaxNorm_test.arff"),
-            new SmoketestFromArff("Wine", "/Wine_training.arff", "/Wine_test.arff"),
+	        new SmoketestFromArff("BreastCancerMinMaxNorm", "/BreastCancerMinMaxNorm_training.arff", "/BreastCancerMinMaxNorm_test.arff", FeatureType.POSITIVEDOUBLE),
+            new SmoketestFromArff("Wine", "/Wine_training.arff", "/Wine_test.arff", FeatureType.POSITIVEDOUBLE),
             new SmoketestFromArff("WineZNorm", "/WineZNorm_training.arff", "/WineZNorm_test.arff"),
-            new SmoketestFromArff("WineMinMaxNorm", "/WineMinMaxNorm_training.arff", "/WineMinMaxNorm_test.arff"));
+            new SmoketestFromArff("WineMinMaxNorm", "/WineMinMaxNorm_training.arff", "/WineMinMaxNorm_test.arff", FeatureType.POSITIVEDOUBLE));
 
 	/**
 	 * Immutable list of all metamorphic tests, needed by atoml but not used by atoml_cmp.
