@@ -95,3 +95,25 @@ parameters:
   rparam.nTree:
     default: 10
 ---
+
+name: CARETrf_RFwithoutDepth
+type: classification
+framework: caret
+package: Rborist
+class: rf
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  mtry: # mandatory
+    default: 5
+  rparam.ntree:
+    default: 10
+---

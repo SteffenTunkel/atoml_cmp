@@ -101,3 +101,20 @@ parameters:
   cp:
     default: 'bic'
 ---
+
+name: CARETpolr_LR
+type: classification
+framework: caret
+package: MASS
+class: polr
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  method:
+    default: 'logistic'
+---
