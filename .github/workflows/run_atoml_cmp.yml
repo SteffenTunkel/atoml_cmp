@@ -1,0 +1,37 @@
+name: manual_run_tool
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run_tool:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pyparsing==2.4.7 setuptools
+        python -m pip install -r requirements.txt
+    - name: Install package
+      run: |
+        python setup.py install
+    - name: Run Tool
+      run: |
+        python -m atoml_cmp
+    - name: Setup Git Config
+      run: |
+        git config user.name "GitHub Actions Run"
+        git config user.email "<>"
+    - name: Commit the Archive
+      run: |
+        # Stage the file, commit and push
+        git add archive
+        git commit -m "new atoml_cmp results created"
+        git push origin master
