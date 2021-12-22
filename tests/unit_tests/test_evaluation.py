@@ -70,13 +70,25 @@ class Chi2Test(unittest.TestCase):
 
     def test_all_zero(self):
         input1 = pd.Series([0, 0, 0, 0, 0, 0, 0, 0])
-        input2 = input1.copy(deep=True)
+        input2 = pd.Series([0, 0, 0, 0, 0, 0, 0, 0])
+        p = atoml_cmp.evaluation.chi2_statistic(input1, input2, print_all=False)
+        self.assertEqual(p, 1.0)
+
+    def test_all_zero_different_types(self):
+        input1 = pd.Series([0, 0, 0, 0, 0, 0, 0, 0])
+        input2 = pd.Series([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         p = atoml_cmp.evaluation.chi2_statistic(input1, input2, print_all=False)
         self.assertEqual(p, 1.0)
 
     def test_all_one(self):
         input1 = pd.Series([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        input2 = input1.copy(deep=True)
+        input2 = pd.Series([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        p = atoml_cmp.evaluation.chi2_statistic(input1, input2, print_all=False)
+        self.assertEqual(p, 1.0)
+
+    def test_all_one_different_types(self):
+        input1 = pd.Series([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        input2 = pd.Series([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         p = atoml_cmp.evaluation.chi2_statistic(input1, input2, print_all=False)
         self.assertEqual(p, 1.0)
 

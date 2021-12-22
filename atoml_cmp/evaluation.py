@@ -212,10 +212,10 @@ def get_data_from_csv(filename: str, print_all: bool = True) -> Tuple[pd.Series,
     if print_all:
         print("read: %s" % filename)
     csv_df = pd.read_csv(filename)
-    actual = csv_df["actual"]
-    prediction = csv_df["prediction"]
-    prob_0 = csv_df["prob_0"]
-    prob_1 = csv_df["prob_1"]
+    actual = csv_df["actual"].astype('int64')
+    prediction = csv_df["prediction"].astype('int64')
+    prob_0 = csv_df["prob_0"].astype('float64')
+    prob_1 = csv_df["prob_1"].astype('float64')
     return prediction, prob_0, prob_1, actual
 
 
@@ -295,7 +295,7 @@ def chi2_statistic(pred1: pd.Series, pred2: pd.Series, print_all: bool = True):
     Returns: p-value of chi-squared test
     """
     # all 0 or all 1 would lead to computational problems in the test. Therefore, we exclude the case of both identical.
-    if pred1.equals(pred2):
+    if pred1.astype('int64').equals(pred2.astype('int64')):
         if print_all:
             print("Identical frequency distribution: Consistency is given (H0 holds true)\n")
         return 1.0
