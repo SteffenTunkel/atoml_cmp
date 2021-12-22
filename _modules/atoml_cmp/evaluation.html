@@ -280,10 +280,10 @@
     <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;read: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
     <span class="n">csv_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="n">actual</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span>
-    <span class="n">prediction</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prediction&quot;</span><span class="p">]</span>
-    <span class="n">prob_0</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prob_0&quot;</span><span class="p">]</span>
-    <span class="n">prob_1</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prob_1&quot;</span><span class="p">]</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;actual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+    <span class="n">prediction</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prediction&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+    <span class="n">prob_0</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prob_0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="n">prob_1</span> <span class="o">=</span> <span class="n">csv_df</span><span class="p">[</span><span class="s2">&quot;prob_1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">prob_0</span><span class="p">,</span> <span class="n">prob_1</span><span class="p">,</span> <span class="n">actual</span></div>
 
 
@@ -363,7 +363,7 @@
 <span class="sd">    Returns: p-value of chi-squared test</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># all 0 or all 1 would lead to computational problems in the test. Therefore, we exclude the case of both identical.</span>
-    <span class="k">if</span> <span class="n">pred1</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">pred2</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pred1</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">pred2</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int64&#39;</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">print_all</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Identical frequency distribution: Consistency is given (H0 holds true)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="mf">1.0</span>

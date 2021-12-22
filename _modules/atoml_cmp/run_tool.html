@@ -77,6 +77,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 
@@ -241,6 +242,8 @@
 <span class="sd">        - Number of evaluated csv files.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
     <span class="n">delete_folder</span><span class="p">(</span><span class="n">gen_tests_folder</span><span class="p">)</span>
     <span class="n">delete_folder</span><span class="p">(</span><span class="n">pred_folder</span><span class="p">)</span>
 
@@ -258,6 +261,7 @@
     <span class="n">num_csv_files</span> <span class="o">=</span> <span class="n">evaluate_results</span><span class="p">(</span><span class="n">prediction_folder</span><span class="o">=</span><span class="n">pred_folder</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="o">=</span><span class="n">yaml_folder</span><span class="p">,</span>
                                      <span class="n">archive_folder</span><span class="o">=</span><span class="n">archive_folder</span><span class="p">,</span> <span class="n">gen_tests_folder</span><span class="o">=</span><span class="n">gen_tests_folder</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;atoml_cmp finished. time: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">num_csv_files</span></div>
 
 
