@@ -1,0 +1,146 @@
+# VARIABLES
+# sizes = [10,10,10]
+# lr = 0.01
+# epochs = 500
+# momentum = 0.9
+
+name: SKLEARN_MLP
+framework: sklearn
+type: classification
+package:  sklearn.neural_network
+class: MLPClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  hidden_layer_sizes:
+    default: '(10,10,10)'
+  activation:
+    default: logistic
+  solver:
+    default: sgd
+  alpha:
+    default: 0.0
+  learning_rate_init:
+    default: 0.01
+  momentum:
+    default: 0.9
+  max_iter:
+    default: 500
+---
+
+name: WEKA_MLP
+type: classification
+framework: weka
+package: weka.classifiers.functions
+class: MultilayerPerceptron
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  H: # number of hidden layers (allows numbers and some wildcards, therefore, we use values)
+    default: '10, 10, 10'
+  L: # learning rate of the gradiant descent
+    default: 0.01
+  M: # momentum applied to weight updates
+    default: 0.9
+  N: # number of epochs for training
+    default: 500
+---
+
+#name: SPARK_MLP
+#framework: spark
+#type: classification
+#package:  org.apache.spark.ml.classification
+#class: MultilayerPerceptronClassifier
+#features: [double,categorical]
+#properties:
+#  same: score_exact
+#  scramble: score_stat
+#  reorder: class_exact
+#  const: class_stat
+#  opposite: score_stat
+#  rotate: class_exact
+#  rescale: class_exact
+#  clone: class_exact
+#parameters:
+#  setSolver:
+#    default: gd
+#  setStepSize: # lr
+#    default: 0.01
+#  setMaxIter:
+#    default: 500
+## setLayers is not supported because the number of neurons on the first layer cannot be set in a fixed way as this depends on the number of features
+##  setLayers:
+##    type: values
+##    values: ["2, 3, 4", "2,3"]
+##    default: '2, 3, 4'
+#---
+
+#name: CARETmlp_MLP
+#type: classification
+#framework: caret
+#package: RSNNS
+#class: mlpSGD
+#features: [double,categorical]
+#properties:
+#  same: score_exact
+#  scramble: score_exact
+#  reorder: score_exact
+#  const: score_exact
+#  opposite: score_exact
+#parameters:
+#  size:
+#    default: c(10,10,10)
+#  rparam.learnFncParams:
+#    default: c(0.01, 0.9)
+#  rparam.maxit:
+#    default: 500
+#---
+#
+#name: CARETmlpsgd_MLP
+#type: classification
+#framework: caret
+#package: plyr
+#class: mlpSGD
+#features: [double,categorical]
+#properties:
+#  same: score_exact
+#  scramble: score_exact
+#  reorder: score_exact
+#  const: score_exact
+#  opposite: score_exact
+#parameters:
+#  size:
+#    default: c(10,10,10)
+#  learn_rate:
+#    default: lr
+#  momentum:
+#    default: 0.9
+#  gamma:
+#    default: 0
+#  #lambda:
+#  #  default: 0
+#  l2reg:
+#    default: 0
+#  repeats:
+#    default: 0
+#  #minibatchsz:
+#  #  default: 100
+#  rparam.max_epochs:
+#    default: 500
+#---

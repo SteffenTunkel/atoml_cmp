@@ -1,0 +1,53 @@
+name: SKLEARN_MostFrequent
+framework: sklearn
+type: classification
+package:  sklearn.dummy
+class: DummyClassifier
+features: double
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+parameters:
+  strategy:
+    default: 'most_frequent'
+---
+
+name: WEKA_MostFrequent
+type: classification
+framework: weka
+package: weka.classifiers.rules
+class: ZeroR
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+  rotate: class_exact
+  rescale: class_exact
+  clone: class_exact
+---
+
+name: CARET_MostFrequent
+type: classification
+framework: caret
+package: caret
+class: null
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  parameter:
+    default: 'none'
+---

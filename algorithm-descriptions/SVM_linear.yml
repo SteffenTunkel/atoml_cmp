@@ -65,23 +65,22 @@ parameters:
     default: 1.0
 ---
 
-# ISSUE: this function does not work
-#name: CARETsvmlinear_SVMlinear
-#type: classification
-#framework: caret
-#package: kernlab
-#class: svmLinear
-#features: [double,categorical]
-#properties:
-#  same: score_exact
-#  scramble: score_exact
-#  reorder: score_exact
-#  const: score_exact
-#  opposite: score_exact
-#parameters:
-#  C:
-#    default: 1.0
-#---
+name: CARETsvmlinear_SVMlinear
+type: classification
+framework: caret
+package: kernlab
+class: svmLinear
+features: [double,categorical]
+properties:
+  same: score_exact
+  scramble: score_exact
+  reorder: score_exact
+  const: score_exact
+  opposite: score_exact
+parameters:
+  C:
+    default: 1.0
+---
 
 name: CARETsvmlinear2_SVMlinear
 type: classification
