@@ -43,6 +43,8 @@ parameters:
     default: 'weka.classifiers.functions.supportVector.PolyKernel'
   C:
     default: 1.0
+  N:
+    default: 2
 ---
 
 name: SPARK_SVMlinear
@@ -80,6 +82,8 @@ properties:
 parameters:
   C:
     default: 1.0
+  rparam.tau:
+    default: 0
 ---
 
 name: CARETsvmlinear2_SVMlinear

@@ -48,6 +48,8 @@ parameters:
     default: 'weka.classifiers.functions.supportVector.PolyKernel -E 3' # degree
   C:
     default: 1.0
+  N:
+    default: 2
 ---
 
 name: CARET_SVMpoly
@@ -71,4 +73,6 @@ parameters:
     default: 1
   rparam.tol:
     default: 0.001
+  rparam.tau:
+    default: 0
 ---

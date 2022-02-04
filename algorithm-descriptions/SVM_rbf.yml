@@ -46,6 +46,8 @@ parameters:
     default: 'weka.classifiers.functions.supportVector.RBFKernel -G 0.01' # gamma
   C:
     default: 1.0
+  N:
+    default: 2
 ---
 
 name: CARET_SVMrbf
@@ -67,4 +69,6 @@ parameters:
     default: 0.01
   rparam.tol:
     default: 0.001
+  rparam.tau:
+    default: 0
 ---
