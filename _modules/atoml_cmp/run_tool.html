@@ -223,8 +223,32 @@
     <span class="k">return</span> <span class="n">generator_d_list</span><span class="p">,</span> <span class="n">test_d_list</span></div>
 
 
+<div class="viewcode-block" id="make_decision"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.make_decision">[docs]</a><span class="k">def</span> <span class="nf">make_decision</span><span class="p">(</span><span class="n">active</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Asks a deciding question (True/False) to the user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        active (bool): flag whether the user should be asked.</span>
+<span class="sd">        question (str): the question for the user</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The result of the decision, which is set to True if not dissented.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">active</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Y/N: &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Automatic &#39;yes&#39; after 3 invalid inputs.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../run_tool.html#atoml_cmp.run_tool.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">dockerlist_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gen_tests_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;generated-tests&quot;</span><span class="p">,</span> <span class="n">pred_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;predictions&quot;</span><span class="p">,</span>
-         <span class="n">yaml_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;algorithm-descriptions&quot;</span><span class="p">,</span> <span class="n">archive_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;archive&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+         <span class="n">yaml_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;algorithm-descriptions&quot;</span><span class="p">,</span> <span class="n">archive_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;archive&quot;</span><span class="p">,</span> <span class="n">manual_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;entrypoint for the overall pipeline.</span>
 
 <span class="sd">    Runs the whole pipeline of the tool. This includes clearing old data from output folder,</span>
@@ -237,6 +261,7 @@
 <span class="sd">        pred_folder (str): directory for the prediction csv files.</span>
 <span class="sd">        yaml_folder (str): directory for the yaml files with the algorithm definitions.</span>
 <span class="sd">        archive_folder (str): directory, where to save the archive.</span>
+<span class="sd">        manual_flag (bool): flag for the activation of manual decisions.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        - Number of evaluated csv files.</span>
@@ -244,19 +269,25 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    <span class="n">delete_folder</span><span class="p">(</span><span class="n">gen_tests_folder</span><span class="p">)</span>
-    <span class="n">delete_folder</span><span class="p">(</span><span class="n">pred_folder</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">make_decision</span><span class="p">(</span><span class="n">manual_flag</span><span class="p">,</span> <span class="s2">&quot;Delete the generated tests folder?&quot;</span><span class="p">):</span>
+        <span class="n">delete_folder</span><span class="p">(</span><span class="n">gen_tests_folder</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">make_decision</span><span class="p">(</span><span class="n">manual_flag</span><span class="p">,</span> <span class="s2">&quot;Delete the predictions folder?&quot;</span><span class="p">):</span>
+        <span class="n">delete_folder</span><span class="p">(</span><span class="n">pred_folder</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dockerlist_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">docker_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-    <span class="n">build_docker_collection</span><span class="p">(</span><span class="n">docker_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">make_decision</span><span class="p">(</span><span class="n">manual_flag</span><span class="p">,</span> <span class="s2">&quot;(Re)Build the docker collection?&quot;</span><span class="p">):</span>
+        <span class="n">build_docker_collection</span><span class="p">(</span><span class="n">docker_list</span><span class="p">)</span>
 
     <span class="n">generator_docker_list</span><span class="p">,</span> <span class="n">test_docker_list</span> <span class="o">=</span> <span class="n">split_docker_list</span><span class="p">(</span><span class="n">docker_list</span><span class="p">)</span>
 
-    <span class="n">run_docker_collection</span><span class="p">(</span><span class="n">generator_docker_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">make_decision</span><span class="p">(</span><span class="n">manual_flag</span><span class="p">,</span> <span class="s2">&quot;Run generation docker?&quot;</span><span class="p">):</span>
+        <span class="n">run_docker_collection</span><span class="p">(</span><span class="n">generator_docker_list</span><span class="p">)</span>
 
-    <span class="n">run_docker_collection</span><span class="p">(</span><span class="n">test_docker_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">make_decision</span><span class="p">(</span><span class="n">manual_flag</span><span class="p">,</span> <span class="s2">&quot;Run test case docker collection?&quot;</span><span class="p">):</span>
+        <span class="n">run_docker_collection</span><span class="p">(</span><span class="n">test_docker_list</span><span class="p">)</span>
 
     <span class="n">num_csv_files</span> <span class="o">=</span> <span class="n">evaluate_results</span><span class="p">(</span><span class="n">prediction_folder</span><span class="o">=</span><span class="n">pred_folder</span><span class="p">,</span> <span class="n">yaml_folder</span><span class="o">=</span><span class="n">yaml_folder</span><span class="p">,</span>
                                      <span class="n">archive_folder</span><span class="o">=</span><span class="n">archive_folder</span><span class="p">,</span> <span class="n">gen_tests_folder</span><span class="o">=</span><span class="n">gen_tests_folder</span><span class="p">,</span> <span class="n">print_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

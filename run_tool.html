@@ -112,7 +112,7 @@ docker is either not installed or just not running.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atoml_cmp.run_tool.main">
-<span class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dockerlist_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_tests_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'generated-tests'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'predictions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'algorithm-descriptions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'archive'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.main" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dockerlist_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_tests_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'generated-tests'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'predictions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'algorithm-descriptions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'archive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.main" title="Permalink to this definition"></a></dt>
 <dd><p>entrypoint for the overall pipeline.</p>
 <p>Runs the whole pipeline of the tool. This includes clearing old data from output folder,
 building test / test generation docker, test generation, executing tests, compare results of the tests
@@ -125,6 +125,7 @@ and finally saving the information in an archive.</p>
 <li><p><strong>pred_folder</strong> (<em>str</em>) – directory for the prediction csv files.</p></li>
 <li><p><strong>yaml_folder</strong> (<em>str</em>) – directory for the yaml files with the algorithm definitions.</p></li>
 <li><p><strong>archive_folder</strong> (<em>str</em>) – directory, where to save the archive.</p></li>
+<li><p><strong>manual_flag</strong> (<em>bool</em>) – flag for the activation of manual decisions.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -132,6 +133,23 @@ and finally saving the information in an archive.</p>
 <li><p>Number of evaluated csv files.</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="atoml_cmp.run_tool.make_decision">
+<span class="sig-prename descclassname"><span class="pre">atoml_cmp.run_tool.</span></span><span class="sig-name descname"><span class="pre">make_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">question</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/atoml_cmp/run_tool.html#make_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atoml_cmp.run_tool.make_decision" title="Permalink to this definition"></a></dt>
+<dd><p>Asks a deciding question (True/False) to the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>active</strong> (<em>bool</em>) – flag whether the user should be asked.</p></li>
+<li><p><strong>question</strong> (<em>str</em>) – the question for the user</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The result of the decision, which is set to True if not dissented.</p>
 </dd>
 </dl>
 </dd></dl>
