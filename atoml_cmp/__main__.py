@@ -12,7 +12,9 @@ parser.add_argument('-p', '--predictions', default="predictions", metavar='',
                     help='directory for the prediction csv files ["predictions"]')
 parser.add_argument('-a', '--archive', default="archive", metavar='',
                     help='directory, where to save the archive ["archive"]')
+parser.add_argument('-m', '--manual', action='store_true',
+                    help='flag for manual decisions in program run [False]')
 args = parser.parse_args()
 
 atoml_cmp.run_tool.main(dockerlist_file=args.dockerlist, gen_tests_folder=args.testcases, pred_folder=args.predictions,
-                        yaml_folder=args.yaml_desc, archive_folder=args.archive)
+                        yaml_folder=args.yaml_desc, archive_folder=args.archive, manual_flag=args.manual)

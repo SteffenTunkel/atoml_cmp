@@ -155,8 +155,32 @@ def split_docker_list(d_list: List[Dict[str, Any]]):
     return generator_d_list, test_d_list
 
 
+def make_decision(active: bool, question: str) -> bool:
+    """Asks a deciding question (True/False) to the user.
+
+    Args:
+        active (bool): flag whether the user should be asked.
+        question (str): the question for the user
+
+    Returns:
+        The result of the decision, which is set to True if not dissented.
+    """
+    if active:
+        for i in range(3):
+            print(question)
+            answer = input("Y/N: ")
+            if answer.upper() == "Y":
+                return True
+            if answer.upper() == "N":
+                return False
+        print("Automatic 'yes' after 3 invalid inputs.")
+        return True
+    else:
+        return True
+
+
 def main(dockerlist_file: str, gen_tests_folder: str = "generated-tests", pred_folder: str = "predictions",
-         yaml_folder: str = "algorithm-descriptions", archive_folder: str = "archive") -> int:
+         yaml_folder: str = "algorithm-descriptions", archive_folder: str = "archive", manual_flag: bool = False) -> int:
     """entrypoint for the overall pipeline.
 
     Runs the whole pipeline of the tool. This includes clearing old data from output folder,
@@ -169,6 +193,7 @@ def main(dockerlist_file: str, gen_tests_folder: str = "generated-tests", pred_f
         pred_folder (str): directory for the prediction csv files.
         yaml_folder (str): directory for the yaml files with the algorithm definitions.
         archive_folder (str): directory, where to save the archive.
+        manual_flag (bool): flag for the activation of manual decisions.
 
     Returns:
         - Number of evaluated csv files.
@@ -176,19 +201,25 @@ def main(dockerlist_file: str, gen_tests_folder: str = "generated-tests", pred_f
     """
     start_time = time.time()
 
-    delete_folder(gen_tests_folder)
-    delete_folder(pred_folder)
+    if make_decision(manual_flag, "Delete the generated tests folder?"):
+        delete_folder(gen_tests_folder)
+
+    if make_decision(manual_flag, "Delete the predictions folder?"):
+        delete_folder(pred_folder)
 
     with open(dockerlist_file) as f:
         docker_list = json.load(f)
 
-    build_docker_collection(docker_list)
+    if make_decision(manual_flag, "(Re)Build the docker collection?"):
+        build_docker_collection(docker_list)
 
     generator_docker_list, test_docker_list = split_docker_list(docker_list)
 
-    run_docker_collection(generator_docker_list)
+    if make_decision(manual_flag, "Run generation docker?"):
+        run_docker_collection(generator_docker_list)
 
-    run_docker_collection(test_docker_list)
+    if make_decision(manual_flag, "Run test case docker collection?"):
+        run_docker_collection(test_docker_list)
 
     num_csv_files = evaluate_results(prediction_folder=pred_folder, yaml_folder=yaml_folder,
                                      archive_folder=archive_folder, gen_tests_folder=gen_tests_folder, print_all=False)
